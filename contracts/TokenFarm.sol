@@ -31,6 +31,9 @@ contract TokenFarm is Ownable {
 
     uint256 public rewardPercent;
     uint256 public perSeconds;
+    event Stake(address _user, uint256 amount);
+    event Unstake(address _user);
+    event ClaimReward(address _user);
 
     function stake(uint256 _amount) public payable {
         dbToken.transferFrom(msg.sender, address(this), _amount);
@@ -47,6 +50,7 @@ contract TokenFarm is Ownable {
         }
         listStake[msg.sender].stakeTime = currentTime;
         listStake[msg.sender].amount += _amount;
+        emit Stake(msg.sender, _amount);
     }
 
     function renewUnClaimAmount(address _user, uint256 currentTime) internal {
@@ -78,6 +82,7 @@ contract TokenFarm is Ownable {
         listStake[msg.sender].stakeTime = 0;
         listStake[msg.sender].unClaimAmount = 0;
         removeUser(msg.sender);
+        emit Unstake(msg.sender);
     }
 
     function claimToken() public onlyOwner {
@@ -98,6 +103,7 @@ contract TokenFarm is Ownable {
             dbToken.transfer(_user, listStake[_user].unClaimAmount);
             listStake[_user].unClaimAmount = 0;
         }
+        emit ClaimReward(_user);
     }
 
     function setRewardPercent(uint256 percent) public onlyOwner {
