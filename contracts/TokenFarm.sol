@@ -40,8 +40,9 @@ contract TokenFarm is Ownable {
         } else {
             // never stake before -> add to list user stakke
             if (userStakeIndex[msg.sender] == 0) {
+                uint256 currentLength = userStake.length;
                 userStake.push(msg.sender);
-                userStakeIndex[msg.sender] = userStake.length;
+                userStakeIndex[msg.sender] = currentLength + 1;
             }
         }
         listStake[msg.sender].stakeTime = currentTime;
