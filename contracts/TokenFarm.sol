@@ -79,25 +79,23 @@ contract TokenFarm is Ownable {
         removeUser(msg.sender);
     }
 
-    function issueToken() public onlyOwner {
-        for (uint256 userIndex = 0; userIndex < userStake.length; userIndex++) {
-            address _user = userStake[userIndex];
-            uint256 currentTime = block.timestamp;
-            if (listStake[_user].stakeTime == 0) {
-                // no longer stake
-                if (listStake[_user].unClaimAmount != 0) {
-                    dbToken.transfer(_user, listStake[_user].unClaimAmount);
-                    listStake[_user].unClaimAmount = 0;
-                    listStake[_user].amount = 0;
-                    removeUser(_user);
-                }
-            } else {
-                // staking
-                renewUnClaimAmount(_user, currentTime);
-                listStake[_user].stakeTime = currentTime;
+    function claimToken() public onlyOwner {
+        address _user = msg.sender;
+        uint256 currentTime = block.timestamp;
+        if (listStake[_user].stakeTime == 0) {
+            // no longer stake
+            if (listStake[_user].unClaimAmount != 0) {
                 dbToken.transfer(_user, listStake[_user].unClaimAmount);
                 listStake[_user].unClaimAmount = 0;
+                listStake[_user].amount = 0;
+                removeUser(_user);
             }
+        } else {
+            // staking
+            renewUnClaimAmount(_user, currentTime);
+            listStake[_user].stakeTime = currentTime;
+            dbToken.transfer(_user, listStake[_user].unClaimAmount);
+            listStake[_user].unClaimAmount = 0;
         }
     }
 
