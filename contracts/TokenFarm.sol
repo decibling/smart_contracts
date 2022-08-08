@@ -16,8 +16,6 @@ contract TokenFarm is Ownable {
 
     constructor(address _dbTokenAddress) public {
         dbToken = IERC20(_dbTokenAddress);
-        rewardPercent = 100;
-        perSeconds = 60;
     }
 
     struct StakeInfo {
@@ -25,92 +23,107 @@ contract TokenFarm is Ownable {
         uint256 stakeTime;
         uint256 unClaimAmount;
     }
-    mapping(address => StakeInfo) public listStake;
-    mapping(address => uint256) public userStakeIndex;
-    address[] public userStake;
+    mapping(string => mapping(address => StakeInfo)) public listStake;
+    mapping(string => mapping(address => uint256)) public userStakeIndex;
+    mapping(string => address[]) public userStake;
 
-    uint256 public rewardPercent;
-    uint256 public perSeconds;
-    event Stake(address _user, uint256 amount);
-    event Unstake(address _user);
-    event ClaimReward(address _user);
+    mapping(string => uint256) public rewardPercent;
+    mapping(string => uint256) public perSeconds;
+    event Stake(address _user, uint256 amount, string pool);
+    event Unstake(address _user, string pool);
+    event ClaimReward(address _user, string pool);
 
-    function stake(uint256 _amount) public payable {
+    function stake(uint256 _amount, string memory pool) public payable {
         dbToken.transferFrom(msg.sender, address(this), _amount);
         uint256 currentTime = block.timestamp;
-        if (listStake[msg.sender].stakeTime != 0) {
-            renewUnClaimAmount(msg.sender, currentTime);
+        if (listStake[pool][msg.sender].stakeTime != 0) {
+            renewUnClaimAmount(msg.sender, currentTime, pool);
         } else {
             // never stake before -> add to list user stakke
-            if (userStakeIndex[msg.sender] == 0) {
-                uint256 currentLength = userStake.length;
-                userStake.push(msg.sender);
-                userStakeIndex[msg.sender] = currentLength + 1;
+            if (userStakeIndex[pool][msg.sender] == 0) {
+                uint256 currentLength = userStake[pool].length;
+                userStake[pool].push(msg.sender);
+                userStakeIndex[pool][msg.sender] = currentLength + 1;
             }
         }
-        listStake[msg.sender].stakeTime = currentTime;
-        listStake[msg.sender].amount += _amount;
-        emit Stake(msg.sender, _amount);
+        listStake[pool][msg.sender].stakeTime = currentTime;
+        listStake[pool][msg.sender].amount += _amount;
+        emit Stake(msg.sender, _amount, pool);
     }
 
-    function renewUnClaimAmount(address _user, uint256 currentTime) internal {
-        if ((currentTime - listStake[_user].stakeTime) / perSeconds != 0) {
-            // unclaim amount = staking time / perseconds * percentGainned / 100 ;
-            listStake[_user].unClaimAmount +=
-                (((currentTime - listStake[_user].stakeTime) / perSeconds) *
-                    rewardPercent *
-                    listStake[_user].amount) /
+    function renewUnClaimAmount(
+        address _user,
+        uint256 currentTime,
+        string memory pool
+    ) internal {
+        if (
+            (currentTime - listStake[pool][_user].stakeTime) /
+                perSeconds[pool] !=
+            0
+        ) {
+            // unclaim amount = staking time / perseconds[pool] * percentGainned / 100 ;
+            listStake[pool][_user].unClaimAmount +=
+                (((currentTime - listStake[pool][_user].stakeTime) /
+                    perSeconds[pool]) *
+                    rewardPercent[pool] *
+                    listStake[pool][_user].amount) /
                 10000;
         }
     }
 
-    function removeUser(address _user) internal {
-        if (userStakeIndex[_user] != 0) {
-            userStake[userStakeIndex[_user] - 1] = userStake[
-                userStake.length - 1
+    function removeUser(address _user, string memory pool) internal {
+        if (userStakeIndex[pool][_user] != 0) {
+            userStake[pool][userStakeIndex[pool][_user] - 1] = userStake[pool][
+                userStake[pool].length - 1
             ];
-            userStake.pop();
-            userStakeIndex[_user] = 0;
+            userStake[pool].pop();
+            userStakeIndex[pool][_user] = 0;
         }
     }
 
-    function unstake() public {
-        require(userStakeIndex[msg.sender] != 0, "2"); // user is not exists
-        require(listStake[msg.sender].amount != 0, "1"); // amount must be smaller than current staked
-        dbToken.transfer(msg.sender, listStake[msg.sender].amount);
-        listStake[msg.sender].amount = 0;
-        listStake[msg.sender].stakeTime = 0;
-        listStake[msg.sender].unClaimAmount = 0;
-        removeUser(msg.sender);
-        emit Unstake(msg.sender);
+    function unstake(string memory pool) public {
+        require(userStakeIndex[pool][msg.sender] != 0, "2"); // user is not exists
+        require(listStake[pool][msg.sender].amount != 0, "1"); // amount must be smaller than current staked
+        dbToken.transfer(msg.sender, listStake[pool][msg.sender].amount);
+        listStake[pool][msg.sender].amount = 0;
+        listStake[pool][msg.sender].stakeTime = 0;
+        listStake[pool][msg.sender].unClaimAmount = 0;
+        removeUser(msg.sender, pool);
+        emit Unstake(msg.sender, pool);
     }
 
-    function claimToken() public onlyOwner {
+    function claimToken(string memory pool) public onlyOwner {
         address _user = msg.sender;
         uint256 currentTime = block.timestamp;
-        if (listStake[_user].stakeTime == 0) {
+        if (listStake[pool][_user].stakeTime == 0) {
             // no longer stake
-            if (listStake[_user].unClaimAmount != 0) {
-                dbToken.transfer(_user, listStake[_user].unClaimAmount);
-                listStake[_user].unClaimAmount = 0;
-                listStake[_user].amount = 0;
-                removeUser(_user);
+            if (listStake[pool][_user].unClaimAmount != 0) {
+                dbToken.transfer(_user, listStake[pool][_user].unClaimAmount);
+                listStake[pool][_user].unClaimAmount = 0;
+                listStake[pool][_user].amount = 0;
+                removeUser(_user, pool);
             }
         } else {
             // staking
-            renewUnClaimAmount(_user, currentTime);
-            listStake[_user].stakeTime = currentTime;
-            dbToken.transfer(_user, listStake[_user].unClaimAmount);
-            listStake[_user].unClaimAmount = 0;
+            renewUnClaimAmount(_user, currentTime, pool);
+            listStake[pool][_user].stakeTime = currentTime;
+            dbToken.transfer(_user, listStake[pool][_user].unClaimAmount);
+            listStake[pool][_user].unClaimAmount = 0;
         }
-        emit ClaimReward(_user);
+        emit ClaimReward(_user, pool);
     }
 
-    function setRewardPercent(uint256 percent) public onlyOwner {
-        rewardPercent = percent;
+    function setRewardPercent(uint256 percent, string memory pool)
+        public
+        onlyOwner
+    {
+        rewardPercent[pool] = percent;
     }
 
-    function setPerSecondsReward(uint256 sec) public onlyOwner {
-        perSeconds = sec;
+    function setPerSecondsReward(uint256 sec, string memory pool)
+        public
+        onlyOwner
+    {
+        perSeconds[pool] = sec;
     }
 }
