@@ -1,6 +1,6 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "FroggilyToken",
+  "contractName": "DeciblingToken",
   "sourceName": "contracts/DB.sol",
   "abi": [
     {
