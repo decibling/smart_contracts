@@ -666,8 +666,8 @@
       ]
     },
     "/Users/pau275/Documents/GitHub/contract-tests/contracts/DbAudio.sol": {
-      "lastModificationDate": 1660814174163,
-      "contentHash": "129c9b23df28379d60027b1ca365d9ae",
+      "lastModificationDate": 1667457585333,
+      "contentHash": "a9c9768dea78381927c34e025e5f2694",
       "sourceName": "contracts/DbAudio.sol",
       "solcConfig": {
         "version": "0.8.4",

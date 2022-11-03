@@ -36,7 +36,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
     }
     struct Bidding {
         address winner;
-        uint256 price; //
+        uint256 price; //\\
         BidStatus status;
         uint256 startTime;
         uint256 endTime;
@@ -55,56 +55,8 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
     mapping(string => AudioInfo) public listNFT;
     mapping(string => uint256) public tokenIdMapping;
     mapping(address => uint256[]) public listOwnToken;
-    mapping(uint256 => uint256) public indexOfToken;
+    mapping(uint256 => uint256) public  indexOfToken;
 
-    // The following functions are overrides required by Solidity.
-    function setSharePercent(uint256 share) public onlyOwner {
-        require(share >= 0 && share <= 100, "1");
-        sharePercent = share;
-    }
-
-    function getBidding(string memory uri, uint256 index)
-        public
-        view
-        returns (
-            address,
-            uint256,
-            BidStatus,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
-        AudioInfo storage audio = listNFT[uri];
-        Bidding storage bidding = audio.biddingList[index];
-        return (
-            bidding.winner,
-            bidding.price,
-            bidding.status,
-            bidding.startTime,
-            bidding.endTime,
-            bidding.currentSession
-        );
-    }
-
-    function getBidSession(
-        string memory uri,
-        uint256 index,
-        uint256 sessionId
-    )
-        public
-        view
-        returns (
-            address,
-            uint256,
-            uint256
-        )
-    {
-        AudioInfo storage audio = listNFT[uri];
-        Bidding storage bidding = audio.biddingList[index];
-        Bid memory bidItem = bidding.biddingSessions[sessionId];
-        return (bidItem.user, bidItem.price, bidItem.timestamp);
-    }
 
     function _burn(uint256 tokenId)
         internal
@@ -178,6 +130,13 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         indexOfToken[newItemId] = listOwnToken[msg.sender].length - 1;
         return newItemId;
     }
+    // The following functions are overrides required by Solidity.
+    function setSharePercent(uint256 share) public onlyOwner {
+        require(share >= 0 && share <= 100, "1");
+        sharePercent = share;
+    }
+
+
 
     function setPriceNFT(string memory uri, uint256 price) public {
         AudioInfo storage currentNFT = listNFT[uri];

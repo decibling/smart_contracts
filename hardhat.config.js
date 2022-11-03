@@ -23,11 +23,30 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  */
 module.exports = {
   solidity: "0.8.4",
+  settings: {
+    optimizer: {
+      enabled: true,
+      runs: 500,
+    }
+  },
   networks: {
     goerli: {
       url: process.env.GOERLI_URL,
+      throwOnTransactionFailures: true,
+      throwOnCallFailures: true,
+      allowUnlimitedContractSize: true,
+      blockGasLimit: 0x1fffffffffffff,
       accounts: [process.env.ACCOUNT_KEY],
     },
+    arb: {
+      url: process.env.ARB_URL,
+      throwOnTransactionFailures: true,
+      throwOnCallFailures: true,
+      allowUnlimitedContractSize: true,
+      blockGasLimit: 0x1fffffffffffff,
+      accounts: [process.env.ACCOUNT_KEY],
+    },
+
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
