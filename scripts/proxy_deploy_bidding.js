@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-const { ethers } = require("hardhat");
+const { ethers, upgrades } = require("hardhat");
 
 async function main() {
     var tokenAddress = "";
@@ -8,8 +8,9 @@ async function main() {
     var proxyAddress = "";
     if (tokenAddress.length == 0) {
         console.log("[+]Deploying Bidding contract ...");
-        const db = await hre.ethers.getContractFactory("DbAudio");
-        const dbTx = await db.deploy();
+        const db = await hre.ethers.getContractFactory("Decibling");
+        const dbTx = await upgrades.deployProxy(db, []);
+        await dbTx.deployed();
         console.log("[+]Deployed Bidding contract : " + dbTx.address);
         // if (proxyAdmin.length == 0) {
         //     console.log("[+]Deploying ProxAdmin ...");

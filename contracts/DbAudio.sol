@@ -1,18 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
-contract DbAudio is ERC721, Ownable, ERC721URIStorage {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+
+contract Decibling is ERC721Upgradeable, OwnableUpgradeable, ERC721URIStorageUpgradeable {
+    using  CountersUpgradeable for CountersUpgradeable.Counter;
+    CountersUpgradeable.Counter private _tokenIdCounter;
     uint256 public sharePercent;
     uint256 public biddingFee;
+function initialize() initializer public {
+        __ERC721_init("Decibiling", "DB");
+        __ERC721URIStorage_init();
+        __Ownable_init();
+    }
 
-    constructor() ERC721("DbAudio", "DBAU") {
+
+
+    function init() private  {
         sharePercent = 0;
         biddingFee = 3000000;
     }
@@ -60,7 +69,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
 
     function _burn(uint256 tokenId)
         internal
-        override(ERC721, ERC721URIStorage)
+        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
     {
         super._burn(tokenId);
     }
@@ -68,7 +77,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721, ERC721URIStorage)
+        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
@@ -115,15 +124,15 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
     ) public returns (uint256) {
         AudioInfo storage currentNFT = listNFT[uri];
         require(keccak256(bytes(currentNFT.url)) != keccak256(bytes(uri)), "2");
-        _tokenIds.increment();
+        uint256 newItemId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
         listNFT[uri].owner = msg.sender;
         listNFT[uri].url = uri;
         listNFT[uri].name = name;
         listNFT[uri].price = price;
         listNFT[uri].status = AudioStatus.NEW;
         listNFT[uri].currentBidding = 0;
-        uint256 newItemId = _tokenIds.current();
-        _mint(msg.sender, newItemId);
+        _safeMint(msg.sender, newItemId);
         _setTokenURI(newItemId, uri);
         tokenIdMapping[uri] = newItemId;
         listOwnToken[msg.sender].push(newItemId);
