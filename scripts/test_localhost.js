@@ -1,0 +1,62 @@
+require("@nomiclabs/hardhat-web3");
+const { ethers } = require('ethers');
+
+function increaseHexByOne(hex, added) {
+    let x = ethers.BigNumber.from(hex)
+    let sum = x.add(added)
+    let result = sum.toHexString()
+    return result
+}
+
+async function main() {
+    // Array(100).fill(1).forEach(async (e, i) => console.log(i, await web3.eth.getStorageAt("0xAB557fA0b2613f6230c7c96534ECae3df710B078", i)))
+
+
+    for (i = 9; i <= 9; i++) {
+        let index = i.toString().padStart(64, '0')
+        let data = Buffer.from('test').toString('hex');
+        data = ("0x" + data);
+        // console.log(data);
+        var newKey = web3.utils.sha3(data + index, { "encoding": "hex" });
+        for (j = 0; j < 6; j++) {
+            let a;
+            if (j == 2) {
+                // mapping(string => int) listInt;
+                let data2 = Buffer.from('aaa').toString('hex');
+                data2 = ("0x" + data2);
+                // let mykey = web3.utils.sha3(newKey + data2 + j.toString().padStart(64, "0"), { "encoding": "hex" });
+                // let mykey = increaseHexByOne(newKey, data2);
+                // let mykey = web3.utils.sha3(newKey + data2 + j.toString().padStart(64, "0"), { "encoding": "hex" });
+                // let mykey = web3.utils.sha3(newKey + data2, { "encoding": "hex" });
+                // let mykey = web3.utils.sha3(data2 + newKey, { "encoding": "hex" });
+                // let mykey = web3.utils.sha3(increaseHexByOne(newKey, data2), { "encoding": "hex" });
+                // let mykey = increaseHexByOne(newKey, web3.utils.sha3(data2 + j.toString().padStart(64, "0"), { "encoding": "hex" }))
+                // let mykey = web3.utils.sha3(data + index + data2 + j.toString().padStart(64, "0"), { "encoding": "hex" });
+                let mykey = web3.utils.sha3(data2 + increaseHexByOne(newKey, j).replace(/0x/, ''), { "encoding": "hex" });
+                a = await web3.eth.getStorageAt("0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f", mykey);
+
+            } else if (j == 3) {
+                // mapping(string => X) listArray1;
+                let data2 = Buffer.from('aaa').toString('hex');
+                data2 = ("0x" + data2);
+                let mykey = web3.utils.sha3(data2 + increaseHexByOne(newKey, j).replace(/0x/, ''), { "encoding": "hex" });
+                a = await web3.eth.getStorageAt("0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f", mykey);
+
+            } else if (j == 4) {
+                // mapping(string => X[]) listArray2; 
+                a = await web3.eth.getStorageAt("0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f", increaseHexByOne(newKey, j));
+
+            } else {
+                a = await web3.eth.getStorageAt("0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f", increaseHexByOne(newKey, j));
+            }
+            if (a != 0) {
+                console.log('DATA FOUND-> ', i, j, a);
+            } else {
+                // break;
+            }
+
+        }
+    }
+    // console.log(index, data, newKey);
+}
+main();
