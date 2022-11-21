@@ -292,7 +292,7 @@ export default {
       nft_status: ["NEW", "BIDING", "SELLING", "OWNED"],
       nft_color: ["success", "danger", "primary", "secondary"],
       bid_status: ["NOTREADY", "START", "BIDING", "END"],
-      usdtPerEth: 3054.80626277,
+      usdtPerEth: 1113.40,
       model: {
         startNow: false,
         startTime: "",

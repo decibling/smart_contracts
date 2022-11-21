@@ -242,14 +242,14 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
             if (sharePercent > 0) {
                 transferPrice = (transferPrice * (100 - sharePercent)) / 100;
             }
-            payable(currentNFT.owner).transfer(transferPrice);
-            //change owner = winner
             safeTransferFrom(
                 currentNFT.owner,
                 biddingOfNFT.winner,
                 tokenIdMapping[uri]
             );
             currentNFT.owner = biddingOfNFT.winner;
+            payable(currentNFT.owner).transfer(transferPrice);
+            //change owner = winner
         }
 
         biddingOfNFT.status = BidStatus.END;
