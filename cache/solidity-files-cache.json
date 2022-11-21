@@ -20,6 +20,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -59,6 +60,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -99,6 +101,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -137,6 +140,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -173,6 +177,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -211,6 +216,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -247,6 +253,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -286,6 +293,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -326,6 +334,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -362,6 +371,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -406,6 +416,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -444,6 +455,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -480,6 +492,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -518,6 +531,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -554,6 +568,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -590,6 +605,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -628,6 +644,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -664,6 +681,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -681,48 +699,6 @@
       ],
       "artifacts": [
         "ERC721URIStorage"
-      ]
-    },
-    "/Users/pau275/Documents/GitHub/contract-tests/contracts/DbAudio.sol": {
-      "lastModificationDate": 1667804982441,
-      "contentHash": "df2e85cf55aadab64bfd329f5c10e85e",
-      "sourceName": "contracts/DbAudio.sol",
-      "solcConfig": {
-        "version": "0.8.4",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.4"
-      ],
-      "artifacts": [
-        "Decibling"
       ]
     },
     "/Users/pau275/Documents/GitHub/contract-tests/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
@@ -744,6 +720,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -780,6 +757,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -821,6 +799,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -857,6 +836,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -893,6 +873,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -929,6 +910,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -968,6 +950,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1004,6 +987,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1042,6 +1026,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1081,6 +1066,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1117,6 +1103,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1149,6 +1136,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1181,6 +1169,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1226,6 +1215,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1265,6 +1255,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1304,6 +1295,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1342,6 +1334,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1378,6 +1371,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1416,6 +1410,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1452,6 +1447,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1490,6 +1486,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1526,6 +1523,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1564,6 +1562,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1600,6 +1599,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1639,6 +1639,7 @@
                 "evm.deployedBytecode",
                 "evm.methodIdentifiers",
                 "metadata",
+                "storageLayout",
                 "storageLayout"
               ],
               "": [
@@ -1654,6 +1655,91 @@
       ],
       "artifacts": [
         "IERC165Upgradeable"
+      ]
+    },
+    "/Users/pau275/Documents/GitHub/contract-tests/contracts/DbAudiUpgrable.sol": {
+      "lastModificationDate": 1668503508531,
+      "contentHash": "f938a6bce74bb7c6afe79c0377fd60c6",
+      "sourceName": "contracts/DbAudiUpgrable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "DbAudiUpgrable"
+      ]
+    },
+    "/Users/pau275/Documents/GitHub/contract-tests/contracts/DbAudio.sol": {
+      "lastModificationDate": 1668761728532,
+      "contentHash": "b06e88d19ce7f5145e372f3c85f242ed",
+      "sourceName": "contracts/DbAudio.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/utils/Counters.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "DbAudio"
       ]
     }
   }

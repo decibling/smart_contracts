@@ -23,11 +23,7 @@ import NFTMusic from "../../components/NFTMusic.vue";
   <TopNavbar />
   <div class="container">
     <template v-if="!is_connected">
-      <div
-        class="btn btn-primary"
-        v-on:click="loadInformation()"
-        v-if="checkEth()"
-      >
+      <div class="btn btn-primary" v-on:click="loadInformation()" v-if="checkEth()">
         Connect To My Wallet
       </div>
       <div v-else>
@@ -56,46 +52,20 @@ import NFTMusic from "../../components/NFTMusic.vue";
             <div class="container">
               <div class="row" style="margin-bottom: 10px">
                 <CInputGroup class="flex-nowrap">
-                  <CInputGroupText id="addon-wrapping"
-                    >Stake Amount</CInputGroupText
-                  >
-                  <CFormInput
-                    v-model="model.currentStake"
-                    aria-describedby="addon-wrapping"
-                  />
+                  <CInputGroupText id="addon-wrapping">Stake Amount</CInputGroupText>
+                  <CFormInput v-model="model.currentStake" aria-describedby="addon-wrapping" />
                 </CInputGroup>
               </div>
               <div class="row">
                 <v-btn color="primary" @click="stakeNow()">
-                  <CSpinner
-                    color="white"
-                    v-if="stakeLoading"
-                    size=""
-                    style="margin-right: 5px"
-                  />Stake</v-btn
-                >
-                <v-btn
-                  class="mt-2 text-white"
-                  color="danger"
-                  @click="unStakeNow()"
-                >
-                  <CSpinner
-                    color="white"
-                    v-if="stakeLoading"
-                    style="margin-right: 5px"
-                  />UnStake All</v-btn
-                ><v-btn
-                  class="mt-2 text-white"
-                  color="success"
-                  @click="issueAll()"
-                  v-if="allowToIssue"
-                >
-                  <CSpinner
-                    color="white"
-                    v-if="stakeLoading"
-                    style="margin-right: 5px"
-                  />Issue All Token</v-btn
-                >
+                  <CSpinner color="white" v-if="stakeLoading" size="" style="margin-right: 5px" />Stake
+                </v-btn>
+                <v-btn class="mt-2 text-white" color="danger" @click="unStakeNow()">
+                  <CSpinner color="white" v-if="stakeLoading" style="margin-right: 5px" />UnStake All
+                </v-btn>
+                <v-btn class="mt-2 text-white" color="success" @click="issueAll()" v-if="allowToIssue">
+                  <CSpinner color="white" v-if="stakeLoading" style="margin-right: 5px" />Issue All Token
+                </v-btn>
               </div>
             </div>
           </div>
@@ -104,7 +74,9 @@ import NFTMusic from "../../components/NFTMusic.vue";
     </template>
   </div>
 </template>
-<style></style>
+<style>
+
+</style>
 
 <script>
 export default {
@@ -135,7 +107,7 @@ export default {
   },
 
   methods: {
-    async clearAll() {},
+    async clearAll() { },
     checkEth() {
       return !!window.ethereum;
     },
@@ -186,8 +158,8 @@ export default {
       if (!this.stakeLoading)
         if (this.model.currentStake) {
           this.stakeLoading = true;
-          const [contractTokenFarm, {}] = await wallet.getTokenFarmContract();
-          const [contractToken, {}] = await wallet.getTokenContract();
+          const [contractTokenFarm, { }] = await wallet.getTokenFarmContract();
+          const [contractToken, { }] = await wallet.getTokenContract();
           try {
             let tx1 = await contractToken.approve(
               contractTokenFarm.address,
@@ -216,7 +188,7 @@ export default {
       if (!this.stakeLoading)
         if (confirm("Your reward will be lost, continues?")) {
           this.stakeLoading = true;
-          const [contractTokenFarm, {}] = await wallet.getTokenFarmContract();
+          const [contractTokenFarm, { }] = await wallet.getTokenFarmContract();
           try {
             let tx1 = await contractTokenFarm.unstake();
             await tx1.wait();
@@ -237,7 +209,7 @@ export default {
       if (!this.stakeLoading);
       if (confirm("Issue all reward for all users?")) {
         this.stakeLoading = true;
-        const [contractTokenFarm, {}] = await wallet.getTokenFarmContract();
+        const [contractTokenFarm, { }] = await wallet.getTokenFarmContract();
         try {
           let tx1 = await contractTokenFarm.issueToken();
           await tx1.wait();
@@ -254,7 +226,7 @@ export default {
       }
     },
     async updateBalanceDB() {
-      const [contractToken, {}] = wallet.getTokenContract();
+      const [contractToken, { }] = wallet.getTokenContract();
       this.balanceDB = (
         (await contractToken.balanceOf(this.accountAddress)) / 1e18
       ).toFixed(2);
@@ -262,8 +234,8 @@ export default {
       [window.contractToken, {}] = wallet.getTokenContract();
     },
     async updateRewardConfig() {
-      const [contractTokenFarm, {}] = wallet.getTokenFarmContract();
-      const [contractToken, {}] = wallet.getTokenContract();
+      const [contractTokenFarm, { }] = wallet.getTokenFarmContract();
+      const [contractToken, { }] = wallet.getTokenContract();
 
       this.rewardConfig = {
         rewardPercent: (await contractTokenFarm.rewardPercent()).toNumber(),
@@ -271,7 +243,7 @@ export default {
       };
     },
     async updateStakeInfo() {
-      const [contractTokenFarm, {}] = await wallet.getTokenFarmContract();
+      const [contractTokenFarm, { }] = await wallet.getTokenFarmContract();
       if (
         (await contractTokenFarm.owner()).toUpperCase() ==
         this.accountAddress.toUpperCase()
@@ -306,10 +278,12 @@ export default {
 .left-margin {
   margin-left: 5px;
 }
+
 /* Helper classes */
 .basil {
   background-color: #fffbe6 !important;
 }
+
 .basil--text {
   color: #356859 !important;
 }

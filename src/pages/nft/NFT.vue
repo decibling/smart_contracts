@@ -25,7 +25,7 @@ import {
   <TopNavbar />
   <div class="container">
     <h3 v-if="!available">
-      {{ ["Please install Metamask", "Loading..."][getError()] }}
+      {{ [" Please install Metamas k", "Loading..."][getError()] }}
     </h3>
     <template v-else>
       <template v-if="!loading">
@@ -33,23 +33,13 @@ import {
           <div class="col-md-6">
             <div class="row">
               <audio controls style="width: 100%">
-                <source
-                  v-bind:src="'https://ipfs.datgital.top/ipfs/' + nft.url"
-                  type="audio/mpeg"
-                />
+                <source v-bind:src="'https://cloudflare-ipfs.com/ipfs/' + nft.url" type="audio/mpeg" />
                 Your browser does not support the audio element.
               </audio>
             </div>
             <div class="row">
-              <CButton
-                v-on:click="showModal = true"
-                color="primary"
-                style="width: 150px; margin: 20px"
-                v-if="
-                  nft.status != 1 &&
-                  nft.owner.toUpperCase() == account?.toUpperCase()
-                "
-              >
+              <CButton v-on:click="showModal = true" color="primary" style="width: 150px; margin: 20px"
+                v-if="nft.status != 1 && nft.owner.toUpperCase() == account?.toUpperCase()">
                 Create Bidding
               </CButton>
             </div>
@@ -85,11 +75,8 @@ import {
         <div class="row" v-if="biddingInfo">
           <CCard class="col-md-12">
             <CCardHeader>
-              <v-progress-linear
-                :color="countDownBid[0] < 1 ? 'red' : 'blue'"
-                height="5"
-                indeterminate
-              ></v-progress-linear>
+              <v-progress-linear :color="countDownBid[0] < 1 ? 'red' : 'blue'" height="5" indeterminate>
+              </v-progress-linear>
               <h3>
                 <template v-if="countDownBid[0] >= 0 && countDownBid[1] >= 0">
                   [{{ countDownBid[0] }}:{{ countDownBid[1] }}]
@@ -98,19 +85,19 @@ import {
                 {{ biddingInfo.winner }}
               </h3>
             </CCardHeader>
-            <CCardBody style="overflow-x: scroll"
-              ><div class="container">
+            <CCardBody style="overflow-x: scroll">
+              <div class="container">
                 <div class="row">
                   Status: {{ bid_status[biddingInfo.status] }}
                 </div>
                 <div class="row">
                   Time:
                   {{
-                    moment(biddingInfo.startTime).format("YYYY-MM-DD HH:mm:ss")
+                  moment(biddingInfo.startTime).format("YYYY-MM-DD HH:mm:ss")
                   }}
                   -
                   {{
-                    moment(biddingInfo.endTime).format("YYYY-MM-DD HH:mm:ss")
+                  moment(biddingInfo.endTime).format("YYYY-MM-DD HH:mm:ss")
                   }}
                 </div>
                 <div class="row">
@@ -124,63 +111,38 @@ import {
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                      <CTableHeaderCell scope="col"
-                        >User's Wallet address</CTableHeaderCell
-                      >
-                      <CTableHeaderCell scope="col"
-                        >Price (ETH)</CTableHeaderCell
-                      >
-                      <CTableHeaderCell scope="col"
-                        >Price (USD)</CTableHeaderCell
-                      >
+                      <CTableHeaderCell scope="col">User's Wallet address</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Price (ETH)</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Price (USD)</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Time</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
                     <CTableRow v-for="bid in bidTable.data" v-bind:key="bid.i">
                       <CTableHeaderCell scope="row">{{
-                        bid.i + 1
+                      bid.i + 1
                       }}</CTableHeaderCell>
-                      <CTableDataCell
-                        ><a
-                          :href="
-                            'https://rinkeby.etherscan.io/address/' + bid.user
-                          "
-                          target="_blank"
-                          >{{ bid.user.slice(0, 10) }}...</a
-                        ></CTableDataCell
-                      >
+                      <CTableDataCell><a :href="
+                        'https://goerli.arbiscan.io/address/' + bid.user
+                      " target="_blank">{{ bid.user.slice(0, 10) }}...</a></CTableDataCell>
                       <CTableDataCell>{{ bid.price / 1e9 }}</CTableDataCell>
                       <CTableDataCell>{{
-                        ((bid.price / 1e9) * usdtPerEth).toFixed(2)
+                      ((bid.price / 1e9) * usdtPerEth).toFixed(2)
                       }}</CTableDataCell>
                       <CTableDataCell>{{
-                        moment(bid.timestamp).format("YYYY-MM-DD HH:mm:ss")
+                      moment(bid.timestamp).format("YYYY-MM-DD HH:mm:ss")
                       }}</CTableDataCell>
                     </CTableRow>
                   </CTableBody>
                 </CTable>
-              </div></CCardBody
-            >
+              </div>
+            </CCardBody>
             <CCardFooter>
-              <CButton
-                variant="outline"
-                color="danger"
-                @click="showBidModal = true"
-              >
+              <CButton variant="outline" color="danger" @click="showBidModal = true">
                 Bid
               </CButton>
-              <CButton
-                variant="outline"
-                color="primary"
-                @click="settleBidding()"
-                v-if="showSettleBidding"
-                ><CSpinner
-                  color="info"
-                  v-if="settleBiddingLoad"
-                  size="sm"
-                  style="margin-right: 5px"
-                />Receive money
+              <CButton variant="outline" color="primary" @click="settleBidding()" v-if="showSettleBidding">
+                <CSpinner color="info" v-if="settleBiddingLoad" size="sm" style="margin-right: 5px" />Receive money
               </CButton>
             </CCardFooter>
           </CCard>
@@ -201,40 +163,24 @@ import {
         <p class="inline-row">{{ nft.name }}</p>
       </div>
       <div class="row">
-        <strong class="inline-row col-md-4">Bid's start time :</strong
-        ><Datepicker
-          class="mb-1 inline-row col-md-8"
-          v-model="model.startTime"
-          v-if="!model.startNow"
-        ></Datepicker>
+        <strong class="inline-row col-md-4">Bid's start time :</strong>
+        <Datepicker class="mb-1 inline-row col-md-8" v-model="model.startTime" v-if="!model.startNow"></Datepicker>
         <p class="inline-row" v-else>Right the way</p>
-        <CButton
-          color="danger"
-          @click="model.startNow = !model.startNow"
-          style="width: auto"
-          >{{ model.startNow ? "Select date" : "Now" }}</CButton
-        >
+        <CButton color="danger" @click="model.startNow = !model.startNow" style="width: auto">{{ model.startNow ?
+        "Select date" : "Now"
+        }}</CButton>
       </div>
       <div class="row">
-        <strong class="inline-row col-md-4">Bid's end time :</strong
-        ><Datepicker
-          class="mb-1 inline-row col-md-8"
-          v-model="model.endTime"
-        ></Datepicker>
+        <strong class="inline-row col-md-4">Bid's end time :</strong>
+        <Datepicker class="mb-1 inline-row col-md-8" v-model="model.endTime"></Datepicker>
       </div>
       <div class="row">
         <strong class="inline-row col-md-4">Start price (ETH):</strong>
-        <input
-          class="form-control inline-row"
-          placeholder="Start Price(ETH)"
-          v-model="model.startPrice"
-          type="number"
-          @keyup="model.startPriceUsd = model.startPrice * usdtPerEth"
-        />
+        <input class="form-control inline-row" placeholder="Start Price(ETH)" v-model="model.startPrice" type="number"
+          @keyup="model.startPriceUsd = model.startPrice * usdtPerEth" />
       </div>
       <div class="row">
-        <div
-          style="
+        <div style="
             height: 20px !important;
             width: 20px !important;
             background-image: url('/exchange.png');
@@ -242,38 +188,24 @@ import {
             position: relative;
             margin: 10px 0 10px 0;
             left: 40%;
-          "
-        ></div>
+          "></div>
       </div>
       <div class="row">
         <strong class="inline-row col-md-4">Start price (USD):</strong>
-        <input
-          class="form-control inline-row"
-          placeholder="Start Price($)"
-          v-model="model.startPriceUsd"
-          type="number"
-          @keyup="model.startPrice = model.startPriceUsd / usdtPerEth"
-        />
+        <input class="form-control inline-row" placeholder="Start Price($)" v-model="model.startPriceUsd" type="number"
+          @keyup="model.startPrice = model.startPriceUsd / usdtPerEth" />
       </div>
     </CModalBody>
     <CModalFooter>
-      <CButton
-        color="secondary"
-        @click="
-          showModal = false;
-          createBidingLoad = false;
-        "
-      >
+      <CButton color="secondary" @click="
+  showModal = false;
+createBidingLoad = false;
+      ">
         Cancel
       </CButton>
-      <CButton color="primary" @click="createBiding()"
-        ><CSpinner
-          color="info"
-          v-if="createBidingLoad"
-          size="sm"
-          style="margin-right: 5px"
-        />Create</CButton
-      >
+      <CButton color="primary" @click="createBiding()">
+        <CSpinner color="info" v-if="createBidingLoad" size="sm" style="margin-right: 5px" />Create
+      </CButton>
     </CModalFooter>
   </CModal>
   <CModal title="Bid" :visible="showBidModal" @close="showBidModal = false">
@@ -284,17 +216,11 @@ import {
       <div class="container">
         <div class="row">
           <strong class="inline-row col-md-4">Bid's Price (ETH):</strong>
-          <input
-            class="form-control inline-row"
-            placeholder="Start Price(ETH)"
-            v-model="model.startPrice"
-            type="number"
-            @keyup="model.startPriceUsd = model.startPrice * usdtPerEth"
-          />
+          <input class="form-control inline-row" placeholder="Start Price(ETH)" v-model="model.startPrice" type="number"
+            @keyup="model.startPriceUsd = model.startPrice * usdtPerEth" />
         </div>
         <div class="row">
-          <div
-            style="
+          <div style="
               height: 20px !important;
               width: 20px !important;
               background-image: url('/exchange.png');
@@ -302,39 +228,25 @@ import {
               position: relative;
               margin: 10px 0 10px 0;
               left: 40%;
-            "
-          ></div>
+            "></div>
         </div>
         <div class="row">
           <strong class="inline-row col-md-4">Bid's Price (USD):</strong>
-          <input
-            class="form-control inline-row"
-            placeholder="Start Price($)"
-            v-model="model.startPriceUsd"
-            type="number"
-            @keyup="model.startPrice = model.startPriceUsd / usdtPerEth"
-          />
+          <input class="form-control inline-row" placeholder="Start Price($)" v-model="model.startPriceUsd"
+            type="number" @keyup="model.startPrice = model.startPriceUsd / usdtPerEth" />
         </div>
       </div>
     </CModalBody>
     <CModalFooter>
-      <CButton
-        color="secondary"
-        @click="
-          showBidModal = false;
-          createBidLoad = false;
-        "
-      >
+      <CButton color="secondary" @click="
+  showBidModal = false;
+createBidLoad = false;
+      ">
         Cancel
       </CButton>
-      <CButton color="danger" @click="bidNFT()"
-        ><CSpinner
-          color="info"
-          v-if="createBidLoad"
-          size="sm"
-          style="margin-right: 5px"
-        />Bid</CButton
-      >
+      <CButton color="danger" @click="bidNFT()">
+        <CSpinner color="info" v-if="createBidLoad" size="sm" style="margin-right: 5px" />Bid
+      </CButton>
     </CModalFooter>
   </CModal>
   <v-overlay v-if="loading">
@@ -406,7 +318,7 @@ export default {
 
   computed: {},
   methods: {
-    name() {},
+    name() { },
     moment() {
       return moment();
     },
@@ -425,7 +337,7 @@ export default {
         });
         if (confirm("Open ethernet scanner for bidding process?")) {
           window.open(
-            "https://rinkeby.etherscan.io/tx/" + result.hash,
+            "https://goerli.arbiscan.io/tx/" + result.hash,
             "_blank"
           );
         }
@@ -476,7 +388,7 @@ export default {
     async loadData() {
       if (this.account) {
         // loading wallet
-        const [contract, {}] = await wallet.getContract();
+        const [contract, { }] = await wallet.getContract();
         let nftInfo = await contract.listNFT(
           await contract.tokenURI(this.tokenId)
         );
@@ -485,6 +397,10 @@ export default {
           price: nftInfo.price.toNumber(),
           currentBidding: nftInfo.currentBidding.toNumber(),
         };
+        console.log({          ...nftInfo,
+          price: nftInfo.price.toNumber(),
+          currentBidding: nftInfo.currentBidding.toNumber(),
+})
         window.contract = contract;
         // contract.
       }
@@ -551,7 +467,7 @@ export default {
           );
           if (confirm("Open ethernet scanner for create biding process?")) {
             window.open(
-              "https://rinkeby.etherscan.io/tx/" + result.hash,
+              "https://goerli.arbiscan.io/tx/" + result.hash,
               "_blank"
             );
           }
@@ -583,17 +499,20 @@ export default {
         "endTime",
         "currentSession",
       ];
+      console.log('getBidding', this.nft.url, this.nft.currentBidding);
+      let biddingResult = await contract.getBidding(this.nft.url, this.nft.currentBidding);
       let contractBiding = common.mappingWithKey(
         listMapping,
-        await contract.getBidding(this.nft.url, this.nft.currentBidding)
+        biddingResult
       );
+      console.log(biddingResult);
       if (contractBiding.status != 3) {
         //
         this.biddingInfo = {
           ...contractBiding,
-          startTime: new Date(contractBiding.startTime.toNumber() * 1000),
-          endTime: new Date(contractBiding.endTime.toNumber() * 1000),
-          currentSession: contractBiding.currentSession.toNumber(),
+          startTime: new Date(contractBiding.startTime * 1000),
+          endTime: new Date(contractBiding.endTime * 1000),
+          currentSession: contractBiding.currentSession,
           price: contractBiding.price / 1e9,
         };
         console.log(contractBiding);

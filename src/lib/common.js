@@ -10,7 +10,7 @@ export default {
   mappingWithKey(keys, values) {
     let data = {};
     keys.forEach((v, i) => {
-      data[v] = values[i] ?? "";
+      data[v] = values[i] ?? values[v] ?? "";
     });
     return data;
   },

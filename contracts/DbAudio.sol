@@ -1,27 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-
-contract Decibling is ERC721Upgradeable, OwnableUpgradeable, ERC721URIStorageUpgradeable {
-    using  CountersUpgradeable for CountersUpgradeable.Counter;
-    CountersUpgradeable.Counter private _tokenIdCounter;
-    uint256 public sharePercent;
-    uint256 public biddingFee;
-function initialize() initializer public {
-        __ERC721_init("Decibiling", "DB");
-        __ERC721URIStorage_init();
-        __Ownable_init();
-    }
-
-
-
-    function init() private  {
+contract DbAudio is ERC721, Ownable, ERC721URIStorage {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIds;
+    constructor() ERC721("Decibling", "DB") {
         sharePercent = 0;
         biddingFee = 3000000;
     }
@@ -65,11 +53,13 @@ function initialize() initializer public {
     mapping(string => uint256) public tokenIdMapping;
     mapping(address => uint256[]) public listOwnToken;
     mapping(uint256 => uint256) public  indexOfToken;
+    uint256 public sharePercent;
+    uint256 public biddingFee;
 
 
     function _burn(uint256 tokenId)
         internal
-        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
+        override(ERC721, ERC721URIStorage)
     {
         super._burn(tokenId);
     }
@@ -77,7 +67,7 @@ function initialize() initializer public {
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
+        override(ERC721, ERC721URIStorage)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
@@ -124,15 +114,15 @@ function initialize() initializer public {
     ) public returns (uint256) {
         AudioInfo storage currentNFT = listNFT[uri];
         require(keccak256(bytes(currentNFT.url)) != keccak256(bytes(uri)), "2");
-        uint256 newItemId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+        _tokenIds.increment();
         listNFT[uri].owner = msg.sender;
         listNFT[uri].url = uri;
         listNFT[uri].name = name;
         listNFT[uri].price = price;
         listNFT[uri].status = AudioStatus.NEW;
         listNFT[uri].currentBidding = 0;
-        _safeMint(msg.sender, newItemId);
+        uint256 newItemId = _tokenIds.current();
+        _mint(msg.sender, newItemId);
         _setTokenURI(newItemId, uri);
         tokenIdMapping[uri] = newItemId;
         listOwnToken[msg.sender].push(newItemId);

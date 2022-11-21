@@ -3,33 +3,27 @@
     <CCardHeader>
       {{ nft.name }}
       <CBadge v-bind:color="nft_color[nft.status]">{{
-        nft_status[nft.status]
-      }}</CBadge></CCardHeader
-    >
+          nft_status[nft.status]
+      }}</CBadge>
+    </CCardHeader>
     <CCardBody>
       <audio controls style="width: 100%">
-        <source
-          v-bind:src="'https://ipfs.datgital.top/ipfs/' + nft.url"
-          type="audio/mpeg"
-        />
+        <source v-bind:src="'https://cloudflare-ipfs.com/ipfs/' + nft.url" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
     </CCardBody>
     <CCardFooter>
-      <a v-bind:href="'/nft/' + nft.tokenId"
-        ><CButton color="danger" variant="outline">Detail</CButton></a
-      >
-      <a
-        v-bind:href="
-          'https://rinkeby.etherscan.io/token/' +
-          contractAddress +
-          '?a=' +
-          nft.tokenId
-        "
-        target="_blank"
-        class="left-margin"
-        ><CButton color="success" variant="outline">ETH Scanner</CButton></a
-      >
+      <a v-bind:href="'/nft/' + nft.tokenId">
+        <CButton color="danger" variant="outline">Detail</CButton>
+      </a>
+      <a v-bind:href="
+        'https://goerli.arbiscan.io/token/' +
+        contractAddress +
+        '?a=' +
+        nft.tokenId
+      " target="_blank" class="left-margin">
+        <CButton color="success" variant="outline">ETH Scanner</CButton>
+      </a>
     </CCardFooter>
   </CCard>
 </template>

@@ -23,11 +23,7 @@ import NFTMusic from "../../components/NFTMusic.vue";
   <TopNavbar />
   <div class="container">
     <template v-if="!is_connected">
-      <div
-        class="btn btn-primary"
-        v-on:click="loadInformation()"
-        v-if="checkEth()"
-      >
+      <div class="btn btn-primary" v-on:click="loadInformation()" v-if="checkEth()">
         Connect To My Wallet
       </div>
       <div v-else>
@@ -52,49 +48,23 @@ import NFTMusic from "../../components/NFTMusic.vue";
               <div class="row" style="margin-bottom: 10px">
                 <CInputGroup class="flex-nowrap">
                   <CInputGroupText id="addon-wrapping">Name</CInputGroupText>
-                  <CFormInput
-                    v-model="model.name"
-                    placeholder="Name of NFT"
-                    aria-label="Name of NFT"
-                    aria-describedby="addon-wrapping"
-                  />
+                  <CFormInput v-model="model.name" placeholder="Name of NFT" aria-label="Name of NFT"
+                    aria-describedby="addon-wrapping" />
                 </CInputGroup>
               </div>
               <div class="row">
                 <CInputGroup class="mb-3">
-                  <input
-                    class="form-control"
-                    type="file"
-                    ref="file_mp3"
-                    accept=".mp3,audio/*"
-                  />
+                  <input class="form-control" type="file" ref="file_mp3" accept=".mp3,audio/*" />
                 </CInputGroup>
               </div>
             </CCardBody>
             <CCardFooter>
-              <CButton
-                color="success"
-                v-on:click="uploadNFT()"
-                :disable="accountAddress != ''"
-              >
-                <CSpinner
-                  component="span"
-                  size="sm"
-                  aria-hidden="true"
-                  v-if="loading"
-                />
-                Upload NFT</CButton
-              >
-              <CButton color="secondary" variant="outline" class="left-margin"
-                >Clear</CButton
-              >
-              <CButton
-                color="secondary"
-                variant="outline"
-                v-on:click="loadMyNFT()"
-                class="left-margin"
-                >Reload</CButton
-              >
+              <CButton color="success" v-on:click="uploadNFT()" :disable="accountAddress != ''">
+                <CSpinner component="span" size="sm" aria-hidden="true" v-if="loading" />
+                Upload NFT
+              </CButton>
+              <CButton color="secondary" variant="outline" class="left-margin">Clear</CButton>
+              <CButton color="secondary" variant="outline" v-on:click="loadMyNFT()" class="left-margin">Reload</CButton>
             </CCardFooter>
           </CCard>
         </div>
@@ -104,12 +74,7 @@ import NFTMusic from "../../components/NFTMusic.vue";
         </div>
         <div class="row">
           <div class="center">
-            <CSpinner
-              component="span"
-              size="lg"
-              aria-hidden="true"
-              v-if="loadingNFT"
-            />
+            <CSpinner component="span" size="lg" aria-hidden="true" v-if="loadingNFT" />
           </div>
 
           <template v-for="item in myNFT" v-bind:key="item.url">
@@ -120,7 +85,9 @@ import NFTMusic from "../../components/NFTMusic.vue";
     </template>
   </div>
 </template>
-<style></style>
+<style>
+
+</style>
 
 <script>
 export default {
@@ -157,18 +124,19 @@ export default {
                 this.$refs.file_mp3.files[0]
               );
               let uploadedURL =
-                "https://ipfs.datgital.top/ipfs/" + uploadedFile.path;
+                "https://cloudflare-ipfs.com/ipfs/" + uploadedFile.path;
               console.log(uploadedURL);
               const [contract, signer] = wallet.getContract();
               const connection = contract.connect(signer);
               const addr = connection.address;
+              console.log('uploadedFile.path', uploadedFile.path);
               const result = await contract.createNFT(
                 uploadedFile.path,
                 this.model.name,
                 0
               );
               console.log(result);
-              alert("https://rinkeby.etherscan.io/tx/" + result.hash);
+              alert("https://goerli.arbiscan.io/tx/" + result.hash);
               await result.wait();
               this.loading = false;
               this.loadMyNFT();
@@ -195,11 +163,11 @@ export default {
           } else {
             alert(e.message);
           }
-          location.reload();
+          // location.reload();
         }
       }
     },
-    async clearAll() {},
+    async clearAll() { },
     checkEth() {
       return !!window.ethereum;
     },
@@ -208,10 +176,12 @@ export default {
         this.myNFT = [];
         this.loadingNFT = true;
         const [contract, signer] = wallet.getContract();
+        [window.contract, window.signer] = wallet.getContract();
         let userToken = await this.getListToken(contract);
         userToken.forEach(async (index) => {
           let uri = await contract.tokenURI(index.toNumber());
           let nft = await contract.listNFT(uri);
+          console.log(nft);
           this.myNFT.push({ tokenId: index, ...nft });
         });
         this.loadingNFT = false;
@@ -223,7 +193,7 @@ export default {
           } else {
             alert(e.message);
           }
-          location.reload();
+          // location.reload();
         }
       }
     },

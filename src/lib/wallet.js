@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import DbAudio from "../../artifacts/contracts/DbAudio.sol/DbAudio.json";
 import DeciblingToken from "../../artifacts/contracts/DB.sol/DeciblingToken.json";
 import TokenFarm from "../../artifacts/contracts/TokenFarm.sol/TokenFarm.json";
+import extension from "./extension";
 export default {
   async connectWallet() {
     const [account] = await window.ethereum.request({
@@ -15,7 +16,7 @@ export default {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(
-      "0x0317e82cBDA8188b8d67d817b81De0E781aBa0E9",
+      "0xAa8ADb51329BA9640D86Aa10b0F374d97A7B31d9",
       DeciblingToken.abi,
       signer
     );
@@ -25,25 +26,26 @@ export default {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(
-      "0x9ff3Cc7d2C869E64F7868daEa2C7C7fE452320Dd",
+      "0x8de83e46aF3B8b62e787fa4d8f7C4889A619e91a",
       TokenFarm.abi,
       signer
     );
     return [contract, signer];
-    w;
   },
   getContract() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const contract = new ethers.Contract(
-      "0xaA773D0Ebf777F8311c813C0763A1e3e4Fd077c2",
+    let contract = new ethers.Contract(
+      "0x8BCA4b50Df16B7FBeC8755e37910476fd8BC92Ac",
       DbAudio.abi,
       signer
     );
+    contract = extension.injectContract(contract);
+
     return [contract, signer];
   },
   async uploadIpfs(file) {
-    let ipfsClient = window.IpfsHttpClient.create("https://datgital.top");
+    let ipfsClient = window.IpfsHttpClient.create("https://ipfs.decibling.com");
     return await ipfsClient.add(file);
   },
   initEvent() {
