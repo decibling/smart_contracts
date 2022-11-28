@@ -10,10 +10,10 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     constructor() ERC721("Decibling", "DB") {
-        sharePercent = 0;
+        sharePercent = 0; 
         biddingFee = 3000000;
     }
-
+    // event, percent share, upgrable contract
     enum BidStatus {
         NOTREADY,
         START,
@@ -56,7 +56,8 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
     uint256 public sharePercent;
     uint256 public biddingFee;
 
-
+    event CreateNFT(string uri, uint256 index);
+    event BidEvent(string uri, uint256 startPrice, uint256 startTime, uint256 endTime);
     function _burn(uint256 tokenId)
         internal
         override(ERC721, ERC721URIStorage)
@@ -127,6 +128,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         tokenIdMapping[uri] = newItemId;
         listOwnToken[msg.sender].push(newItemId);
         indexOfToken[newItemId] = listOwnToken[msg.sender].length - 1;
+        emit CreateNFT(uri, newItemId);
         return newItemId;
     }
     // The following functions are overrides required by Solidity.
@@ -180,6 +182,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         currentNFT.biddingList[currentNFT.currentBidding].endTime = endTime;
         currentNFT.biddingList[currentNFT.currentBidding].currentSession = 0;
         currentNFT.status = AudioStatus.BIDING;
+        emit BidEvent(uri, startPrice, startTime, endTime);
     }
 
     function bid(string memory uri) public payable {
@@ -240,7 +243,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
             // send money to owner
             uint256 transferPrice = biddingOfNFT.price;
             if (sharePercent > 0) {
-                transferPrice = (transferPrice * (100 - sharePercent)) / 100;
+                transferPrice = (transferPrice * (1e8 - 5000)) / 1e8;
             }
             safeTransferFrom(
                 currentNFT.owner,

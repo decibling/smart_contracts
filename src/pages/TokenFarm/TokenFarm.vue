@@ -39,17 +39,25 @@ import NFTMusic from "../../components/NFTMusic.vue";
             </div>
             <div class="row">
               <h4 class="center" style="color: red; font-weight: bold">
-                Your balance: {{ balanceDB }} DB
+                Your balance: {{ balanceDB }} FROY
               </h4>
               <h4 class="center" style="color: green; font-weight: bold">
-                Staked: {{ stakeInfo.amount }} DB
+                Staked: {{ stakeInfo.amount }} FROY
               </h4>
               <h4 class="center" style="color: blue; font-weight: bold">
                 Your reward:
-                {{ unClaimAmountShow }} DB ({{ growPerMin }} DB per min)
+                {{ unClaimAmountShow }} FROY ({{ growPerMin }} FROY per min)
               </h4>
             </div>
             <div class="container">
+              <div class="row" style="margin-bottom: 10px">
+                <CInputGroup class="flex-nowrap">
+                  <CInputGroupText id="addon-wrapping">Pools </CInputGroupText>
+                  <CFormInput v-model="model.poolName" aria-describedby="addon-wrapping" />
+                  <v-btn color="primary" @click="loadPool()"> Load Pool</v-btn>
+                </CInputGroup>
+              </div>
+
               <div class="row" style="margin-bottom: 10px">
                 <CInputGroup class="flex-nowrap">
                   <CInputGroupText id="addon-wrapping">Stake Amount</CInputGroupText>
@@ -96,7 +104,7 @@ export default {
       lastUpdateStake: 0,
       rewardConfig: {},
       growPerMin: 0,
-      model: { currentStake: "" },
+      model: { currentStake: "", poolName : "DECIBLING_DEFAULT_POOL" },
       currentUnStake: "",
       tab: null,
       accountAddress: "",
@@ -115,6 +123,19 @@ export default {
       this.is_connected = await window.ethereum.isConnected();
       if (this.is_connected) {
         this.loadInformation();
+      }
+    },
+    async loadPool(startup = false){
+      let poolName = this.model.poolName ?? localStorage.getItem("poolName") ?? "";
+      if(poolName){
+        this.model.poolName = poolName;
+        localStorage.setItem("poolName", poolName);
+        if(!startup){
+          this.isConnected();
+        }
+      }else{
+        if(!startup)
+        alert("Please enter pools");
       }
     },
     initSetInterval() {
@@ -155,6 +176,10 @@ export default {
       );
     },
     async stakeNow() {
+      if(!this.model.poolName){
+        alert('Pool not found');
+        return;
+      }
       if (!this.stakeLoading)
         if (this.model.currentStake) {
           this.stakeLoading = true;
@@ -167,7 +192,8 @@ export default {
             );
             await tx1.wait();
             let tx2 = await contractTokenFarm.stake(
-              ethers.utils.parseEther(this.model.currentStake.toString())
+              ethers.utils.parseEther(this.model.currentStake.toString()),
+              this.model.poolName
             );
             await tx2.wait();
             this.stakeLoading = false;
@@ -175,22 +201,28 @@ export default {
             this.loadInformation();
             alert("Stake successfully!");
           } catch (e) {
-            this.stakeLoading = false;
+            console.log(e);
+            // this.stakeLoading = false;
 
-            if (e) {
-              alert(e.message);
-              location.reload();
-            }
+            // if (e) {
+            //   alert(e.message);
+            //   location.reload();
+            // }
           }
         }
     },
     async unStakeNow() {
+      if(!this.model.poolName){
+        alert('Pool not found');
+        return;
+      }
+
       if (!this.stakeLoading)
         if (confirm("Your reward will be lost, continues?")) {
           this.stakeLoading = true;
           const [contractTokenFarm, { }] = await wallet.getTokenFarmContract();
           try {
-            let tx1 = await contractTokenFarm.unstake();
+            let tx1 = await contractTokenFarm.unstake(this.model.poolName);
             await tx1.wait();
             this.stakeLoading = false;
             this.loadInformation();
@@ -206,16 +238,22 @@ export default {
         }
     },
     async issueAll() {
+      if(!this.model.poolName){
+        alert('Pool not found');
+        return;
+      }
+
       if (!this.stakeLoading);
-      if (confirm("Issue all reward for all users?")) {
+      let userAddress = prompt("Enter user you want to issue token", "0x65da138fe4614a9fed2bdaeab09f0d78ccfc4ba6");
+      if (userAddress) {
         this.stakeLoading = true;
         const [contractTokenFarm, { }] = await wallet.getTokenFarmContract();
         try {
-          let tx1 = await contractTokenFarm.issueToken();
+          let tx1 = await contractTokenFarm.issueToken(this.model.poolName, userAddress);
           await tx1.wait();
           this.stakeLoading = false;
           this.loadInformation();
-          alert("Issue all token successfully!");
+          alert("Issue all token to " +userAddress+ " successfully!");
         } catch (e) {
           this.stakeLoading = false;
           if (e) {
@@ -235,12 +273,17 @@ export default {
     },
     async updateRewardConfig() {
       const [contractTokenFarm, { }] = wallet.getTokenFarmContract();
-      const [contractToken, { }] = wallet.getTokenContract();
-
       this.rewardConfig = {
-        rewardPercent: (await contractTokenFarm.rewardPercent()).toNumber(),
-        perSeconds: (await contractTokenFarm.perSeconds()).toNumber(),
+        rewardPercent: (await contractTokenFarm.rewardPercent(this.model.poolName)).toNumber(),
+        perSeconds: (await contractTokenFarm.perSeconds(this.model.poolName)).toNumber(),
       };
+      if(this.rewardConfig.rewardPercent == 0){
+        this.rewardConfig = {
+        rewardPercent: (await contractTokenFarm.defaultRewardPer()).toNumber(),
+        perSeconds: (await contractTokenFarm.defaultPerSec()).toNumber(),
+      };
+
+      }
     },
     async updateStakeInfo() {
       const [contractTokenFarm, { }] = await wallet.getTokenFarmContract();
@@ -250,15 +293,16 @@ export default {
       ) {
         this.allowToIssue = true;
       }
-      let stakeInfo = await contractTokenFarm.listStake(this.accountAddress);
+      let stakeInfo = await contractTokenFarm.getListStack(this.model.poolName);
       this.stakeInfo = {
-        amount: stakeInfo.amount / 1e18,
-        stakeTime: stakeInfo.stakeTime.toNumber(),
-        unClaimAmount: stakeInfo.unClaimAmount / 1e18,
+        amount: stakeInfo[0] / 1e18,
+        stakeTime: stakeInfo[1].toNumber(),
+        unClaimAmount: stakeInfo[2] / 1e18,
       };
     },
     async loadInformation() {
-      [this.accountAddress, this.balance] = await wallet.connectWallet();
+      [this.accountAddress, this.balance] = await wallet.connectWallet();    
+      // await this.loadPool(true);
       await this.updateBalanceDB();
       await this.updateStakeInfo();
       await this.updateRewardConfig();

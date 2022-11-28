@@ -1,6 +1,109 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
+    "/Users/pau275/Documents/GitHub/contract-tests/contracts/ProxyAdmin.sol": {
+      "lastModificationDate": 1665069800254,
+      "contentHash": "e0a4c582ec26ac3125859b7a94074d25",
+      "sourceName": "contracts/ProxyAdmin.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": []
+    },
+    "/Users/pau275/Documents/GitHub/contract-tests/contracts/flattened_DB.sol": {
+      "lastModificationDate": 1665069866379,
+      "contentHash": "c0488b59c75d02f85f3fbb7e58ff3eb0",
+      "sourceName": "contracts/flattened_DB.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": []
+    },
+    "/Users/pau275/Documents/GitHub/contract-tests/contracts/OpenSeaExchangeContract.sol": {
+      "lastModificationDate": 1665069849428,
+      "contentHash": "c23fe0fcc5baff222cd76287a9108575",
+      "sourceName": "contracts/OpenSeaExchangeContract.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [],
+      "artifacts": []
+    },
     "/Users/pau275/Documents/GitHub/contract-tests/contracts/DB.sol": {
       "lastModificationDate": 1660814174163,
       "contentHash": "5bf9cee7f408fa860ffb4611c852dcae",
@@ -275,8 +378,8 @@
       ]
     },
     "/Users/pau275/Documents/GitHub/contract-tests/contracts/TokenFarm.sol": {
-      "lastModificationDate": 1665072610854,
-      "contentHash": "9d340cc239816185376c78bb1b74fc3b",
+      "lastModificationDate": 1669652304377,
+      "contentHash": "0b4469a5ec6e28c2f112b9221649a2f0",
       "sourceName": "contracts/TokenFarm.sol",
       "solcConfig": {
         "version": "0.8.4",
@@ -309,47 +412,10 @@
         "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.4"
       ],
       "artifacts": [
         "TokenFarm"
-      ]
-    },
-    "/Users/pau275/Documents/GitHub/contract-tests/node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol": {
-      "lastModificationDate": 1660814244458,
-      "contentHash": "611f626b2447ccff9ba5332460fd217f",
-      "sourceName": "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
-      "solcConfig": {
-        "version": "0.8.4",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "AggregatorV3Interface"
       ]
     },
     "/Users/pau275/Documents/GitHub/contract-tests/node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
@@ -701,6 +767,48 @@
         "ERC721URIStorage"
       ]
     },
+    "/Users/pau275/Documents/GitHub/contract-tests/contracts/DbAudio.sol": {
+      "lastModificationDate": 1669371788648,
+      "contentHash": "0ca7fa28a792b6422e4f4fc96419ff56",
+      "sourceName": "contracts/DbAudio.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
+        "@openzeppelin/contracts/utils/Counters.sol",
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "DbAudio"
+      ]
+    },
     "/Users/pau275/Documents/GitHub/contract-tests/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
       "lastModificationDate": 1660814240694,
       "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
@@ -1047,10 +1155,10 @@
         "ProxyAdmin"
       ]
     },
-    "/Users/pau275/Documents/GitHub/contract-tests/contracts/ProxyAdmin.sol": {
-      "lastModificationDate": 1665069800254,
-      "contentHash": "e0a4c582ec26ac3125859b7a94074d25",
-      "sourceName": "contracts/ProxyAdmin.sol",
+    "/Users/pau275/Documents/GitHub/contract-tests/contracts/DbAudiUpgrable.sol": {
+      "lastModificationDate": 1668503508531,
+      "contentHash": "f938a6bce74bb7c6afe79c0377fd60c6",
+      "sourceName": "contracts/DbAudiUpgrable.sol",
       "solcConfig": {
         "version": "0.8.4",
         "settings": {
@@ -1077,78 +1185,18 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol"
+        "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.4"
       ],
-      "artifacts": []
-    },
-    "/Users/pau275/Documents/GitHub/contract-tests/contracts/flattened_DB.sol": {
-      "lastModificationDate": 1665069866379,
-      "contentHash": "c0488b59c75d02f85f3fbb7e58ff3eb0",
-      "sourceName": "contracts/flattened_DB.sol",
-      "solcConfig": {
-        "version": "0.8.4",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [],
-      "artifacts": []
-    },
-    "/Users/pau275/Documents/GitHub/contract-tests/contracts/OpenSeaExchangeContract.sol": {
-      "lastModificationDate": 1665069849428,
-      "contentHash": "c23fe0fcc5baff222cd76287a9108575",
-      "sourceName": "contracts/OpenSeaExchangeContract.sol",
-      "solcConfig": {
-        "version": "0.8.4",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [],
-      "artifacts": []
+      "artifacts": [
+        "DbAudiUpgrable"
+      ]
     },
     "/Users/pau275/Documents/GitHub/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol": {
       "lastModificationDate": 1667804324513,
@@ -1657,10 +1705,10 @@
         "IERC165Upgradeable"
       ]
     },
-    "/Users/pau275/Documents/GitHub/contract-tests/contracts/DbAudiUpgrable.sol": {
-      "lastModificationDate": 1668503508531,
-      "contentHash": "f938a6bce74bb7c6afe79c0377fd60c6",
-      "sourceName": "contracts/DbAudiUpgrable.sol",
+    "/Users/pau275/Documents/GitHub/contract-tests/node_modules/@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol": {
+      "lastModificationDate": 1660814244458,
+      "contentHash": "611f626b2447ccff9ba5332460fd217f",
+      "sourceName": "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol",
       "solcConfig": {
         "version": "0.8.4",
         "settings": {
@@ -1686,60 +1734,12 @@
           }
         }
       },
-      "imports": [
-        "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol"
-      ],
+      "imports": [],
       "versionPragmas": [
-        "^0.8.4"
+        "^0.8.0"
       ],
       "artifacts": [
-        "DbAudiUpgrable"
-      ]
-    },
-    "/Users/pau275/Documents/GitHub/contract-tests/contracts/DbAudio.sol": {
-      "lastModificationDate": 1668761728532,
-      "contentHash": "b06e88d19ce7f5145e372f3c85f242ed",
-      "sourceName": "contracts/DbAudio.sol",
-      "solcConfig": {
-        "version": "0.8.4",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-        "@openzeppelin/contracts/utils/Counters.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.4"
-      ],
-      "artifacts": [
-        "DbAudio"
+        "AggregatorV3Interface"
       ]
     }
   }

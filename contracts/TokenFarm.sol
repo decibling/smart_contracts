@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -14,8 +14,8 @@ contract TokenFarm is Ownable {
     // getValue - DONE!
     IERC20 public dbToken;
 
-    constructor(address _dbTokenAddress) public {
-        dbToken = IERC20(_dbTokenAddress);
+    constructor() {
+        dbToken = IERC20(0xAa8ADb51329BA9640D86Aa10b0F374d97A7B31d9);
     }
 
     struct StakeInfo {
@@ -26,12 +26,26 @@ contract TokenFarm is Ownable {
     mapping(string => mapping(address => StakeInfo)) public listStake;
     mapping(string => mapping(address => uint256)) public userStakeIndex;
     mapping(string => address[]) public userStake;
-
+    uint256 public defaultRewardPer = 2;
+    uint256 public defaultPerSec = 5;
     mapping(string => uint256) public rewardPercent;
     mapping(string => uint256) public perSeconds;
     event Stake(address _user, uint256 amount, string pool);
     event Unstake(address _user, string pool);
     event ClaimReward(address _user, string pool);
+
+    function getListStack(string memory pool)
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        StakeInfo memory info = listStake[pool][msg.sender];
+        return (info.amount, info.stakeTime, info.unClaimAmount);
+    }
 
     function stake(uint256 _amount, string memory pool) public payable {
         dbToken.transferFrom(msg.sender, address(this), _amount);
@@ -56,19 +70,35 @@ contract TokenFarm is Ownable {
         uint256 currentTime,
         string memory pool
     ) internal {
-        if (
-            (currentTime - listStake[pool][_user].stakeTime) /
-                perSeconds[pool] !=
-            0
-        ) {
-            // unclaim amount = staking time / perseconds[pool] * percentGainned / 100 ;
-            listStake[pool][_user].unClaimAmount +=
-                (((currentTime - listStake[pool][_user].stakeTime) /
-                    perSeconds[pool]) *
-                    rewardPercent[pool] *
-                    listStake[pool][_user].amount) /
-                10000;
+        if (rewardPercent[pool] == 0 || perSeconds[pool] == 0) {
+            if (
+                (currentTime - listStake[pool][_user].stakeTime) /
+                    defaultPerSec !=
+                0
+            ) {
+                // use default pool
+                listStake[pool][_user].unClaimAmount +=
+                    (((currentTime - listStake[pool][_user].stakeTime) /
+                        defaultPerSec) *
+                        defaultRewardPer *
+                        listStake[pool][_user].amount) /
+                    10000;
+            }
+        } else {
+            if (
+                (currentTime - listStake[pool][_user].stakeTime) /
+                    perSeconds[pool] !=
+                0
+            ) {
+                listStake[pool][_user].unClaimAmount +=
+                    (((currentTime - listStake[pool][_user].stakeTime) /
+                        perSeconds[pool]) *
+                        rewardPercent[pool] *
+                        listStake[pool][_user].amount) /
+                    10000;
+            }
         }
+        // unclaim amount = staking time / perseconds[pool] * percentGainned / 100 ;
     }
 
     function removeUser(address _user, string memory pool) internal {
@@ -92,38 +122,39 @@ contract TokenFarm is Ownable {
         emit Unstake(msg.sender, pool);
     }
 
-    function claimToken(string memory pool) public onlyOwner {
-        address _user = msg.sender;
+    function issueToken(string memory pool, address user) public onlyOwner {
         uint256 currentTime = block.timestamp;
-        if (listStake[pool][_user].stakeTime == 0) {
+        if (listStake[pool][user].stakeTime == 0) {
             // no longer stake
-            if (listStake[pool][_user].unClaimAmount != 0) {
-                dbToken.transfer(_user, listStake[pool][_user].unClaimAmount);
-                listStake[pool][_user].unClaimAmount = 0;
-                listStake[pool][_user].amount = 0;
-                removeUser(_user, pool);
+            if (listStake[pool][user].unClaimAmount != 0) {
+                dbToken.transfer(user, listStake[pool][user].unClaimAmount);
+                listStake[pool][user].unClaimAmount = 0;
+                listStake[pool][user].amount = 0;
+                removeUser(user, pool);
             }
         } else {
             // staking
-            renewUnClaimAmount(_user, currentTime, pool);
-            listStake[pool][_user].stakeTime = currentTime;
-            dbToken.transfer(_user, listStake[pool][_user].unClaimAmount);
-            listStake[pool][_user].unClaimAmount = 0;
+            renewUnClaimAmount(user, currentTime, pool);
+            listStake[pool][user].stakeTime = currentTime;
+            dbToken.transfer(user, listStake[pool][user].unClaimAmount);
+            listStake[pool][user].unClaimAmount = 0;
         }
-        emit ClaimReward(_user, pool);
+        emit ClaimReward(user, pool);
     }
 
-    function setRewardPercent(uint256 percent, string memory pool)
+    function setSplitConfig(uint256 percent, uint256 sec, string memory pool)
         public
         onlyOwner
     {
+        // need require config percent and sec for google measure
         rewardPercent[pool] = percent;
-    }
-
-    function setPerSecondsReward(uint256 sec, string memory pool)
-        public
-        onlyOwner
-    {
         perSeconds[pool] = sec;
     }
+
+    function setSplitConfigDefault(uint256 percent, uint256 sec) public onlyOwner {
+        // need require config percent and sec for google measure
+        defaultRewardPer = percent;
+        defaultPerSec = sec;
+    }
+
 }
