@@ -101,7 +101,7 @@ import {
                   }}
                 </div>
                 <div class="row">
-                  Top Price: {{ (biddingInfo.price / 1e9).toFixed(9) }} ETH (
+                  Top Price: {{ (biddingInfo.price / 1e9).toFixed(9) }} FROY (
                   {{ ((biddingInfo.price / 1e9) * usdtPerEth).toFixed(2) }}
                   USD)
                 </div>
@@ -112,7 +112,7 @@ import {
                     <CTableRow>
                       <CTableHeaderCell scope="col">#</CTableHeaderCell>
                       <CTableHeaderCell scope="col">User's Wallet address</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Price (ETH)</CTableHeaderCell>
+                      <CTableHeaderCell scope="col">Price (FROY)</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Price (USD)</CTableHeaderCell>
                       <CTableHeaderCell scope="col">Time</CTableHeaderCell>
                     </CTableRow>
@@ -175,8 +175,8 @@ import {
         <Datepicker class="mb-1 inline-row col-md-8" v-model="model.endTime"></Datepicker>
       </div>
       <div class="row">
-        <strong class="inline-row col-md-4">Start price (ETH):</strong>
-        <input class="form-control inline-row" placeholder="Start Price(ETH)" v-model="model.startPrice" type="number"
+        <strong class="inline-row col-md-4">Start price (FROY):</strong>
+        <input class="form-control inline-row" placeholder="Start Price(FROY)" v-model="model.startPrice" type="number"
           @keyup="model.startPriceUsd = model.startPrice * usdtPerEth" />
       </div>
       <div class="row">
@@ -215,8 +215,8 @@ createBidingLoad = false;
     <CModalBody>
       <div class="container">
         <div class="row">
-          <strong class="inline-row col-md-4">Bid's Price (ETH):</strong>
-          <input class="form-control inline-row" placeholder="Start Price(ETH)" v-model="model.startPrice" type="number"
+          <strong class="inline-row col-md-4">Bid's Price (FROY):</strong>
+          <input class="form-control inline-row" placeholder="Start Price(FROY)" v-model="model.startPrice" type="number"
             @keyup="model.startPriceUsd = model.startPrice * usdtPerEth" />
         </div>
         <div class="row">
@@ -292,7 +292,7 @@ export default {
       nft_status: ["NEW", "BIDING", "SELLING", "OWNED"],
       nft_color: ["success", "danger", "primary", "secondary"],
       bid_status: ["NOTREADY", "START", "BIDING", "END"],
-      usdtPerEth: 1113.40,
+      usdtPerEth: 1,
       model: {
         startNow: false,
         startTime: "",
@@ -332,9 +332,13 @@ export default {
         }
         const [contract, signer] = wallet.getContract();
         const connection = contract.connect(signer);
-        let result = await contract.bid(this.nft.url, {
-          value: ethers.utils.parseEther(this.model.startPrice.toString()),
-        });
+        const [contractToken, { }] = await wallet.getTokenContract();
+        let tx1 = await contractToken.approve(
+          contract.address,
+          ethers.utils.parseEther(this.model.startPrice.toString())
+        );
+        await tx1.wait();
+        let result = await contract.bid(this.nft.url, ethers.utils.parseEther(this.model.startPrice.toString()));
         if (confirm("Open ethernet scanner for bidding process?")) {
           window.open(
             "https://goerli.arbiscan.io/tx/" + result.hash,
@@ -448,9 +452,8 @@ export default {
           console.log("connection", connection);
           let result = await contract.createBidding(
             this.nft.url,
-            ethers.BigNumber.from(
-              parseInt(this.model.startPrice * 1e9).toString()
-            ),
+            ethers.utils.parseEther(this.model.startPrice.toString())
+,
             ethers.BigNumber.from(
               parseInt(
                 new Date(this.model.startTime).getTime() / 1000
@@ -458,12 +461,7 @@ export default {
             ),
             ethers.BigNumber.from(
               parseInt(new Date(this.model.endTime).getTime() / 1000).toString()
-            ),
-            {
-              value: ethers.utils.parseEther(
-                ((await contract.biddingFee()).toNumber() / 1e9).toString()
-              ),
-            }
+            )
           );
           if (confirm("Open ethernet scanner for create biding process?")) {
             window.open(

@@ -26,7 +26,7 @@ export default {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(
-      "0x8C45fDb0709138553b44F750744413C29e4419fF",
+      "0x903fA6F4e75eA6142411559B75713a0442cd9558",
       TokenFarm.abi,
       signer
     );
@@ -36,7 +36,7 @@ export default {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     let contract = new ethers.Contract(
-      "0x8BCA4b50Df16B7FBeC8755e37910476fd8BC92Ac",
+      "0x7a1848F92cd4945298192De154C24405EAB71aDD",
       DbAudio.abi,
       signer
     );

@@ -29,24 +29,16 @@ module.exports = {
   settings: {
     optimizer: {
       enabled: true,
-      runs: 500,
+      runs: 1000,
     }
   },
   networks: {
     goerli: {
       url: process.env.GOERLI_URL,
-      throwOnTransactionFailures: true,
-      throwOnCallFailures: true,
-      allowUnlimitedContractSize: true,
-      blockGasLimit: 0x1fffffffffffff,
       accounts: [process.env.ACCOUNT_KEY],
     },
     arb: {
       url: process.env.ARB_URL,
-      throwOnTransactionFailures: true,
-      throwOnCallFailures: true,
-      allowUnlimitedContractSize: true,
-      blockGasLimit: 0x1fffffffffffff,
       accounts: [process.env.ACCOUNT_KEY],
     },
     localhost: {
@@ -60,6 +52,8 @@ module.exports = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: "mTDwIo0RdADc8P7ULK9fIXk0vPfHWXx3"
+    apiKey: {
+      arbitrumGoerli : "mTDwIo0RdADc8P7ULK9fIXk0vPfHWXx3"
+    }
   },
 };
