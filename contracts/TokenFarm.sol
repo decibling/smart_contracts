@@ -146,13 +146,13 @@ contract TokenFarm is Ownable {
         public
         onlyOwner
     {
-        // need require config percent and sec for google measure
+        // need require config percent and sec for good measure
         rewardPercent[pool] = percent;
         perSeconds[pool] = sec;
     }
 
     function setSplitConfigDefault(uint256 percent, uint256 sec) public onlyOwner {
-        // need require config percent and sec for google measure
+        // need require config percent and sec for good measure
         defaultRewardPer = percent;
         defaultPerSec = sec;
     }
