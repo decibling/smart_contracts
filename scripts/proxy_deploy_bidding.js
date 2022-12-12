@@ -8,10 +8,10 @@ async function main() {
     var proxyAddress = "";
     if (tokenAddress.length == 0) {
         console.log("[+]Deploying Bidding contract ...");
-        const db = await hre.ethers.getContractFactory("DbAudio");
-        // const dbTx = await upgrades.deployProxy(db, []);
-        const dbTx = await db.deploy();
-        await dbTx.deployed();
+        const db = await hre.ethers.getContractFactory("DbAudioUpgrable");
+        const dbTx = await upgrades.deployProxy(db, []);
+        // const dbTx = await db.deploy();
+        // await dbTx.deployed();
         console.log("[+]Deployed Bidding contract : " + dbTx.address);
         // if (proxyAdmin.length == 0) {
         //     console.log("[+]Deploying ProxAdmin ...");

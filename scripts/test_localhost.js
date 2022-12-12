@@ -25,14 +25,6 @@ async function main() {
                 // mapping(string => int) listInt;
                 let data2 = Buffer.from('aaa').toString('hex');
                 data2 = ("0x" + data2);
-                // let mykey = web3.utils.sha3(newKey + data2 + j.toString().padStart(64, "0"), { "encoding": "hex" });
-                // let mykey = increaseHexByOne(newKey, data2);
-                // let mykey = web3.utils.sha3(newKey + data2 + j.toString().padStart(64, "0"), { "encoding": "hex" });
-                // let mykey = web3.utils.sha3(newKey + data2, { "encoding": "hex" });
-                // let mykey = web3.utils.sha3(data2 + newKey, { "encoding": "hex" });
-                // let mykey = web3.utils.sha3(increaseHexByOne(newKey, data2), { "encoding": "hex" });
-                // let mykey = increaseHexByOne(newKey, web3.utils.sha3(data2 + j.toString().padStart(64, "0"), { "encoding": "hex" }))
-                // let mykey = web3.utils.sha3(data + index + data2 + j.toString().padStart(64, "0"), { "encoding": "hex" });
                 let mykey = web3.utils.sha3(data2 + increaseHexByOne(newKey, j).replace(/0x/, ''), { "encoding": "hex" });
                 a = await web3.eth.getStorageAt("0x5081a39b8A5f0E35a8D959395a630b68B74Dd30f", mykey);
                 console.log('DATA FOUND-> ', i, j, 'aaa', a);

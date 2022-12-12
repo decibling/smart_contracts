@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import DbAudio from "../../artifacts/contracts/DbAudio.sol/DbAudio.json";
+import DbAudio from "../../artifacts/contracts/DbAudioUpgrable.sol/DbAudioUpgrable.json";
 import DeciblingToken from "../../artifacts/contracts/DB.sol/DeciblingToken.json";
 import TokenFarm from "../../artifacts/contracts/TokenFarm.sol/TokenFarm.json";
 import extension from "./extension";
@@ -36,7 +36,7 @@ export default {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     let contract = new ethers.Contract(
-      "0x7a1848F92cd4945298192De154C24405EAB71aDD",
+      "0x1d6B587c74E456D5390e10d49B9ecb28CD8a5830",
       DbAudio.abi,
       signer
     );

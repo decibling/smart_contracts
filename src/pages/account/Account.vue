@@ -1,7 +1,7 @@
 <script setup>
 import TopNavbar from "../../components/TopNavbar.vue";
 import { ethers } from "ethers";
-import DbAudio from "../../../artifacts/contracts/DbAudio.sol/DbAudio.json";
+import DbAudio from "../../../artifacts/contracts/DbAudioUpgrable.sol/DbAudioUpgrable.json";
 import wallet from "../../lib/wallet";
 import common from "../../lib/common";
 
