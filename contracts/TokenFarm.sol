@@ -26,8 +26,8 @@ contract TokenFarm is Ownable {
     mapping(string => mapping(address => StakeInfo)) public listStake;
     mapping(string => mapping(address => uint256)) public userStakeIndex;
     mapping(string => address[]) public userStake;
-    uint256 public defaultRewardPer = 2;
-    uint256 public defaultPerSec = 5;
+    uint256 public defaultRewardPer = 1e6;
+    uint256 public defaultPerSec = 60;
     mapping(string => uint256) public rewardPercent;
     mapping(string => uint256) public perSeconds;
     event Stake(address _user, uint256 amount, string pool);
@@ -82,7 +82,7 @@ contract TokenFarm is Ownable {
                         defaultPerSec) *
                         defaultRewardPer *
                         listStake[pool][_user].amount) /
-                    10000;
+                    1e8;
             }
         } else {
             if (
@@ -95,7 +95,7 @@ contract TokenFarm is Ownable {
                         perSeconds[pool]) *
                         rewardPercent[pool] *
                         listStake[pool][_user].amount) /
-                    10000;
+                    1e8;
             }
         }
         // unclaim amount = staking time / perseconds[pool] * percentGainned / 100 ;
