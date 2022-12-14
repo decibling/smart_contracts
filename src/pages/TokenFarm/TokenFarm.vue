@@ -152,14 +152,14 @@ export default {
               let moneyAdded =
                 ((this.stakeInfo.amount * timeRange) /
                   this.rewardConfig.perSeconds) *
-                (this.rewardConfig.rewardPercent / 1e4);
+                (this.rewardConfig.rewardPercent / 1e8);
               this.unClaimAmountShow = (
                 this.stakeInfo.unClaimAmount + moneyAdded
               ).toFixed(2);
               this.growPerMin =
                 ((60 * this.rewardConfig.rewardPercent) /
                   this.rewardConfig.perSeconds /
-                  1e4) *
+                  1e8) *
                 this.stakeInfo.amount;
             } else {
               this.unClaimAmountShow = 0;
@@ -218,11 +218,10 @@ export default {
       }
 
       if (!this.stakeLoading)
-        if (confirm("Your reward will be lost, continues?")) {
           this.stakeLoading = true;
           const [contractTokenFarm, { }] = await wallet.getTokenFarmContract();
           try {
-            let tx1 = await contractTokenFarm.unstake(this.model.poolName);
+            let tx1 = await contractTokenFarm.unstake(this.model.poolName, this.accountAddress, ethers.utils.parseEther((this.model.currentStake == '' ? "0" : this.model.currentStake.toString())?? "0"));
             await tx1.wait();
             this.stakeLoading = false;
             this.loadInformation();
@@ -232,10 +231,9 @@ export default {
 
             if (e) {
               alert(e.message);
-              location.reload();
+              // location.reload();
             }
           }
-        }
     },
     async issueAll() {
       if(!this.model.poolName){

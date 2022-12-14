@@ -21,7 +21,7 @@ export default {
 
     injectContract(contract) {
         contract.getBidding = async function(uri, biddingIndex){
-            let index = "9".padStart(64, '0')
+            let index = "252".padStart(64, '0')
             let data = "0x"+ Buffer.from(uri).toString('hex');
             //access to listNFT
             let newKey = web3.utils.sha3(data + index, { "encoding": "hex" });
@@ -39,21 +39,21 @@ export default {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             let finalResult = {};
             // console.log(finalKey);
-            // console.log(await provider.getStorageAt(contract.address ,increaseHexByOne(finalKey,3)));
+            // console.log(await provider.getStorageAt("0xfdd485062b3e73549ec3e654ba565f6fab7dc670" ,increaseHexByOne(finalKey,3)));
             for(let i=0; i<Object.keys(parseList).length; i++){
                 if(parseList[Object.keys(parseList)[i]] == "address"){
-                    finalResult[Object.keys(parseList)[i]] = ethers.BigNumber.from(await provider.getStorageAt(contract.address, increaseHexByOne(finalKey, i))).toHexString();
+                    finalResult[Object.keys(parseList)[i]] = ethers.BigNumber.from(await provider.getStorageAt("0xfdd485062b3e73549ec3e654ba565f6fab7dc670", increaseHexByOne(finalKey, i))).toHexString();
                 }
                 else if(parseList[Object.keys(parseList)[i]] == "string" ){
-                    finalResult[Object.keys(parseList)[i]] = web3.utils.toAscii(await provider.getStorageAt(contract.address, increaseHexByOne(finalKey, i)));
+                    finalResult[Object.keys(parseList)[i]] = web3.utils.toAscii(await provider.getStorageAt("0xfdd485062b3e73549ec3e654ba565f6fab7dc670", increaseHexByOne(finalKey, i)));
                 }else{
-                    finalResult[Object.keys(parseList)[i]] = ethers.BigNumber.from(await provider.getStorageAt(contract.address, increaseHexByOne(finalKey, i)));
+                    finalResult[Object.keys(parseList)[i]] = ethers.BigNumber.from(await provider.getStorageAt("0xfdd485062b3e73549ec3e654ba565f6fab7dc670", increaseHexByOne(finalKey, i)));
                 }
             }
             return finalResult;
         }
         contract.getBidSession = async function(uri, biddingIndex, bidIndex) {
-            let index = "9".padStart(64, '0')
+            let index = "252".padStart(64, '0')
             let data = "0x"+ Buffer.from(uri).toString('hex');
             //access to listNFT
             let newKey = web3.utils.sha3(data + index, { "encoding": "hex" });
@@ -71,12 +71,12 @@ export default {
             let finalResult = {};
             for(let i=0; i<Object.keys(parseList).length; i++){
                 if(parseList[Object.keys(parseList)[i]] == "address"){
-                    finalResult[Object.keys(parseList)[i]] = ethers.BigNumber.from(await provider.getStorageAt(contract.address, increaseHexByOne(keyOfBid, i))).toHexString();
+                    finalResult[Object.keys(parseList)[i]] = ethers.BigNumber.from(await provider.getStorageAt("0xfdd485062b3e73549ec3e654ba565f6fab7dc670", increaseHexByOne(keyOfBid, i))).toHexString();
                 }
                 else if(parseList[Object.keys(parseList)[i]] == "string" ){
-                    finalResult[Object.keys(parseList)[i]] = web3.utils.toAscii(await provider.getStorageAt(contract.address, increaseHexByOne(keyOfBid, i)));
+                    finalResult[Object.keys(parseList)[i]] = web3.utils.toAscii(await provider.getStorageAt("0xfdd485062b3e73549ec3e654ba565f6fab7dc670", increaseHexByOne(keyOfBid, i)));
                 }else{
-                    finalResult[Object.keys(parseList)[i]] = ethers.BigNumber.from(await provider.getStorageAt(contract.address, increaseHexByOne(keyOfBid, i)));
+                    finalResult[Object.keys(parseList)[i]] = ethers.BigNumber.from(await provider.getStorageAt("0xfdd485062b3e73549ec3e654ba565f6fab7dc670", increaseHexByOne(keyOfBid, i)));
                 }
             }
             return finalResult;

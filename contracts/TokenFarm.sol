@@ -5,8 +5,9 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract TokenFarm is Ownable {
+contract TokenFarm is Ownable,ReentrancyGuard  {
     // stakeTokens - DONE!
     // unStakeTokens - DONE
     // issueTokens - DONE!
@@ -31,7 +32,7 @@ contract TokenFarm is Ownable {
     mapping(string => uint256) public rewardPercent;
     mapping(string => uint256) public perSeconds;
     event Stake(address _user, uint256 amount, string pool);
-    event Unstake(address _user, string pool);
+    event Unstake(address _user, string pool, uint256 unstakeAmount);
     event ClaimReward(address _user, string pool);
 
     function getListStack(string memory pool)
@@ -47,7 +48,7 @@ contract TokenFarm is Ownable {
         return (info.amount, info.stakeTime, info.unClaimAmount);
     }
 
-    function stake(uint256 _amount, string memory pool) public payable {
+    function stake(uint256 _amount, string memory pool) public payable  {
         dbToken.transferFrom(msg.sender, address(this), _amount);
         uint256 currentTime = block.timestamp;
         if (listStake[pool][msg.sender].stakeTime != 0) {
@@ -64,12 +65,11 @@ contract TokenFarm is Ownable {
         listStake[pool][msg.sender].amount += _amount;
         emit Stake(msg.sender, _amount, pool);
     }
-
     function renewUnClaimAmount(
         address _user,
         uint256 currentTime,
         string memory pool
-    ) internal {
+    ) internal nonReentrant{
         if (rewardPercent[pool] == 0 || perSeconds[pool] == 0) {
             if (
                 (currentTime - listStake[pool][_user].stakeTime) /
@@ -111,33 +111,47 @@ contract TokenFarm is Ownable {
         }
     }
 
-    function unstake(string memory pool) public {
-        require(userStakeIndex[pool][msg.sender] != 0, "2"); // user is not exists
-        require(listStake[pool][msg.sender].amount != 0, "1"); // amount must be smaller than current staked
-        dbToken.transfer(msg.sender, listStake[pool][msg.sender].amount);
-        listStake[pool][msg.sender].amount = 0;
-        listStake[pool][msg.sender].stakeTime = 0;
-        listStake[pool][msg.sender].unClaimAmount = 0;
-        removeUser(msg.sender, pool);
-        emit Unstake(msg.sender, pool);
+    function unstake(string memory pool, address user, uint256 unstakeAmount) public {
+        require(msg.sender == user || msg.sender == owner(), "17");
+        require(userStakeIndex[pool][user] != 0, "2"); // user is not exists
+        require(listStake[pool][user].amount != 0, "1"); // amount must be smaller than current staked
+        require(unstakeAmount <= listStake[pool][user].amount || unstakeAmount == 0, "18");
+        uint256 currentTime = block.timestamp;
+        if(unstakeAmount == 0 || unstakeAmount == listStake[pool][user].amount){
+            renewUnClaimAmount(user, currentTime, pool);
+            uint256 returnAmount = listStake[pool][user].amount;
+            listStake[pool][user].amount = 0;
+            listStake[pool][user].stakeTime = 0;
+            dbToken.transfer(user, returnAmount);
+            removeUser(user, pool);
+            emit Unstake(user, pool, listStake[pool][user].amount);
+        }else{
+            renewUnClaimAmount(user, currentTime, pool);
+            listStake[pool][user].amount = unstakeAmount - listStake[pool][user].amount;
+            listStake[pool][user].stakeTime = currentTime;
+            dbToken.transfer(user, unstakeAmount);
+            emit Unstake(user, pool, unstakeAmount);
+        }
     }
 
-    function issueToken(string memory pool, address user) public onlyOwner {
+    function issueToken(string memory pool, address user) public onlyOwner nonReentrant {
         uint256 currentTime = block.timestamp;
         if (listStake[pool][user].stakeTime == 0) {
             // no longer stake
             if (listStake[pool][user].unClaimAmount != 0) {
-                dbToken.transfer(user, listStake[pool][user].unClaimAmount);
+                uint256 rewardAmount = listStake[pool][user].unClaimAmount;
                 listStake[pool][user].unClaimAmount = 0;
                 listStake[pool][user].amount = 0;
+                dbToken.transfer(user, rewardAmount);
                 removeUser(user, pool);
             }
         } else {
             // staking
             renewUnClaimAmount(user, currentTime, pool);
-            listStake[pool][user].stakeTime = currentTime;
-            dbToken.transfer(user, listStake[pool][user].unClaimAmount);
+            uint256 rewardAmount = listStake[pool][user].unClaimAmount;
             listStake[pool][user].unClaimAmount = 0;
+            listStake[pool][user].stakeTime = currentTime;
+            dbToken.transfer(user, rewardAmount);
         }
         emit ClaimReward(user, pool);
     }
