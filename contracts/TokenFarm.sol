@@ -127,7 +127,7 @@ contract TokenFarm is Ownable,ReentrancyGuard  {
             emit Unstake(user, pool, listStake[pool][user].amount);
         }else{
             renewUnClaimAmount(user, currentTime, pool);
-            listStake[pool][user].amount = unstakeAmount - listStake[pool][user].amount;
+            listStake[pool][user].amount = listStake[pool][user].amount - unstakeAmount;
             listStake[pool][user].stakeTime = currentTime;
             dbToken.transfer(user, unstakeAmount);
             emit Unstake(user, pool, unstakeAmount);

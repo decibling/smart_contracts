@@ -378,8 +378,8 @@
       ]
     },
     "/Users/pau275/Documents/GitHub/contract-tests/contracts/TokenFarm.sol": {
-      "lastModificationDate": 1671014594115,
-      "contentHash": "9b9e43d693b3e9820fa3607768a3453b",
+      "lastModificationDate": 1671075753841,
+      "contentHash": "3898d58cffc8c7b81207dd1862aec20f",
       "sourceName": "contracts/TokenFarm.sol",
       "solcConfig": {
         "version": "0.8.4",
