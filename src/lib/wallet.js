@@ -26,7 +26,7 @@ export default {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(
-      "0x9e4f9f6dfaeb9DDA9a2abCd651FC6470c467A327",
+      "0x32b42E49195A5Ec4f58e6597F185Ca6813ee8a25",
       TokenFarm.abi,
       signer
     );

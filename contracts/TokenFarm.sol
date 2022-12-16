@@ -5,9 +5,8 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract TokenFarm is Ownable,ReentrancyGuard  {
+contract TokenFarm is Ownable  {
     // stakeTokens - DONE!
     // unStakeTokens - DONE
     // issueTokens - DONE!
@@ -69,7 +68,7 @@ contract TokenFarm is Ownable,ReentrancyGuard  {
         address _user,
         uint256 currentTime,
         string memory pool
-    ) internal nonReentrant{
+    ) internal {
         if (rewardPercent[pool] == 0 || perSeconds[pool] == 0) {
             if (
                 (currentTime - listStake[pool][_user].stakeTime) /
@@ -134,7 +133,7 @@ contract TokenFarm is Ownable,ReentrancyGuard  {
         }
     }
 
-    function issueToken(string memory pool, address user) public onlyOwner nonReentrant {
+    function issueToken(string memory pool, address user) public onlyOwner  {
         uint256 currentTime = block.timestamp;
         if (listStake[pool][user].stakeTime == 0) {
             // no longer stake
