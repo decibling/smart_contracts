@@ -6,34 +6,41 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-// import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract DbAudio is ERC721, Ownable, ERC721URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    IERC20 public dbToken;
 
-    constructor() ERC721("Decibling", "DB") {
-        sharePercent = 0;
-        dbToken = IERC20(0xAa8ADb51329BA9640D86Aa10b0F374d97A7B31d9);
-    }
-    // event, percent share, upgrable contract
+    uint256 MULTIPLER = 1e18;
+
+    /// @notice global platform fee, assumed to always be to 1 decimal place i.e. 25 = 2.5%
+    uint256 public platformFee = 125;
+
+    /// @notice where to send platform fee funds to
+    address payable public platformFeeRecipient;
+
     enum BidStatus {
         NOTREADY,
         START,
         BIDING,
         END
     }
+
     enum AudioStatus {
         NEW,
         BIDING,
         SELLING,
         OWNED
     }
+
     struct Bid {
         address user;
         uint256 price;
         uint256 timestamp;
     }
+
     struct Bidding {
         address winner;
         uint256 price; //\\
@@ -43,6 +50,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         uint256 currentSession;
         mapping(uint256 => Bid) biddingSessions;
     }
+
     struct AudioInfo {
         address owner;
         string url;
@@ -52,21 +60,28 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         mapping(uint256 => Bidding) biddingList;
         uint256 currentBidding;
     }
+
     mapping(string => AudioInfo) public listNFT;
     mapping(string => uint256) public tokenIdMapping;
     mapping(address => uint256[]) public listOwnToken;
     mapping(uint256 => uint256) public  indexOfToken;
-    uint256 public sharePercent;
-    IERC20 public dbToken;
 
+    event UpdatePlatformFee(uint256 platformFee);
+    event UpdatePlatformFeeRecipient(address payable platformFeeRecipient);
     event CreateNFT(string uri, uint256 index);
     event BidEvent(string uri, uint256 startPrice, uint256 startTime, uint256 endTime);
     event SettleBidding(string uri, address oldowner, address newowner, uint256 price);
-    function _burn(uint256 tokenId)
-        internal
+
+    constructor() ERC721("Decibling", "DB") {
+        dbToken = IERC20(0xd9145CCE52D386f254917e481eB44e9943F39138);
+        platformFeeRecipient = payable(msg.sender);
+    }
+
+    function _burn(uint256)
+        pure internal
         override(ERC721, ERC721URIStorage)
     {
-        super._burn(tokenId);
+        revert('Burn functionality is removed');
     }
 
     function tokenURI(uint256 tokenId)
@@ -110,12 +125,11 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
     /*
         createNFT
         uri : string of resource
-        price : WEI
+        name : internal id
     */
     function createNFT(
         string memory uri,
-        string memory name,
-        uint256 price
+        string memory name
     ) public returns (uint256) {
         AudioInfo storage currentNFT = listNFT[uri];
         require(keccak256(bytes(currentNFT.url)) != keccak256(bytes(uri)), "2");
@@ -123,7 +137,6 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         listNFT[uri].owner = msg.sender;
         listNFT[uri].url = uri;
         listNFT[uri].name = name;
-        listNFT[uri].price = price;
         listNFT[uri].status = AudioStatus.NEW;
         listNFT[uri].currentBidding = 0;
         uint256 newItemId = _tokenIds.current();
@@ -134,19 +147,6 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         indexOfToken[newItemId] = listOwnToken[msg.sender].length - 1;
         emit CreateNFT(uri, newItemId);
         return newItemId;
-    }
-    // The following functions are overrides required by Solidity.
-    function setSharePercent(uint256 share) public onlyOwner {
-        require(share >= 0 && share <= 100, "1");
-        sharePercent = share;
-    }
-
-    function transferNFT(string memory uri, address to) public {
-        AudioInfo storage currentNFT = listNFT[uri];
-        require(keccak256(bytes(currentNFT.url)) == keccak256(bytes(uri)), "4");
-        require(currentNFT.owner == msg.sender, "5");
-        safeTransferFrom(msg.sender, to, tokenIdMapping[uri]);
-        currentNFT.owner = to;
     }
 
     function createBidding(
@@ -159,7 +159,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         AudioInfo storage currentNFT = listNFT[uri];
         require(keccak256(bytes(currentNFT.url)) == keccak256(bytes(uri)), "4");
         require(currentNFT.owner == msg.sender, "6");
-        require(endTime > block.timestamp, "7");
+        require(endTime > _getNow(), "7");
         require(
             currentNFT.status == AudioStatus.NEW ||
                 currentNFT.status == AudioStatus.OWNED,
@@ -170,7 +170,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         currentNFT.biddingList[currentNFT.currentBidding].winner = address(0);
         currentNFT.biddingList[currentNFT.currentBidding].price = startPrice;
         currentNFT.biddingList[currentNFT.currentBidding].status = startTime >
-            block.timestamp
+            _getNow()
             ? BidStatus.START
             : BidStatus.NOTREADY;
         currentNFT.biddingList[currentNFT.currentBidding].startTime = startTime;
@@ -190,18 +190,22 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
             currentNFT.currentBidding
         ];
         require(
-            biddingOfNFT.startTime <= block.timestamp &&
-                block.timestamp <= biddingOfNFT.endTime,
+            biddingOfNFT.startTime <= _getNow() &&
+                _getNow() <= biddingOfNFT.endTime,
             "12"
         );
-        require(biddingOfNFT.price < _amount, "13");
+        address lastWinner = biddingOfNFT.winner;
+        uint256 lastPrice = biddingOfNFT.price;
+        if (lastWinner == address(0)) {
+            require(biddingOfNFT.price <= _amount, "13");
+        } else {
+            require(biddingOfNFT.price < _amount, "13");
+        }
         biddingOfNFT.status = BidStatus.BIDING;
-        Bid memory bidv = Bid(msg.sender, _amount, block.timestamp);
+        Bid memory bidv = Bid(msg.sender, _amount, _getNow());
         biddingOfNFT.currentSession += 1;
         biddingOfNFT.biddingSessions[biddingOfNFT.currentSession] = bidv;
         // set winner and larger
-        address lastWinner = biddingOfNFT.winner;
-        uint256 lastPrice = biddingOfNFT.price;
         biddingOfNFT.winner = msg.sender;
         biddingOfNFT.price = _amount;
         if(lastWinner != address(0)){
@@ -218,12 +222,13 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         require(keccak256(bytes(currentNFT.url)) == keccak256(bytes(uri)), "4");
         require(currentNFT.status == AudioStatus.BIDING, "14");
         require(currentNFT.currentBidding != 0, "11");
+        require(platformFeeRecipient != address(0), "fee address");
         Bidding storage biddingOfNFT = currentNFT.biddingList[
             currentNFT.currentBidding
         ];
         require(
-            biddingOfNFT.startTime < block.timestamp &&
-                block.timestamp > biddingOfNFT.endTime,
+            biddingOfNFT.startTime < _getNow() &&
+                _getNow() > biddingOfNFT.endTime,
             "15"
         );
         require(
@@ -231,25 +236,56 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
                 currentNFT.status == AudioStatus.BIDING,
             "16"
         );
-        uint256 transferPrice = biddingOfNFT.price;
+        uint256 totalPrice = biddingOfNFT.price;
+        uint256 platformValue;
         address oldOwner = currentNFT.owner;
         if (biddingOfNFT.winner != address(0)) {
-            // no one bid
             // send money to owner
-            if (sharePercent > 0) {
-                transferPrice = (transferPrice * (1e8 - sharePercent)) / 1e8;
+            if (platformFee > 0) {
+                platformValue = totalPrice * platformFee / 1e3;
             }
+            require(platformValue > 0, "pay value");
             safeTransferFrom(
                 currentNFT.owner,
                 biddingOfNFT.winner,
                 tokenIdMapping[uri]
             );
             currentNFT.owner = biddingOfNFT.winner;
-            dbToken.transfer(currentNFT.owner, transferPrice);
+            dbToken.transfer(currentNFT.owner, totalPrice-platformValue);
+            dbToken.transfer(platformFeeRecipient, platformValue);
             //change owner = winner
         }
-        emit SettleBidding(uri, oldOwner, biddingOfNFT.winner, transferPrice);
+        emit SettleBidding(uri, oldOwner, biddingOfNFT.winner, platformValue);
         biddingOfNFT.status = BidStatus.END;
         currentNFT.status = AudioStatus.OWNED;
+    }
+
+    function _getNow() internal view virtual returns (uint256) {
+        return block.timestamp;
+    }
+
+        /**
+     @notice Method for updating platform fee
+     @dev Only admin
+     @param _platformFee uint256 the platform fee to set
+     */
+    function updatePlatformFee(uint256 _platformFee) external onlyOwner {
+        platformFee = _platformFee;
+        emit UpdatePlatformFee(_platformFee);
+    }
+
+    /**
+     @notice Method for updating platform fee address
+     @dev Only admin
+     @param _platformFeeRecipient payable address the address to sends the funds to
+     */
+    function updatePlatformFeeRecipient(address payable _platformFeeRecipient)
+        external
+        onlyOwner
+    {
+        require(_platformFeeRecipient != address(0), "zero address");
+
+        platformFeeRecipient = _platformFeeRecipient;
+        emit UpdatePlatformFeeRecipient(_platformFeeRecipient);
     }
 }
