@@ -12,7 +12,7 @@ contract DbMultiSend {
     address[] addresses;
 
     function multiSend(Recipient[] memory recipients) public payable {
-        ERC20 dbToken = ERC20(0xd9145CCE52D386f254917e481eB44e9943F39138);
+        ERC20 dbToken = ERC20(0xAa8ADb51329BA9640D86Aa10b0F374d97A7B31d9);
         for(uint i = 0; i < recipients.length; i++) {
             require(recipients[i].amount > 0, "Invalid amount");
             require(dbToken.transferFrom(msg.sender, recipients[i].addr, recipients[i].amount));
