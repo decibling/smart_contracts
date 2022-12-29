@@ -32,5 +32,11 @@ export default {
     14: "This NFT is not available for settle",
     15: "Bidding is not over yet",
     16: "Bidding is not available for settle",
+    17: "Burn functionality is removed",
+    18: "Start time must be before end time",
+    19: "fee address",
+    20: "pay value",
+    21: "zero address",
+    22: "positive integer only"
   },
 };

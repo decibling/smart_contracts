@@ -398,12 +398,13 @@ export default {
         );
         this.nft = {
           ...nftInfo,
-          price: nftInfo.price.toNumber(),
+          price: ethers.utils.formatEther(nftInfo.price),
           currentBidding: nftInfo.currentBidding.toNumber(),
         };
         console.log({          ...nftInfo,
-          price: nftInfo.price.toNumber(),
+          price: ethers.utils.formatEther(nftInfo.price),
           currentBidding: nftInfo.currentBidding.toNumber(),
+          saleCount: nftInfo.saleCount.toNumber(),
 })
         window.contract = contract;
         // contract.
