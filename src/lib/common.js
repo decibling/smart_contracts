@@ -37,6 +37,8 @@ export default {
     19: "fee address",
     20: "pay value",
     21: "zero address",
-    22: "positive integer only"
+    22: "positive integer only",
+    23: "invalid amount",
+    24: "error on transfer"
   },
 };
