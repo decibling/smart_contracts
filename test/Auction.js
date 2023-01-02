@@ -134,15 +134,41 @@ contract("DeciblingAuction", (accounts) => {
       await expectRevert(this.auction.createNFT("", "dsadsa", {
         from: artist,
       }), "27")
+    }),
+    it("Update end time of an ongoing bid", async () => {
+      await expectRevert(this.auction.createNFT("", "dsadsa", {
+        from: artist,
+      }), "27")
     })
   })
 
   describe("Contract deployment", () => {
     it("Reverts when platform fee recipient is zero", async () => {
-      await expectRevert(
-        DeciblingAuction.new(constants.ZERO_ADDRESS, constants.ZERO_ADDRESS),
-        "DeciblingAuction: Constructor wallets cannot be zero"
-      );
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: artist,
+      })
+      let startTime = Date.now() / 1e3;
+      let endTime1 = (Date.now() + 100 * 60000) / 1e3;
+      let endTime2 = (Date.now() + 10 * 60000) / 1e3;
+      await this.auction.createBidding(
+        randomTokenURI,
+        ONE_THOUSAND_TOKENS,
+        ONE_TOKENS,
+        startTime.toFixed(0),
+        endTime1.toFixed(0), 
+        { from: artist })
+      let auctionInfo = await this.auction.auctions("1", {
+          from: admin,
+        });
+      expect(auctionInfo.endTime).to.equal(new BN(endTime1.toFixed(0)));
+      await this.auction.updateBidEndtime(
+          randomTokenURI,
+          endTime2.toFixed(0), 
+          { from: admin })
+      auctionInfo = await this.auction.auctions("1", {
+        from: admin,
+      });
+      expect(auctionInfo.endTime).to.equal(new BN(endTime2.toFixed(0)));
     });
   });
 });

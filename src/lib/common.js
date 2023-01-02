@@ -43,6 +43,12 @@ export default {
     25: "cannot bid on your own item",
     26: "invalid item id",
     27: "invalid uri",
-    28: "invalid name"
+    28: "invalid name",
+    29: "no winner, please cancel it",
+    30: "auction already ended",
+    31: "no auction exists",
+    32: "end time must be greater than start",
+    33: "auction should end after 5 minutes",
+    34: "DeciblingAuction: Constructor wallets cannot be zero"
   },
 };

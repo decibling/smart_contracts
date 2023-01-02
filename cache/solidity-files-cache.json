@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/zack/projects/hexhive/decibling/contract-tests/contracts/DeciblingAuction.sol": {
-      "lastModificationDate": 1672690176616,
-      "contentHash": "2ec63e567bb9838152cd046f70523f9f",
+      "lastModificationDate": 1672696632885,
+      "contentHash": "24eaeaa5e19aa99fd7222b5a5e9c62f9",
       "sourceName": "contracts/DeciblingAuction.sol",
       "solcConfig": {
         "version": "0.8.9",

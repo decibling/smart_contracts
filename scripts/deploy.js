@@ -15,14 +15,19 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  // const DeciblingToken = await hre.ethers.getContractFactory("DeciblingToken");
-  // const dbaudio = await DeciblingToken.deploy();
+  const Auction = await hre.ethers.getContractFactory("DeciblingAuction");
+  const auction = await Auction.deploy("0xaa8adb51329ba9640d86aa10b0f374d97a7b31d9", "0x65Da138fe4614A9feD2bdaEab09F0d78Ccfc4BA6");
 
-  // await dbaudio.deployed();
+  await auction.deployed();
 
-  // console.log("DeciblingToken deployed to:", dbaudio.address);
-  const accounts = await hre.ethers.getSigners();
+  console.log("DeciblingAuction deployed to:", auction.address);
 
+  // const Staking = await hre.ethers.getContractFactory("DeciblingStaking");
+  // const staking = await Staking.deploy("0xaa8adb51329ba9640d86aa10b0f374d97a7b31d9", "0x65Da138fe4614A9feD2bdaEab09F0d78Ccfc4BA6");
+
+  // await staking.deployed();
+
+  // console.log("DeciblingStaking deployed to:", staking.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

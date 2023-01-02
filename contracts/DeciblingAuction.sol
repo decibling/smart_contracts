@@ -60,9 +60,10 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
     event CreateBid(string uri, uint256 startPrice, uint256 increment, uint256 startTime, uint256 endTime);
     event BidPlaced(string uri, address user, uint256 amount);
     event SettleBid(string uri, address oldowner, address newowner, uint256 totalPrice, uint256 platformValue, uint256 saleCount);
+    event UpdateBidEndTime(string uri, uint256 endtime);
 
     constructor(address _tokenAddress, address payable _platformFeeRecipient) ERC721("Decibling", "dB") {
-        require(_tokenAddress != address(0) && _platformFeeRecipient != address(0), "DeciblingAuction: Constructor wallets cannot be zero");
+        require(_tokenAddress != address(0) && _platformFeeRecipient != address(0), "34");
         token = IERC20(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
     }
@@ -193,6 +194,7 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         // Get info on who the highest bidder is
         TopBid storage topBid = topBids[itemId];
         address winner = topBid.user;
+        require(winner != address(0), "29");
         uint256 totalPrice = topBid.price;
 
         // Result the auction
@@ -203,30 +205,66 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
 
         uint256 platformValue;
         address oldOwner = currentNFT.owner;
-        if (winner != address(0)) {
-            if (currentNFT.saleCount == 0 && firstSaleFee > 0) {
-                platformValue = totalPrice.mul(firstSaleFee).div(1e3);
-            } else {
-                platformValue = totalPrice.mul(secondSaleFee).div(1e3);
-            }
-            if (platformValue == 0) revert ("20");
-            //to seller - old owner
-            require(token.transfer(oldOwner, totalPrice-platformValue), "26");
-            //to platform
-            require(token.transfer(platformFeeRecipient, platformValue), "26");
-            //to new owner
-            safeTransferFrom(oldOwner, winner, tokenIdMapping[uri]);
-            currentNFT.owner = winner;
-            currentNFT.price = totalPrice;
-            currentNFT.saleCount = currentNFT.saleCount.add(1);
 
-            auction.winner = winner;
-
-            emit SettleBid(uri, oldOwner, auction.winner, totalPrice, platformValue, currentNFT.saleCount);
+        if (currentNFT.saleCount == 0 && firstSaleFee > 0) {
+            platformValue = totalPrice.mul(firstSaleFee).div(1e3);
+        } else {
+            platformValue = totalPrice.mul(secondSaleFee).div(1e3);
         }
-
+        if (platformValue == 0) revert ("20");
+        //to seller - old owner
+        require(token.transfer(oldOwner, totalPrice-platformValue), "26");
+        //to platform
+        require(token.transfer(platformFeeRecipient, platformValue), "26");
+        //to new owner
+        safeTransferFrom(oldOwner, winner, tokenIdMapping[uri]);
+        currentNFT.owner = winner;
+        currentNFT.price = totalPrice;
+        currentNFT.saleCount = currentNFT.saleCount.add(1);
         currentNFT.status = AudioStatus.MINTED;
+        auction.winner = winner;
+
+        emit SettleBid(uri, oldOwner, auction.winner, totalPrice, platformValue, currentNFT.saleCount);
     }
+
+    /**
+     @notice Update the current end time for an auction
+     @dev Only admin
+     @dev Auction must exist
+     @param uri Token ID of the NFT being auctioned
+     @param endtime New end time (unix epoch in seconds)
+     */
+    function updateBidEndtime(
+        string memory uri,
+        uint256 endtime
+    ) external onlyOwner {
+        AudioInfo storage currentNFT = listNFT[uri];
+        uint256 itemId = tokenIdMapping[uri];
+        
+        require(currentNFT.owner == msg.sender || owner() == msg.sender, "6");
+        require(tokenIdMapping[uri] > 0, "26");
+        require(currentNFT.status == AudioStatus.BIDDING, "8");
+
+        Auction storage auction = auctions[itemId];
+        // Ensure auction not already resulted
+        require(!auction.resulted, "27");
+        // Check the auction has not ended
+        require(_getNow() < auction.endTime, "30");
+
+        require(auction.endTime > 0, "31");
+        require(
+            auction.startTime < endtime,
+            "32"
+        );
+        require(
+            endtime > _getNow() + 300,
+            "33"
+        );
+
+        auction.endTime = endtime;
+        emit UpdateBidEndTime(uri, endtime);
+    }
+
 
     function _getNow() internal view virtual returns (uint256) {
         return block.timestamp;
