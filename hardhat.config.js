@@ -1,12 +1,13 @@
 require("dotenv").config();
 
+require("@nomicfoundation/hardhat-toolbox");
 require("@nomiclabs/hardhat-etherscan");
-require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-truffle5");
+require("@openzeppelin/hardhat-upgrades");
+require("@nomiclabs/hardhat-web3");
+require("hardhat-storage-layout");
 require("hardhat-gas-reporter");
 require("solidity-coverage");
-require('@openzeppelin/hardhat-upgrades');
-require("@nomiclabs/hardhat-web3");
-require('hardhat-storage-layout');
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -25,12 +26,12 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: "0.8.4",
+  solidity: "0.8.9",
   settings: {
     optimizer: {
       enabled: true,
-      runs: 1000,
-    }
+      runs: 200,
+    },
   },
   networks: {
     goerli: {
@@ -53,8 +54,8 @@ module.exports = {
 
   },
   gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
+    enabled: false,
+    coinmarketcap: "c9e4cd6a-851e-4aea-a372-43eede88dd18"
   },
   etherscan: {
     apiKey: {
