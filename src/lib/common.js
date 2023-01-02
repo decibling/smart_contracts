@@ -39,6 +39,10 @@ export default {
     21: "zero address",
     22: "positive integer only",
     23: "invalid amount",
-    24: "error on transfer"
+    24: "error on transfer",
+    25: "cannot bid on your own item",
+    26: "invalid item id",
+    27: "invalid uri",
+    28: "invalid name"
   },
 };

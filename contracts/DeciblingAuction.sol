@@ -76,6 +76,10 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         string calldata uri,
         string calldata name
     ) external {
+        bytes memory idTest = bytes(uri); // Uses memory
+        require(idTest.length != 0, "27");
+        bytes memory nameTest = bytes(name); // Uses memory
+        require(nameTest.length != 0, "28");
         require(tokenIdMapping[uri] == 0, "2");
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
@@ -112,7 +116,7 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         uint256 itemId = tokenIdMapping[uri];
 
         require(startTime < endTime, "18");
-        require(tokenIdMapping[uri] > 0, "2");
+        require(tokenIdMapping[uri] > 0, "26");
         require(currentNFT.owner == msg.sender, "6");
         require(endTime > _getNow(), "7");
         require(currentNFT.status == AudioStatus.MINTED, "8");
@@ -142,7 +146,8 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         AudioInfo storage currentNFT = listNFT[uri];
         uint256 itemId = tokenIdMapping[uri];
 
-        require(tokenIdMapping[uri] > 0, "2");
+        require(currentNFT.owner != msg.sender, "25");
+        require(tokenIdMapping[uri] > 0, "26");
         require(currentNFT.status == AudioStatus.BIDDING, "8");
         
         Auction storage auction = auctions[itemId];
@@ -176,7 +181,7 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         uint256 itemId = tokenIdMapping[uri];
         
         require(currentNFT.owner == msg.sender || owner() == msg.sender, "6");
-        require(tokenIdMapping[uri] > 0, "2");
+        require(tokenIdMapping[uri] > 0, "26");
         require(currentNFT.status == AudioStatus.BIDDING, "8");
         require(platformFeeRecipient != address(0), "19");
 
