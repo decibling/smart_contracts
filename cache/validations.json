@@ -43,6 +43,3843 @@
         },
         "solcVersion": "0.8.9"
       },
+      "IERC20": {
+        "src": "@openzeppelin/contracts/token/ERC20/IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "SafeMath": {
+        "src": "@openzeppelin/contracts/utils/math/SafeMath.sol:16",
+        "version": {
+          "withMetadata": "6c2007adc8e8b4fd61e0aba3d222a7221e641c70639cbf526812b77d99fc8da0",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStaking": {
+        "src": "contracts/DeciblingStaking.sol:8",
+        "version": {
+          "withMetadata": "be9704f0e5a84da993bd11acf4fcb41cc06c856224d06092cd5fdf2a5350e51f",
+          "withoutMetadata": "849ea7253039f5aaded9120864faf33d858d1b2ca06f43540ce4b6ca89ec1ea3",
+          "linkedWithoutMetadata": "849ea7253039f5aaded9120864faf33d858d1b2ca06f43540ce4b6ca89ec1ea3"
+        },
+        "inherit": [
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [
+          "SafeMath"
+        ],
+        "methods": [
+          "(address,address payable)",
+          "newPool(string,uint256,uint256)",
+          "updatePool(string,uint256,uint256)",
+          "updatePoolOwner(string,address payable)",
+          "stake(string,uint256)",
+          "unstake(string,uint256)",
+          "issueToken(struct DeciblingStaking.ClaimInfo[])",
+          "updatePlatformFeeRecipient(address payable)",
+          "updatePlatformFee(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStaking",
+            "src": "contracts/DeciblingStaking.sol:16"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "platformFee",
+            "src": "contracts/DeciblingStaking.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStakingMock": {
+        "src": "contracts/mock/MockDeciblingStaking.sol:6",
+        "version": {
+          "withMetadata": "2fa7f32861cad2f1cd4a532ec737b901cf83df044de7e72cc5515f65d163a493",
+          "withoutMetadata": "284b38e5c35482bc1a408d6c424510e12a709bc2e356316681d644438b84a0cf",
+          "linkedWithoutMetadata": "284b38e5c35482bc1a408d6c424510e12a709bc2e356316681d644438b84a0cf"
+        },
+        "inherit": [
+          "DeciblingStaking",
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,address payable)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStakingMock",
+            "src": "contracts/mock/MockDeciblingStaking.sol:7"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      }
+    },
+    {
+      "Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "IERC20": {
+        "src": "@openzeppelin/contracts/token/ERC20/IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "SafeMath": {
+        "src": "@openzeppelin/contracts/utils/math/SafeMath.sol:16",
+        "version": {
+          "withMetadata": "6c2007adc8e8b4fd61e0aba3d222a7221e641c70639cbf526812b77d99fc8da0",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStaking": {
+        "src": "contracts/DeciblingStaking.sol:8",
+        "version": {
+          "withMetadata": "ef6a5e5d12f87fd0377ea4debbb09e5ad8cb28dda11ab5b7dcc2578516c671a4",
+          "withoutMetadata": "849ea7253039f5aaded9120864faf33d858d1b2ca06f43540ce4b6ca89ec1ea3",
+          "linkedWithoutMetadata": "849ea7253039f5aaded9120864faf33d858d1b2ca06f43540ce4b6ca89ec1ea3"
+        },
+        "inherit": [
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [
+          "SafeMath"
+        ],
+        "methods": [
+          "(address,address payable)",
+          "newPool(string,uint256,uint256)",
+          "updatePool(string,uint256,uint256)",
+          "updatePoolOwner(string,address payable)",
+          "stake(string,uint256)",
+          "unstake(string,uint256)",
+          "issueToken(struct DeciblingStaking.ClaimInfo[])",
+          "updatePlatformFeeRecipient(address payable)",
+          "updatePlatformFee(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStaking",
+            "src": "contracts/DeciblingStaking.sol:16"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "platformFee",
+            "src": "contracts/DeciblingStaking.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStakingMock": {
+        "src": "contracts/mock/MockDeciblingStaking.sol:6",
+        "version": {
+          "withMetadata": "fccfeeb8b79a4694afa1cd3486cf06c137542d7cc77aa26860b0927460ae5d8f",
+          "withoutMetadata": "284b38e5c35482bc1a408d6c424510e12a709bc2e356316681d644438b84a0cf",
+          "linkedWithoutMetadata": "284b38e5c35482bc1a408d6c424510e12a709bc2e356316681d644438b84a0cf"
+        },
+        "inherit": [
+          "DeciblingStaking",
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,address payable)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStakingMock",
+            "src": "contracts/mock/MockDeciblingStaking.sol:7"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      }
+    },
+    {
+      "Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "IERC20": {
+        "src": "@openzeppelin/contracts/token/ERC20/IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "SafeMath": {
+        "src": "@openzeppelin/contracts/utils/math/SafeMath.sol:16",
+        "version": {
+          "withMetadata": "6c2007adc8e8b4fd61e0aba3d222a7221e641c70639cbf526812b77d99fc8da0",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStaking": {
+        "src": "contracts/DeciblingStaking.sol:8",
+        "version": {
+          "withMetadata": "05e4a55a864221ccb31d704bb3fbc87a2dbcc8a2fa35ec667e692c2acf5da4af",
+          "withoutMetadata": "e329c2d833e625bcb50b6615dccb069ccd1ab58a7bfb069a8d777ac40a33e141",
+          "linkedWithoutMetadata": "e329c2d833e625bcb50b6615dccb069ccd1ab58a7bfb069a8d777ac40a33e141"
+        },
+        "inherit": [
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [
+          "SafeMath"
+        ],
+        "methods": [
+          "(address,address payable)",
+          "newPool(string,uint256,uint256)",
+          "updatePool(string,uint256,uint256)",
+          "updatePoolOwner(string,address payable)",
+          "stake(string,uint256)",
+          "unstake(string,uint256)",
+          "issueToken(struct DeciblingStaking.ClaimInfo[])",
+          "updatePlatformFeeRecipient(address payable)",
+          "updatePlatformFee(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStaking",
+            "src": "contracts/DeciblingStaking.sol:16"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "platformFee",
+            "src": "contracts/DeciblingStaking.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStakingMock": {
+        "src": "contracts/mock/MockDeciblingStaking.sol:6",
+        "version": {
+          "withMetadata": "db1c8d5023dfee8da5d88ebe8f067abce285f566c7d65a198de143f1b4d7a9ac",
+          "withoutMetadata": "a60ee27c59bc348e15d3a370c70ec6dd5f6b4fc2e23bca6800aebbab877c419b",
+          "linkedWithoutMetadata": "a60ee27c59bc348e15d3a370c70ec6dd5f6b4fc2e23bca6800aebbab877c419b"
+        },
+        "inherit": [
+          "DeciblingStaking",
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,address payable)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStakingMock",
+            "src": "contracts/mock/MockDeciblingStaking.sol:7"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      }
+    },
+    {
+      "Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "IERC20": {
+        "src": "@openzeppelin/contracts/token/ERC20/IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "SafeMath": {
+        "src": "@openzeppelin/contracts/utils/math/SafeMath.sol:16",
+        "version": {
+          "withMetadata": "6c2007adc8e8b4fd61e0aba3d222a7221e641c70639cbf526812b77d99fc8da0",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStaking": {
+        "src": "contracts/DeciblingStaking.sol:8",
+        "version": {
+          "withMetadata": "c62c0dd6d4589892226d20e5cd754e61717839e3e61289019f46b5b7d342d732",
+          "withoutMetadata": "15b60fe2a647fef0d31ab103f7415f89bb20bb783f000d11ca046a2fc6893dad",
+          "linkedWithoutMetadata": "15b60fe2a647fef0d31ab103f7415f89bb20bb783f000d11ca046a2fc6893dad"
+        },
+        "inherit": [
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [
+          "SafeMath"
+        ],
+        "methods": [
+          "(address,address payable)",
+          "newPool(string,uint256,uint256)",
+          "updatePool(string,uint256,uint256)",
+          "updatePoolOwner(string,address payable)",
+          "stake(string,uint256)",
+          "unstake(string,uint256)",
+          "issueToken(struct DeciblingStaking.ClaimInfo[])",
+          "updatePlatformFeeRecipient(address payable)",
+          "updatePlatformFee(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStaking",
+            "src": "contracts/DeciblingStaking.sol:16"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "platformFee",
+            "src": "contracts/DeciblingStaking.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStakingMock": {
+        "src": "contracts/mock/MockDeciblingStaking.sol:6",
+        "version": {
+          "withMetadata": "bdfa302e4500952352bdfe7704087e110636fed64ab6c46c5a9dbefbfbd05384",
+          "withoutMetadata": "e2b15ba56fd6d1824806544ad6ae06484c37081790af958e1c7eb5fc9bd2dd93",
+          "linkedWithoutMetadata": "e2b15ba56fd6d1824806544ad6ae06484c37081790af958e1c7eb5fc9bd2dd93"
+        },
+        "inherit": [
+          "DeciblingStaking",
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,address payable)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStakingMock",
+            "src": "contracts/mock/MockDeciblingStaking.sol:7"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      }
+    },
+    {
+      "Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "IERC20": {
+        "src": "@openzeppelin/contracts/token/ERC20/IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "SafeMath": {
+        "src": "@openzeppelin/contracts/utils/math/SafeMath.sol:16",
+        "version": {
+          "withMetadata": "6c2007adc8e8b4fd61e0aba3d222a7221e641c70639cbf526812b77d99fc8da0",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStaking": {
+        "src": "contracts/DeciblingStaking.sol:8",
+        "version": {
+          "withMetadata": "743381cef337f26c415fa099b2e29d923e1b7bcd237ac297588ac2ce07594dcf",
+          "withoutMetadata": "1efcbf36fce870b5453abf5c48bd63ec21857932881a24cd9ab0ea277ace4790",
+          "linkedWithoutMetadata": "1efcbf36fce870b5453abf5c48bd63ec21857932881a24cd9ab0ea277ace4790"
+        },
+        "inherit": [
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [
+          "SafeMath"
+        ],
+        "methods": [
+          "(address,address payable)",
+          "newPool(string,uint256,uint256)",
+          "updatePool(string,uint256,uint256)",
+          "updatePoolOwner(string,address payable)",
+          "stake(string,uint256)",
+          "unstake(string,uint256)",
+          "issueToken(struct DeciblingStaking.ClaimInfo[])",
+          "updatePlatformFeeRecipient(address payable)",
+          "updatePlatformFee(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStaking",
+            "src": "contracts/DeciblingStaking.sol:16"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "platformFee",
+            "src": "contracts/DeciblingStaking.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStakingMock": {
+        "src": "contracts/mock/MockDeciblingStaking.sol:6",
+        "version": {
+          "withMetadata": "dfe8f35e8675684b98966cab9a93f5c984f18c58f8ee32ada0c01cef57f723fa",
+          "withoutMetadata": "3d62c224d4d7acb840171b5c4e27456d907356f0eba30837b59afd8c526ebf4e",
+          "linkedWithoutMetadata": "3d62c224d4d7acb840171b5c4e27456d907356f0eba30837b59afd8c526ebf4e"
+        },
+        "inherit": [
+          "DeciblingStaking",
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,address payable)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStakingMock",
+            "src": "contracts/mock/MockDeciblingStaking.sol:7"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "rToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "baseToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      }
+    },
+    {
+      "Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "IERC20": {
+        "src": "@openzeppelin/contracts/token/ERC20/IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "SafeMath": {
+        "src": "@openzeppelin/contracts/utils/math/SafeMath.sol:16",
+        "version": {
+          "withMetadata": "6c2007adc8e8b4fd61e0aba3d222a7221e641c70639cbf526812b77d99fc8da0",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStaking": {
+        "src": "contracts/DeciblingStaking.sol:8",
+        "version": {
+          "withMetadata": "4d1a5413dc41cba22b7db5aba55543a84b1d135693aab0bdf07b37424f800243",
+          "withoutMetadata": "723a32a418b729f3335ac345173ee46d70b0e38fce8d500cab82364252bf9449",
+          "linkedWithoutMetadata": "723a32a418b729f3335ac345173ee46d70b0e38fce8d500cab82364252bf9449"
+        },
+        "inherit": [
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [
+          "SafeMath"
+        ],
+        "methods": [
+          "(address,address payable)",
+          "newPool(string,uint256,uint256)",
+          "updatePool(string,uint256,uint256)",
+          "stake(string,uint256)",
+          "unstake(string,uint256)",
+          "issueToken(struct DeciblingStaking.ClaimInfo[])",
+          "updatePlatformFeeRecipient(address payable)",
+          "updatePlatformFee(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStaking",
+            "src": "contracts/DeciblingStaking.sol:16"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "platformFee",
+            "src": "contracts/DeciblingStaking.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "r_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "base_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStakingMock": {
+        "src": "contracts/mock/MockDeciblingStaking.sol:6",
+        "version": {
+          "withMetadata": "963952c7f950db010d90e814cb88fd95ab62187f5502d412c1eb9f7812413cca",
+          "withoutMetadata": "ba2e48260da34ab8dce18ee9e153e5d30629a5044096b7bdbf98debfcc750db2",
+          "linkedWithoutMetadata": "ba2e48260da34ab8dce18ee9e153e5d30629a5044096b7bdbf98debfcc750db2"
+        },
+        "inherit": [
+          "DeciblingStaking",
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,address payable)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStakingMock",
+            "src": "contracts/mock/MockDeciblingStaking.sol:7"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "r_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "base_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      }
+    },
+    {
+      "Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "IERC20": {
+        "src": "@openzeppelin/contracts/token/ERC20/IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "SafeMath": {
+        "src": "@openzeppelin/contracts/utils/math/SafeMath.sol:16",
+        "version": {
+          "withMetadata": "6c2007adc8e8b4fd61e0aba3d222a7221e641c70639cbf526812b77d99fc8da0",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStaking": {
+        "src": "contracts/DeciblingStaking.sol:8",
+        "version": {
+          "withMetadata": "f84d166f10dbecf853bbbb2059bfefa28cfccb331fdb68226dbe97ac6877aa02",
+          "withoutMetadata": "3c0cea61685914659a4e6a22545d02788c4c03af3095b90dfaf9bac2e307cd93",
+          "linkedWithoutMetadata": "3c0cea61685914659a4e6a22545d02788c4c03af3095b90dfaf9bac2e307cd93"
+        },
+        "inherit": [
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [
+          "SafeMath"
+        ],
+        "methods": [
+          "(address,address payable)",
+          "newPool(string,uint256,uint256)",
+          "updatePool(string,uint256,uint256)",
+          "stake(string,uint256)",
+          "unstake(string,uint256)",
+          "issueToken(struct DeciblingStaking.ClaimInfo[])",
+          "updatePlatformFeeRecipient(address payable)",
+          "updatePlatformFee(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStaking",
+            "src": "contracts/DeciblingStaking.sol:16"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "platformFee",
+            "src": "contracts/DeciblingStaking.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "r_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "base_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStakingMock": {
+        "src": "contracts/mock/MockDeciblingStaking.sol:6",
+        "version": {
+          "withMetadata": "58f0aa4c369ffa299ad3dc60033a199aa6eacb84310217033179d95674bb9560",
+          "withoutMetadata": "3580e02c8a1d69a4f4794f756d7073ed7fb81d7b8511442c53120f1ad246be6e",
+          "linkedWithoutMetadata": "3580e02c8a1d69a4f4794f756d7073ed7fb81d7b8511442c53120f1ad246be6e"
+        },
+        "inherit": [
+          "DeciblingStaking",
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,address payable)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStakingMock",
+            "src": "contracts/mock/MockDeciblingStaking.sol:7"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "r_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "base_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      }
+    },
+    {
+      "Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "IERC20": {
+        "src": "@openzeppelin/contracts/token/ERC20/IERC20.sol:9",
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "totalSupply()",
+          "balanceOf(address)",
+          "transfer(address,uint256)",
+          "allowance(address,address)",
+          "approve(address,uint256)",
+          "transferFrom(address,address,uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "Context": {
+        "src": "@openzeppelin/contracts/utils/Context.sol:16",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "SafeMath": {
+        "src": "@openzeppelin/contracts/utils/math/SafeMath.sol:16",
+        "version": {
+          "withMetadata": "6c2007adc8e8b4fd61e0aba3d222a7221e641c70639cbf526812b77d99fc8da0",
+          "withoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff",
+          "linkedWithoutMetadata": "08d24783a787f8a51dea0c166bb6f91a4f0865e02d03d749f102d332e6ead0ff"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.2",
+          "flat": false
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStaking": {
+        "src": "contracts/DeciblingStaking.sol:8",
+        "version": {
+          "withMetadata": "687e2fc63f607eeae9c657cc2a2f1ead3395d6ee3c8bed7616a7b93ffd18937e",
+          "withoutMetadata": "bf50447436823bf16fbcb2224ea1654278702ac7fbd643c7df28834c1d5e001a",
+          "linkedWithoutMetadata": "bf50447436823bf16fbcb2224ea1654278702ac7fbd643c7df28834c1d5e001a"
+        },
+        "inherit": [
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [
+          "SafeMath"
+        ],
+        "methods": [
+          "(address,address payable)",
+          "newPool(string,uint256,uint256)",
+          "updatePool(string,uint256,uint256)",
+          "stake(string,uint256)",
+          "unstake(string,uint256)",
+          "issueToken(struct DeciblingStaking.ClaimInfo[])",
+          "updatePlatformFeeRecipient(address payable)",
+          "updatePlatformFee(uint256)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStaking",
+            "src": "contracts/DeciblingStaking.sol:16"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "platformFee",
+            "src": "contracts/DeciblingStaking.sol:12"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "r_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "base_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
+      "DeciblingStakingMock": {
+        "src": "contracts/mock/MockDeciblingStaking.sol:6",
+        "version": {
+          "withMetadata": "8bef94980c98d34b895aba5dc8f464d6548c56032983a27124e7db7721ad2d62",
+          "withoutMetadata": "bad6252d13151533515b8707791bd1976e4ade04da16dd6a36ebfaf085e05414",
+          "linkedWithoutMetadata": "bad6252d13151533515b8707791bd1976e4ade04da16dd6a36ebfaf085e05414"
+        },
+        "inherit": [
+          "DeciblingStaking",
+          "Ownable",
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "(address,address payable)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "DeciblingStakingMock",
+            "src": "contracts/mock/MockDeciblingStaking.sol:7"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            },
+            {
+              "label": "froyToken",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_contract(IERC20)190",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:10"
+            },
+            {
+              "label": "platformFee",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_uint256",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:12"
+            },
+            {
+              "label": "platformFeeRecipient",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_address_payable",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:14"
+            },
+            {
+              "label": "stakes",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:43"
+            },
+            {
+              "label": "pools",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)",
+              "contract": "DeciblingStaking",
+              "src": "contracts/DeciblingStaking.sol:44"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_address_payable": {
+              "label": "address payable",
+              "numberOfBytes": "20"
+            },
+            "t_contract(IERC20)190": {
+              "label": "contract IERC20",
+              "numberOfBytes": "20"
+            },
+            "t_mapping(t_address,t_struct(StakeInfo)593_storage)": {
+              "label": "mapping(address => struct DeciblingStaking.StakeInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_mapping(t_address,t_struct(StakeInfo)593_storage))": {
+              "label": "mapping(string => mapping(address => struct DeciblingStaking.StakeInfo))",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_string_memory_ptr,t_struct(PoolInfo)604_storage)": {
+              "label": "mapping(string => struct DeciblingStaking.PoolInfo)",
+              "numberOfBytes": "32"
+            },
+            "t_string_memory_ptr": {
+              "label": "string",
+              "numberOfBytes": "32"
+            },
+            "t_struct(PoolInfo)604_storage": {
+              "label": "struct DeciblingStaking.PoolInfo",
+              "members": [
+                {
+                  "label": "owner",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "r_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "r",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "base",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "base_to_owner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                }
+              ],
+              "numberOfBytes": "160"
+            },
+            "t_struct(StakeInfo)593_storage": {
+              "label": "struct DeciblingStaking.StakeInfo",
+              "members": [
+                {
+                  "label": "amount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "stakeTime",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "unclaimAmount",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "unclaimAmountToOwner",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                }
+              ],
+              "numberOfBytes": "128"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_string_storage": {
+              "label": "string"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      }
+    },
+    {
+      "Ownable": {
+        "src": "@openzeppelin/contracts/access/Ownable.sol:20",
+        "inherit": [
+          "Context"
+        ],
+        "libraries": [],
+        "methods": [
+          "owner()",
+          "renounceOwnership()",
+          "transferOwnership(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Ownable",
+            "src": "@openzeppelin/contracts/access/Ownable.sol:28"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "_owner",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Ownable",
+              "src": "@openzeppelin/contracts/access/Ownable.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true
+        },
+        "solcVersion": "0.8.9"
+      },
       "ReentrancyGuard": {
         "src": "@openzeppelin/contracts/security/ReentrancyGuard.sol:22",
         "inherit": [],

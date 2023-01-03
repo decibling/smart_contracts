@@ -29,10 +29,10 @@ contract DeciblingStaking is Ownable  {
     }
     struct PoolInfo {
         address owner;
-        uint256 r_to_owner;
+        uint256 rToOwner;
         uint256 r;
         uint256 base;
-        uint256 base_to_owner;
+        uint256 baseToOwner;
     }
 
     struct ClaimInfo {
@@ -42,10 +42,13 @@ contract DeciblingStaking is Ownable  {
 
     mapping(string => mapping(address => StakeInfo)) public stakes;
     mapping(string => PoolInfo) public pools;
+    
     event Stake(address _user, uint256 time, uint256 amount, string pool);
     event Unstake(address _user, uint256 time, string pool, uint256 unstakeAmount);
     event IssueToken(address _user, string pool, uint256 time, uint256 amount, uint256 amountToOwner, uint256 platformValue, uint256 platformValueToOwner);
+    event NewPool(string id);
     event UpdatePool(string id, uint256 r, uint256 r_to_owner, uint256 base, uint256 base_to_owner);
+    event UpdatePoolOwner(string id, address payable owner);
     event UpdatePlatformFeeRecipient(address payable platformFeeRecipient);
     event UpdatePlatformFee(uint256 platformFee);
     event UpdateUnclaimAmount(address _user, uint256 time, string id, uint256 actualAmount);
@@ -63,6 +66,7 @@ contract DeciblingStaking is Ownable  {
         require(idTest.length != 0, "invalid pool id");
         pools[_id].owner = msg.sender;
         _updatePool(_id, _r, _r_to_owner);
+        emit NewPool(_id);
     }
 
     function updatePool(string memory id, uint256 _r, uint256 _r_to_owner)
@@ -71,8 +75,21 @@ contract DeciblingStaking is Ownable  {
         require(pools[id].owner == msg.sender || owner() == msg.sender, "not pool owner or admin");
         require(_r >= 3 && _r <= 8, "invalid return value");
         require(_r_to_owner <= 5, "invalid return to owner value");
-        require(_r_to_owner + _r <= 8, "total return must be less than or equal 8");
+        require(_r_to_owner + _r == 8, "total return must be equal 8");
+        
         _updatePool(id, _r, _r_to_owner);
+    }
+
+    function updatePoolOwner(string memory _id, address payable _owner)
+        external
+    {
+        bytes memory idTest = bytes(_id); // Uses memory
+        require(idTest.length != 0, "invalid pool id");
+        require(pools[_id].owner == msg.sender || owner() == msg.sender, "not pool owner or admin");
+        require(_owner != address(0), "21");
+        pools[_id].owner = _owner;
+
+        emit UpdatePoolOwner(_id, _owner);
     }
     
     function _updatePool(string memory id, uint256 _r, uint256 _r_to_owner)
@@ -81,16 +98,17 @@ contract DeciblingStaking is Ownable  {
         bytes memory idTest = bytes(id); // Uses memory
         require(idTest.length != 0, "invalid pool id");
         pools[id].r = _r;
-        pools[id].r_to_owner = _r_to_owner;
+        pools[id].rToOwner = _r_to_owner;
         pools[id].base = 1e18 * _r / (86400 * 100 * 365);
-        pools[id].base_to_owner = 1e18 * _r_to_owner / (86400 * 100 * 365);
-        emit UpdatePool(id, _r, _r_to_owner, pools[id].base, pools[id].base_to_owner);
+        pools[id].baseToOwner = 1e18 * _r_to_owner / (86400 * 100 * 365);
+        emit UpdatePool(id, _r, _r_to_owner, pools[id].base, pools[id].baseToOwner);
     }
 
     function stake(string memory id, uint256 _amount) external {
         bytes memory idTest = bytes(id); // Uses memory
         require(idTest.length != 0, "invalid pool id");
         require(_amount > 0, "amount must be larger than zero");
+        require(pools[id].owner != address(0), "not an active pool");
         uint256 currentTime = _getNow();
         require(froyToken.transferFrom(msg.sender, address(this), _amount));
         if (stakes[id][msg.sender].stakeTime != 0) {
@@ -105,6 +123,8 @@ contract DeciblingStaking is Ownable  {
         bytes memory idTest = bytes(id); // Uses memory
         require(idTest.length != 0, "invalid pool id");
         address user = msg.sender;
+        require(pools[id].owner != address(0), "not an active pool");
+        require(unstakeAmount > 0, "amount must be larger than zero");
         require(stakes[id][user].amount != 0, "1"); // amount must be smaller than current staked
         require(unstakeAmount <= stakes[id][user].amount || unstakeAmount == 0, "18");
         uint256 currentTime = _getNow();
@@ -128,8 +148,8 @@ contract DeciblingStaking is Ownable  {
         if (pools[id].base >= 0) {
             base = pools[id].base;
         }
-        if (pools[id].base_to_owner >= 0) {
-            baseToOwner = pools[id].base_to_owner;
+        if (pools[id].baseToOwner >= 0) {
+            baseToOwner = pools[id].baseToOwner;
         }
         stakes[id][_user].unclaimAmount += base * stakedSeconds * stakes[id][_user].amount / 1e18;
         stakes[id][_user].unclaimAmountToOwner += baseToOwner * stakedSeconds * stakes[id][_user].amount / 1e18;

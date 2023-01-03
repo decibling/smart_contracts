@@ -11,6 +11,7 @@ const {
 const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
 const { expect } = require("chai");
+const { ZERO_ADDRESS } = require("@openzeppelin/test-helpers/src/constants");
 
 const DeciblingStaking = artifacts.require("DeciblingStakingMock");
 const Token = artifacts.require("FroggilyToken");
@@ -59,7 +60,7 @@ contract("DeciblingStaking", (accounts) => {
       });
       const poolInfo = await this.staking.pools(poolId);
       expect(poolInfo.r).to.equal(new BN("3"));
-      expect(poolInfo.r_to_owner).to.equal(new BN("5"));
+      expect(poolInfo.rToOwner).to.equal(new BN("5"));
       expect(poolInfo.owner).to.equal(admin);
     }),
       it("newPool() from artist", async () => {
@@ -69,26 +70,26 @@ contract("DeciblingStaking", (accounts) => {
         });
         const poolInfo = await this.staking.pools(poolId);
         expect(poolInfo.r).to.equal(new BN("3"));
-        expect(poolInfo.r_to_owner).to.equal(new BN("5"));
+        expect(poolInfo.rToOwner).to.equal(new BN("5"));
         expect(poolInfo.owner).to.equal(artist);
-      }),
-      it("updatePool() from admin", async () => {
-        const poolId = "test_pool_admin";
-        await this.staking.newPool(poolId, 3, 5, {
-          from: admin,
-        });
-        let poolInfo = await this.staking.pools(poolId);
-        expect(poolInfo.r).to.equal(new BN("3"));
-        expect(poolInfo.r_to_owner).to.equal(new BN("5"));
-        expect(poolInfo.owner).to.equal(admin);
-        await this.staking.updatePool(poolId, 4, 4, {
-          from: admin,
-        });
-        poolInfo = await this.staking.pools(poolId);
-        expect(poolInfo.r).to.equal(new BN("4"));
-        expect(poolInfo.r_to_owner).to.equal(new BN("4"));
-        expect(poolInfo.owner).to.equal(admin);
-      }),
+      });
+    it("updatePool() from admin", async () => {
+      const poolId = "test_pool_admin";
+      await this.staking.newPool(poolId, 3, 5, {
+        from: admin,
+      });
+      let poolInfo = await this.staking.pools(poolId);
+      expect(poolInfo.r).to.equal(new BN("3"));
+      expect(poolInfo.rToOwner).to.equal(new BN("5"));
+      expect(poolInfo.owner).to.equal(admin);
+      await this.staking.updatePool(poolId, 4, 4, {
+        from: admin,
+      });
+      poolInfo = await this.staking.pools(poolId);
+      expect(poolInfo.r).to.equal(new BN("4"));
+      expect(poolInfo.rToOwner).to.equal(new BN("4"));
+      expect(poolInfo.owner).to.equal(admin);
+    }),
       it("updatePool() from artist", async () => {
         const poolId = "test_pool_artist";
         await this.staking.newPool(poolId, 4, 4, {
@@ -96,14 +97,14 @@ contract("DeciblingStaking", (accounts) => {
         });
         let poolInfo = await this.staking.pools(poolId);
         expect(poolInfo.r).to.equal(new BN("4"));
-        expect(poolInfo.r_to_owner).to.equal(new BN("4"));
+        expect(poolInfo.rToOwner).to.equal(new BN("4"));
         expect(poolInfo.owner).to.equal(artist);
         await this.staking.updatePool(poolId, 3, 5, {
           from: artist,
         });
         poolInfo = await this.staking.pools(poolId);
         expect(poolInfo.r).to.equal(new BN("3"));
-        expect(poolInfo.r_to_owner).to.equal(new BN("5"));
+        expect(poolInfo.rToOwner).to.equal(new BN("5"));
         expect(poolInfo.owner).to.equal(artist);
       }),
       it("updatePool() error not owner", async () => {
@@ -128,41 +129,41 @@ contract("DeciblingStaking", (accounts) => {
         });
         poolInfo = await this.staking.pools(poolId);
         expect(poolInfo.r).to.equal(new BN("4"));
-        expect(poolInfo.r_to_owner).to.equal(new BN("4"));
+        expect(poolInfo.rToOwner).to.equal(new BN("4"));
         expect(poolInfo.owner).to.equal(artist);
-      }),
-      it("stake()", async () => {
-        const bpd = await balanceOf(
+      });
+    it("stake()", async () => {
+      const bpd = await balanceOf(
+        "Pool Default",
+        this.staking.address,
+        "initiated"
+      );
+      const bu1 = await balanceOf("User 1", user1, "initiated");
+
+      console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
+      expect(
+        await this.token.approve(this.staking.address, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        })
+      );
+      expect(
+        await this.staking.stake(defaultPoolId, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        })
+      );
+
+      expect(
+        await balanceOf(
           "Pool Default",
           this.staking.address,
-          "initiated"
-        );
-        const bu1 = await balanceOf("User 1", user1, "initiated");
-
-        console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
-        expect(
-          await this.token.approve(this.staking.address, ONE_THOUSAND_TOKENS, {
-            from: user1,
-          })
-        );
-        expect(
-          await this.staking.stake(defaultPoolId, ONE_THOUSAND_TOKENS, {
-            from: user1,
-          })
-        );
-
-        expect(
-          await balanceOf(
-            "Pool Default",
-            this.staking.address,
-            "after a stake",
-            bpd
-          )
-        ).to.equal(ONE_THOUSAND_TOKENS);
-        expect(await balanceOf("User 1", user1, "after a stake", bu1)).to.equal(
-          bu1.sub(ONE_THOUSAND_TOKENS)
-        );
-      }),
+          "after a stake",
+          bpd
+        )
+      ).to.equal(ONE_THOUSAND_TOKENS);
+      expect(await balanceOf("User 1", user1, "after a stake", bu1)).to.equal(
+        bu1.sub(ONE_THOUSAND_TOKENS)
+      );
+    }),
       it("stake() with zero value", async () => {
         console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
         expect(
@@ -176,8 +177,57 @@ contract("DeciblingStaking", (accounts) => {
           }),
           "amount must be larger than zero"
         );
-      }),
-      it("unstake()", async () => {
+      });
+    it("unstake()", async () => {
+      const bpd = await balanceOf(
+        "Pool Default",
+        this.staking.address,
+        "initiated"
+      );
+      const bu1 = await balanceOf("User 1", user1, "initiated");
+
+      // stake first
+      console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
+      await this.token.approve(this.staking.address, ONE_THOUSAND_TOKENS, {
+        from: user1,
+      });
+      await this.staking.stake(defaultPoolId, ONE_THOUSAND_TOKENS, {
+        from: user1,
+      });
+
+      // unstake
+      expect(
+        await balanceOf(
+          "Pool Default",
+          this.staking.address,
+          "after a stake",
+          bpd
+        )
+      ).to.equal(ONE_THOUSAND_TOKENS);
+      expect(await balanceOf("User 1", user1, "after a stake", bu1)).to.equal(
+        bu1.sub(ONE_THOUSAND_TOKENS)
+      );
+
+      console.log("User 1 does the unstake", weiToEther(ONE_THOUSAND_TOKENS));
+      expect(
+        await this.staking.unstake(defaultPoolId, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        })
+      );
+
+      expect(
+        await balanceOf(
+          "Pool Default",
+          this.staking.address,
+          "after an unstake",
+          bpd
+        )
+      ).to.equal(ZERO);
+      expect(await balanceOf("User 1", user1, "after an unstake")).to.equal(
+        bu1
+      );
+    }),
+      it("unstake() with zero value", async () => {
         const bpd = await balanceOf(
           "Pool Default",
           this.staking.address,
@@ -207,23 +257,50 @@ contract("DeciblingStaking", (accounts) => {
           bu1.sub(ONE_THOUSAND_TOKENS)
         );
 
-        console.log("User 1 does the unstake", weiToEther(ONE_THOUSAND_TOKENS));
-        expect(
-          await this.staking.unstake(defaultPoolId, ONE_THOUSAND_TOKENS, {
+        console.log("User 1 does the unstake", weiToEther(ZERO));
+        await expectRevert(
+          this.staking.unstake(defaultPoolId, ZERO, {
             from: user1,
-          })
+          }),
+          "amount must be larger than zero"
         );
+      }),
+      it("unstake() to invalid pool id", async () => {
+        const bpd = await balanceOf(
+          "Pool Default",
+          this.staking.address,
+          "initiated"
+        );
+        const bu1 = await balanceOf("User 1", user1, "initiated");
 
+        // stake first
+        console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
+        await this.token.approve(this.staking.address, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        });
+        await this.staking.stake(defaultPoolId, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        });
+
+        // unstake
         expect(
           await balanceOf(
             "Pool Default",
             this.staking.address,
-            "after an unstake",
+            "after a stake",
             bpd
           )
-        ).to.equal(ZERO);
-        expect(await balanceOf("User 1", user1, "after an unstake")).to.equal(
-          bu1
+        ).to.equal(ONE_THOUSAND_TOKENS);
+        expect(await balanceOf("User 1", user1, "after a stake", bu1)).to.equal(
+          bu1.sub(ONE_THOUSAND_TOKENS)
+        );
+
+        console.log("User 1 does the unstake", weiToEther(ZERO));
+        await expectRevert(
+          this.staking.unstake(defaultPoolId + "invalid", ZERO, {
+            from: user1,
+          }),
+          "not an active pool"
         );
       });
     it("issueToken() normal", async () => {
@@ -382,73 +459,114 @@ contract("DeciblingStaking", (accounts) => {
           bpdB
         );
         expect((bpdC - bpdB) / 1e18).closeTo(-100, 0.05);
-      }),
-      it("renewUnclaimAmount() with stake", async () => {
-        let bpd = await balanceOf(
-          "Pool Default",
-          this.staking.address,
-          "initiated"
-        );
-        let bpa = await balanceOf(
-          "Platform A",
-          platformFeeAddress,
-          "initiated"
-        );
-        let bu1 = await balanceOf("User 1", user1, "initiated");
-
-        console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
-        expect(
-          await this.token.approve(this.staking.address, ONE_THOUSAND_TOKENS, {
-            from: user1,
-          })
-        );
-        expect(
-          await this.staking.stake(defaultPoolId, ONE_THOUSAND_TOKENS, {
-            from: user1,
-          })
-        );
-
-        bpd = await balanceOf(
-          "Pool Default",
-          this.staking.address,
-          "after stake",
-          bpd
-        );
-        bu1 = await balanceOf("User 1", user1, "after stake", bu1);
-        bpa = await balanceOf(
-          "Platform A",
-          platformFeeAddress,
-          "after stake",
-          bpa
-        );
-
-        currentTime = await time.latest();
-        shiftTime = currentTime + 86400;
-        console.log("Increase time", currentTime, shiftTime);
-        await time.increaseTo(new BN(shiftTime));
-
-        // stake
-        console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
-        expect(
-          await this.token.approve(this.staking.address, ONE_THOUSAND_TOKENS, {
-            from: user1,
-          })
-        );
-        expect(
-          await this.staking.stake(defaultPoolId, ONE_THOUSAND_TOKENS, {
-            from: user1,
-          })
-        );
-
-        const poolInfo = await this.staking.pools(defaultPoolId);
-        const base = weiToEther(poolInfo.base);
-        console.log(`Pool info: r ${weiToEther(poolInfo.r)} base ${base}`);
-
-        const stakeInfo = await this.staking.stakes(defaultPoolId, user1);
-        console.log("Amount:", weiToEther(stakeInfo.amount));
-        console.log("Stake time:", stakeInfo.stakeTime.toNumber());
-        console.log("Unclaim amount:", weiToEther(stakeInfo.unclaimAmount));
       });
+    it("renewUnclaimAmount() with stake", async () => {
+      let bpd = await balanceOf(
+        "Pool Default",
+        this.staking.address,
+        "initiated"
+      );
+      let bpa = await balanceOf("Platform A", platformFeeAddress, "initiated");
+      let bu1 = await balanceOf("User 1", user1, "initiated");
+
+      console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
+      expect(
+        await this.token.approve(this.staking.address, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        })
+      );
+      expect(
+        await this.staking.stake(defaultPoolId, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        })
+      );
+
+      bpd = await balanceOf(
+        "Pool Default",
+        this.staking.address,
+        "after stake",
+        bpd
+      );
+      bu1 = await balanceOf("User 1", user1, "after stake", bu1);
+      bpa = await balanceOf(
+        "Platform A",
+        platformFeeAddress,
+        "after stake",
+        bpa
+      );
+
+      currentTime = await time.latest();
+      shiftTime = currentTime + 86400;
+      console.log("Increase time", currentTime, shiftTime);
+      await time.increaseTo(new BN(shiftTime));
+
+      // stake
+      console.log("User 1 does the stake", weiToEther(ONE_THOUSAND_TOKENS));
+      expect(
+        await this.token.approve(this.staking.address, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        })
+      );
+      expect(
+        await this.staking.stake(defaultPoolId, ONE_THOUSAND_TOKENS, {
+          from: user1,
+        })
+      );
+
+      const poolInfo = await this.staking.pools(defaultPoolId);
+      const base = weiToEther(poolInfo.base);
+      console.log(`Pool info: r ${weiToEther(poolInfo.r)} base ${base}`);
+
+      const stakeInfo = await this.staking.stakes(defaultPoolId, user1);
+      console.log("Amount:", weiToEther(stakeInfo.amount));
+      console.log("Stake time:", stakeInfo.stakeTime.toNumber());
+      console.log("Unclaim amount:", weiToEther(stakeInfo.unclaimAmount));
+    })
+    it("updatePoolOwner()", async() => {
+      const poolId = "test_pool_user";
+      await this.staking.newPool(poolId, 3, 5, {
+        from: user1,
+      });
+      await this.staking.updatePoolOwner(poolId, user2, {
+        from: user1,
+      });
+    }),
+    it("updatePoolOwner() from admin", async() => {
+      const poolId = "test_pool_user";
+      await this.staking.newPool(poolId, 3, 5, {
+        from: user1,
+      });
+      await this.staking.updatePoolOwner(poolId, user2, {
+        from: admin,
+      });
+    }),
+    it("updatePoolOwner() with invalid id", async() => {
+      const poolId = "test_pool_user";
+      await this.staking.newPool(poolId, 3, 5, {
+        from: user1,
+      });
+      await expectRevert(this.staking.updatePoolOwner("", user2, {
+        from: user1,
+      }), 'invalid pool id');
+    }),
+    it("updatePoolOwner() with invalid address", async() => {
+      const poolId = "test_pool_user";
+      await this.staking.newPool(poolId, 3, 5, {
+        from: user1,
+      });
+      await expectRevert(this.staking.updatePoolOwner(poolId, ZERO_ADDRESS, {
+        from: user1,
+      }), '21');
+    }),
+    it("updatePoolOwner() invalid owner", async() => {
+      const poolId = "test_pool_user";
+      await this.staking.newPool(poolId, 3, 5, {
+        from: user1,
+      });
+      await expectRevert(this.staking.updatePoolOwner(poolId, user1, {
+        from: user2,
+      }), "not pool owner or admin");
+    })
   });
 });
 
