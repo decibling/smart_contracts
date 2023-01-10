@@ -78,21 +78,6 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         return super.tokenURI(tokenId);
     }
 
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory _data
-    ) public override {
-        listOwnToken[to].push(tokenId);
-        listOwnToken[from][indexOfToken[tokenId]] = listOwnToken[from][
-            listOwnToken[from].length - 1
-        ];
-        listOwnToken[from].pop();
-        indexOfToken[tokenId] = listOwnToken[to].length - 1;
-        return super.safeTransferFrom(from, to, tokenId, _data);
-    }
-
     function transferFrom(
         address from,
         address to,
@@ -106,7 +91,19 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         indexOfToken[tokenId] = listOwnToken[to].length - 1;
         super.transferFrom(from, to, tokenId);
     }
-
+    function safeTransferFrom(
+        address from, 
+        address to, 
+        uint256 tokenId, 
+        bytes memory data
+    ) public override{            
+    }
+    function safeTransferFrom(
+        address from, 
+        address to, 
+        uint256 tokenId
+    ) public override{
+    }
     /*
         createNFT
         uri : string of resource
@@ -140,15 +137,6 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
         require(share >= 0 && share <= 100, "1");
         sharePercent = share;
     }
-
-    function transferNFT(string memory uri, address to) public {
-        AudioInfo storage currentNFT = listNFT[uri];
-        require(keccak256(bytes(currentNFT.url)) == keccak256(bytes(uri)), "4");
-        require(currentNFT.owner == msg.sender, "5");
-        safeTransferFrom(msg.sender, to, tokenIdMapping[uri]);
-        currentNFT.owner = to;
-    }
-
     function createBidding(
         string memory uri,
         uint256 startPrice,
@@ -239,7 +227,7 @@ contract DbAudio is ERC721, Ownable, ERC721URIStorage {
             if (sharePercent > 0) {
                 transferPrice = (transferPrice * (1e8 - sharePercent)) / 1e8;
             }
-            safeTransferFrom(
+            transferFrom(
                 currentNFT.owner,
                 biddingOfNFT.winner,
                 tokenIdMapping[uri]
