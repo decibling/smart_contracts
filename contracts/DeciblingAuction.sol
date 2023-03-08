@@ -8,6 +8,12 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
+//remove ReentrancyGuard
+//ERC721 > ERC721Upgradeable
+//ERC20 > ERC721Upgradeable
+//Ownable > OwnableUpgradeable
+//Counters > CountersUpgradeable
+
 contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
     using SafeMath for uint256;
     using Counters for Counters.Counter;
