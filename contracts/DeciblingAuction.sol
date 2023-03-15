@@ -130,6 +130,8 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         require(increment > 0, "22");
         require(endTime >= startTime + 300, "24"); //end time must be after at least 5 mins
 
+        approve(owner(), itemId);
+
         auctions[itemId] = Auction({
             winner: address(0),
             startPrice: startPrice,
@@ -260,7 +262,7 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         require(auction.endTime > 0, "31");
         require(
             auction.startTime < endtime,
-            "32"
+            "18"
         );
         require(
             endtime > _getNow() + 300,

@@ -126,7 +126,7 @@ contract DeciblingStaking is Ownable  {
         require(pools[id].owner != address(0), "not an active pool");
         require(unstakeAmount > 0, "amount must be larger than zero");
         require(stakes[id][user].amount != 0, "1"); // amount must be smaller than current staked
-        require(unstakeAmount <= stakes[id][user].amount || unstakeAmount == 0, "18");
+        require(unstakeAmount <= stakes[id][user].amount || unstakeAmount == 0, "23");
         uint256 currentTime = _getNow();
         renewUnclaimAmount(user, currentTime, id);
         stakes[id][user].amount = stakes[id][user].amount - unstakeAmount;
