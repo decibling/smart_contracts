@@ -265,6 +265,44 @@ contract("DeciblingStaking", (accounts) => {
           "amount must be larger than zero"
         );
       }),
+      it("unstake() with value larger than staked amount", async () => {
+        const bpd = await balanceOf(
+          "Pool Default",
+          this.staking.address,
+          "initiated"
+        );
+        const bu1 = await balanceOf("User 1", user1, "initiated");
+
+        // stake first
+        console.log("User 1 does the stake", weiToEther(TWENTY_TOKENS));
+        await this.token.approve(this.staking.address, TWENTY_TOKENS, {
+          from: user1,
+        });
+        await this.staking.stake(defaultPoolId, TWENTY_TOKENS, {
+          from: user1,
+        });
+
+        //unstake
+        expect(
+          await balanceOf(
+            "Pool Default",
+            this.staking.address,
+            "after a stake",
+            bpd
+          )
+        ).to.equal(TWENTY_TOKENS);
+        expect(await balanceOf("User 1", user1, "after a stake", bu1)).to.equal(
+          bu1.sub(TWENTY_TOKENS)
+        );
+
+        console.log("User 1 does the unstake", weiToEther(ONE_THOUSAND_TOKENS));
+        await expectRevert(
+          this.staking.unstake(defaultPoolId, ONE_THOUSAND_TOKENS, {
+            from: user1,
+          }),
+          "23"
+        );
+      }),
       it("unstake() to invalid pool id", async () => {
         const bpd = await balanceOf(
           "Pool Default",

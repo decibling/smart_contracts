@@ -108,8 +108,9 @@ contract("DeciblingAuction", (accounts) => {
         status: new BN("0"),
       });
 
-      let startTime = Date.now() / 1e3;
-      let endTime = (Date.now() + 10 * 60000) / 1e3;
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now + 10 * 60000;
 
       console.log("Artist A creates a bid at", 1000);
       expect(

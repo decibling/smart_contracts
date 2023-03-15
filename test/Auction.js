@@ -14,6 +14,7 @@ const {
 
 const DeciblingAuction = artifacts.require("DeciblingAuction");
 const Token = artifacts.require("FroggilyToken");
+const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
 contract("DeciblingAuction", (accounts) => {
   const [
@@ -50,6 +51,9 @@ contract("DeciblingAuction", (accounts) => {
     this.token.transfer(artist, ONE_BILLION_TOKENS, {
       from: admin,
     });
+    this.token.transfer(bidder, ONE_BILLION_TOKENS, {
+      from: admin,
+    });
   });
 
   describe("Contract deployment successfully", () => {
@@ -65,8 +69,9 @@ contract("DeciblingAuction", (accounts) => {
         await this.auction.createNFT(randomTokenURI, randomTokenURI, {
           from: artist,
         })
-        let startTime = Date.now() / 1e3;
-        let endTime = (Date.now() + 10 * 60000) / 1e3;
+        let now = await time.latest()
+        let startTime = now;
+        let endTime = now + 10 * 60000;
         expect(
           await this.auction.createBidding(
             randomTokenURI,
@@ -91,8 +96,9 @@ contract("DeciblingAuction", (accounts) => {
         await this.auction.createNFT(randomTokenURI, randomTokenURI, {
           from: artist,
         })
-        let startTime = Date.now() / 1e3;
-        let endTime = (Date.now() + 10 * 60000) / 1e3;
+        let now = await time.latest()
+        let startTime = now;
+        let endTime = now + 10 * 60000;
         expect(
           await this.auction.createBidding(
             randomTokenURI,
@@ -113,12 +119,39 @@ contract("DeciblingAuction", (accounts) => {
           from: artist,
         }), '26');
       }),
+      it("Bid lower than last bid value", async () => {
+        await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+          from: owner,
+        })
+        let now = await time.latest()
+        let startTime = now;
+        let endTime = now + 10 * 60000;
+        await this.auction.createBidding(
+          randomTokenURI,
+          ONE_THOUSAND_TOKENS,
+          ONE_TOKENS,
+          startTime.toFixed(0),
+          endTime.toFixed(0), {
+            from: owner,
+          }
+        )
+        await this.token.approve(this.auction.address, ONE_THOUSAND_TOKENS, {
+          from: artist,
+        })
+        await this.auction.bid(randomTokenURI, TWENTY_TOKENS, {
+          from: artist,
+        })
+        await expectRevert(this.auction.bid(randomTokenURI, ONE_TOKENS, {
+          from: artist,
+        }), '13');
+      }),
       it("Create bid on an invalid item", async () => {
         await this.auction.createNFT(randomTokenURI, randomTokenURI, {
           from: artist,
         })
-        let startTime = Date.now() / 1e3;
-        let endTime = (Date.now() + 10 * 60000) / 1e3;
+        let now = await time.latest()
+        let startTime = now;
+        let endTime = now + 10 * 60000;
         await expectRevert(
           this.auction.createBidding(
             randomTokenURI + 'invalid',
@@ -130,15 +163,196 @@ contract("DeciblingAuction", (accounts) => {
             }
           ), "26");
       })
+    it("Create bid with invalid owner", async () => {
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: owner,
+      })
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now + 10 * 60000;
+      await expectRevert(
+        this.auction.createBidding(
+          randomTokenURI,
+          ONE_THOUSAND_TOKENS,
+          ONE_TOKENS,
+          startTime.toFixed(0),
+          endTime.toFixed(0), {
+            from: artist,
+          }
+        ), "6");
+    }),
+    it("Create bid with end time before start time", async () => {
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: owner,
+      })
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now - 10 * 60000;
+      await expectRevert(
+        this.auction.createBidding(
+          randomTokenURI,
+          ONE_THOUSAND_TOKENS,
+          ONE_TOKENS,
+          startTime.toFixed(0),
+          endTime.toFixed(0), {
+            from: owner,
+          }
+        ), "18");
+    }),
+    it("Create bid on an on sale item", async () => {
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: owner,
+      })
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now + 10 * 60000;
+      await this.auction.createBidding(
+        randomTokenURI,
+        ONE_THOUSAND_TOKENS,
+        ONE_TOKENS,
+        startTime.toFixed(0),
+        endTime.toFixed(0), {
+          from: owner,
+        }
+      )
+      await expectRevert(
+        this.auction.createBidding(
+          randomTokenURI,
+          ONE_THOUSAND_TOKENS,
+          ONE_TOKENS,
+          startTime.toFixed(0),
+          endTime.toFixed(0), {
+            from: owner,
+          }
+        ), "8");
+    }),
     it("Create NFT on an invalid item", async () => {
       await expectRevert(this.auction.createNFT("", "dsadsa", {
         from: artist,
       }), "27")
     }),
     it("Update end time of an ongoing bid", async () => {
-      await expectRevert(this.auction.createNFT("", "dsadsa", {
-        from: artist,
-      }), "27")
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: owner,
+      })
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now + 10 * 60000;
+      let endTimeUpdated = now + 15 * 60000;
+      await this.auction.createBidding(
+        randomTokenURI,
+        ONE_THOUSAND_TOKENS,
+        ONE_TOKENS,
+        startTime.toFixed(0),
+        endTime.toFixed(0), {
+          from: owner,
+        }
+      )
+      expect(
+        await this.auction.updateBidEndtime(randomTokenURI, endTimeUpdated.toFixed(0))
+      );
+    }),
+    it("Update end time before start time of an ongoing bid", async () => {
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: owner,
+      })
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now + 10 * 60000;
+      let endTimeUpdated = now - 10 * 60000;
+      await this.auction.createBidding(
+        randomTokenURI,
+        ONE_THOUSAND_TOKENS,
+        ONE_TOKENS,
+        startTime.toFixed(0),
+        endTime.toFixed(0), {
+          from: owner,
+        }
+      )
+      await expectRevert(
+        this.auction.updateBidEndtime(randomTokenURI, endTimeUpdated.toFixed(0)), "18"
+      );
+    }),
+    it("Settle an ongoing bid before end time", async () => {
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: owner,
+      })
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now + 10 * 60000;
+      await this.auction.createBidding(
+        randomTokenURI,
+        ONE_THOUSAND_TOKENS,
+        ONE_TOKENS,
+        startTime.toFixed(0),
+        endTime.toFixed(0), {
+          from: owner,
+        }
+      )
+      await expectRevert(
+        this.auction.settleBiddingSession(randomTokenURI, {
+          from: owner,
+        }), "15")
+    }),
+    it("Admin settle bid", async () => {
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: owner,
+      })
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now + 10 * 60000;
+      await this.auction.createBidding(
+        randomTokenURI,
+        ONE_THOUSAND_TOKENS,
+        ONE_TOKENS,
+        startTime.toFixed(0),
+        endTime.toFixed(0), {
+          from: owner,
+        }
+      )
+      await this.token.approve(this.auction.address, ONE_THOUSAND_TOKENS, {
+        from: bidder,
+      })
+      await this.auction.bid(randomTokenURI, ONE_THOUSAND_TOKENS, {
+        from: bidder,
+      })
+
+      await time.increaseTo(new BN(endTime + 100));
+      expect(
+        await this.auction.settleBiddingSession(randomTokenURI, {
+          from: admin,
+        })
+      )
+    }),
+    it("Bidder settle bid", async () => {
+      await this.auction.createNFT(randomTokenURI, randomTokenURI, {
+        from: owner,
+      })
+      let now = await time.latest()
+      let startTime = now;
+      let endTime = now + 10 * 60000;
+      await this.auction.createBidding(
+        randomTokenURI,
+        ONE_THOUSAND_TOKENS,
+        ONE_TOKENS,
+        startTime.toFixed(0),
+        endTime.toFixed(0), {
+          from: owner,
+        }
+      )
+      await this.token.approve(this.auction.address, ONE_THOUSAND_TOKENS, {
+        from: bidder,
+      })
+      await this.auction.bid(randomTokenURI, ONE_THOUSAND_TOKENS, {
+        from: bidder,
+      })
+
+      await time.increaseTo(new BN(endTime + 100));
+      await expectRevert(
+        this.auction.settleBiddingSession(randomTokenURI, {
+          from: bidder,
+        }), "6"
+      )
     })
   })
 
@@ -147,9 +361,10 @@ contract("DeciblingAuction", (accounts) => {
       await this.auction.createNFT(randomTokenURI, randomTokenURI, {
         from: artist,
       })
-      let startTime = Date.now() / 1e3;
-      let endTime1 = (Date.now() + 100 * 60000) / 1e3;
-      let endTime2 = (Date.now() + 10 * 60000) / 1e3;
+      let now = await time.latest()
+      let startTime = now;
+      let endTime1 = now + 100 * 60000;
+      let endTime2 = now + 10 * 60000;
       await this.auction.createBidding(
         randomTokenURI,
         ONE_THOUSAND_TOKENS,
