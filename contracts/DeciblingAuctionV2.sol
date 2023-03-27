@@ -3,27 +3,26 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "./DeciblingNFT.sol";
 
-contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
-    using SafeMath for uint256;
-
+contract DeciblingAuctionV2 is
+    Initializable,
+    ReentrancyGuardUpgradeable,
+    OwnableUpgradeable,
+    UUPSUpgradeable
+{
     IERC20 private token;
     DeciblingNFT private nftContract;
 
-    uint256 public firstSaleFee = 125;
-    uint256 public secondSaleFee = 100;
+    // 10000 == 100%
+    uint256 public firstSaleFee = 1250;
+    uint256 public secondSaleFee = 1000;
 
-    address payable private platformFeeRecipient;
-
-    enum AudioStatus {
-        NOTMINTED,
-        MINTED,
-        BIDDING
-    }
+    address private platformFeeRecipient;
 
     struct TopBid {
         address user;
@@ -40,57 +39,53 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
         bool resulted;
     }
 
-    struct AudioAuctionInfo {
+    struct NftAuctionInfo {
         uint256 price;
         uint256 saleCount;
-        AudioStatus status;
+        bool isBidding;
     }
 
-    mapping(string => AudioAuctionInfo) public listNFT;
-    // mapping(string => uint256) public tokenIdMapping;
+    mapping(uint256 => NftAuctionInfo) public nftAuctionInfos;
     mapping(uint256 => Auction) public auctions;
     mapping(uint256 => TopBid) public topBids;
 
+    event UpdateNftAuctionInfo(NftAuctionInfo nftAuctionInfo);
     event UpdatePlatformFees(uint256 firstSaleFee, uint256 secondSaleFee);
-    event UpdatePlatformFeeRecipient(address payable platformFeeRecipient);
+    event UpdatePlatformFeeRecipient(address platformFeeRecipient);
     event CreateBid(
-        string uri,
+        uint256 itemId,
         uint256 startPrice,
         uint256 increment,
         uint256 startTime,
         uint256 endTime
     );
-    event BidPlaced(string uri, address user, uint256 amount);
+    event BidPlaced(uint256 itemId, address user, uint256 amount);
     event SettleBid(
-        string uri,
+        uint256 itemId,
         address oldowner,
         address newowner,
         uint256 totalPrice,
         uint256 platformValue,
         uint256 saleCount
     );
-    event UpdateBidEndTime(string uri, uint256 endtime);
+    event UpdateBidEndTime(uint256 itemId, uint256 endtime);
 
-    // Modifier to check if the caller is the nft contract
-    modifier onlyNftContract() {
-        require(
-            msg.sender == address(nftContract),
-            "Caller is not nft contract"
-        );
-        _;
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
     }
 
     /**
-     @notice Constructor for the DeciblingAuctionV2 contract
+     @notice Initialize for the DeciblingAuctionV2 contract
      @param _nftContractAddress address The DeciblingNFT contract address
      @param _tokenAddress address The ERC20 token contract address
      @param _platformFeeRecipient address payable The recipient for the platform fees
      */
-    constructor(
+    function initialize(
         address _nftContractAddress,
         address _tokenAddress,
-        address payable _platformFeeRecipient
-    ) {
+        address _platformFeeRecipient
+    ) public initializer {
         require(
             _nftContractAddress != address(0) &&
                 _tokenAddress != address(0) &&
@@ -100,50 +95,44 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
         nftContract = DeciblingNFT(_nftContractAddress);
         token = IERC20(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
+
+        __Ownable_init();
+        __UUPSUpgradeable_init();
+        __ReentrancyGuard_init();
     }
 
-    /**
-     * @dev Add information of an audio auction to the listNFT mapping.
-     * @param uri The URI of the audio to be added.
-     * Requirements:
-     * - Only the NFT contract can call this function.
-     */
-    function addAudioAuctionInfo(string calldata uri) external onlyNftContract {
-        listNFT[uri] = AudioAuctionInfo({
-            price: 0,
-            saleCount: 0,
-            status: AudioStatus.MINTED
-        });
-    }
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
 
     /**
-     @notice Method for creating a bid
-     @param uri string the platform token uri
+     @notice Method for creating a bid. Approve this contract to transfer owner's NFT first.
+     @param itemId uint256 the id of the token
      @param startPrice uint256 the start price
      @param increment uint256 price increment
      @param startTime uint256 the start time
      @param endTime uint256 the end time
      */
     function createBidding(
-        string calldata uri,
+        uint256 itemId,
         uint256 startPrice,
         uint256 increment,
         uint256 startTime,
         uint256 endTime
     ) external {
-        uint256 itemId = nftContract.getTokenIdByUri(uri);
-        address currentNftOwner = nftContract.getAudioInfoOwner(uri);
-        require(itemId > 0, "26");
-        AudioAuctionInfo storage currentNFT = listNFT[uri];
-        require(currentNftOwner == msg.sender, "6");
+        address currentNftOwner = nftContract.ownerOf(itemId);
+        require(
+            currentNftOwner == msg.sender && currentNftOwner != address(0),
+            "6"
+        );
         require(startTime < endTime, "18");
         require(endTime > _getNow(), "7");
-        require(currentNFT.status == AudioStatus.MINTED, "8"); // TODO Check if needed
         require(increment > 0, "22");
         require(endTime >= startTime + 300, "24"); // end time must be after at least 5 mins
 
-        nftContract.approve(owner(), itemId);
-
+        NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
+        require(currentNFT.isBidding == false, "8"); // Check is not bidding
+        
         auctions[itemId] = Auction({
             winner: address(0),
             startPrice: startPrice,
@@ -153,26 +142,23 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
             resulted: false
         });
 
-        currentNFT.status = AudioStatus.BIDDING;
+        currentNFT.isBidding = true;
 
-        emit CreateBid(uri, startPrice, increment, startTime, endTime);
+        emit UpdateNftAuctionInfo(currentNFT);
+        emit CreateBid(itemId, startPrice, increment, startTime, endTime);
     }
 
     /**
-     @notice Method for placing a bid
-     @param uri string the platform token uri
+     @notice Method for placing a bid. Approve this contract to use bidder's ERC20 first.
+     @param itemId uint256 the id of the token
      @param _amount uint256 the amount to bid
      */
-    function bid(
-        string memory uri,
-        uint256 _amount
-    ) public payable nonReentrant {
-        uint256 itemId = nftContract.getTokenIdByUri(uri);
-        address currentNftOwner = nftContract.getAudioInfoOwner(uri);
-        require(itemId > 0, "26");
-        AudioAuctionInfo storage currentNFT = listNFT[uri];
+    function bid(uint256 itemId, uint256 _amount) public nonReentrant {
+        address currentNftOwner = nftContract.ownerOf(itemId);
         require(currentNftOwner != msg.sender, "25");
-        require(currentNFT.status == AudioStatus.BIDDING, "8");
+
+        NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
+        require(currentNFT.isBidding == true, "8");
 
         Auction storage auction = auctions[itemId];
         require(
@@ -186,32 +172,36 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
         uint256 lastPrice = topBid.price;
         if (topBidUser == address(0)) {
             if (_amount < lastPrice) revert("13");
+            // assign top bidder and bid time
+            topBids[itemId] = TopBid({
+                user: msg.sender,
+                price: _amount,
+                timestamp: _getNow()
+            });
         } else {
             if (_amount < lastPrice + auction.increment) revert("13");
+            // assign top bidder and bid time
+            topBids[itemId] = TopBid({
+                user: msg.sender,
+                price: _amount,
+                timestamp: _getNow()
+            });
             require(token.transfer(topBidUser, lastPrice), "26");
         }
 
-        // assign top bidder and bid time // TODO: Possible reentrancy vulnerabilities. Avoid state changes after transfer.
-        topBids[itemId] = TopBid({
-            user: msg.sender,
-            price: _amount,
-            timestamp: _getNow()
-        });
-        emit BidPlaced(uri, msg.sender, _amount);
+        emit BidPlaced(itemId, msg.sender, _amount);
     }
 
     /**
     @notice Method for settling a bid
-    @param uri string the platform token uri
+    @param itemId uint256 the id of the token
     */
-    function settleBid(string calldata uri) external nonReentrant {
-        uint256 itemId = nftContract.getTokenIdByUri(uri);
-        address currentNftOwner = nftContract.getAudioInfoOwner(uri);
+    function settleBid(uint256 itemId) external nonReentrant {
+        address currentNftOwner = nftContract.ownerOf(itemId);
+        require(currentNftOwner == msg.sender || owner() == msg.sender, "6");
 
-        require(itemId > 0, "26");
-
-        AudioAuctionInfo storage currentNFT = listNFT[uri];
-        require(currentNFT.status == AudioStatus.BIDDING, "8");
+        NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
+        require(currentNFT.isBidding == true, "8");
 
         Auction storage auction = auctions[itemId];
         require(auction.endTime < _getNow(), "12");
@@ -227,23 +217,23 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
 
         require(token.transfer(platformFeeRecipient, platformValue), "26");
         require(
-            token.transfer(currentNftOwner, topBid.price.sub(platformValue)),
+            token.transfer(currentNftOwner, topBid.price - platformValue),
             "26"
         );
 
         nftContract.transferFrom(currentNftOwner, topBid.user, itemId);
 
         address oldOwner = currentNftOwner;
-        nftContract.updateAudioInfoOwner(uri, topBid.user);
-        // currentNFT.owner = topBid.user;
+
         currentNFT.price = topBid.price;
         currentNFT.saleCount += 1;
-        currentNFT.status = AudioStatus.MINTED;
+        currentNFT.isBidding = false;
 
         auction.resulted = true;
 
+        emit UpdateNftAuctionInfo(currentNFT);
         emit SettleBid(
-            uri,
+            itemId,
             oldOwner,
             topBid.user,
             topBid.price,
@@ -254,19 +244,15 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
 
     /**
     @notice Method for updating bid end time
-    @param uri string the platform token uri
+    @param itemId uint256 the id of the token
     @param newEndTime uint256 the new end time
     */
-    function updateBidEndTime(
-        string calldata uri,
-        uint256 newEndTime
-    ) external {
-        uint256 itemId = nftContract.getTokenIdByUri(uri);
-        address currentNftOwner = nftContract.getAudioInfoOwner(uri);
+    function updateBidEndTime(uint256 itemId, uint256 newEndTime) external {
+        address currentNftOwner = nftContract.ownerOf(itemId);
+        require(currentNftOwner == msg.sender, "25");
 
-        require(itemId > 0, "26");
-        // AudioAuctionInfo storage currentNFT = listNFT[uri];
-        require(currentNftOwner == msg.sender, "6");
+        NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
+        require(currentNFT.isBidding == true, "8");
 
         Auction storage auction = auctions[itemId];
         require(auction.endTime > _getNow(), "7");
@@ -274,7 +260,7 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
 
         auction.endTime = newEndTime;
 
-        emit UpdateBidEndTime(uri, newEndTime);
+        emit UpdateBidEndTime(itemId, newEndTime);
     }
 
     /**
@@ -287,7 +273,7 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
         uint256 saleCount
     ) internal view returns (uint256) {
         uint256 platformFees = saleCount == 0 ? firstSaleFee : secondSaleFee;
-        return price.mul(platformFees).div(1000);
+        return (price * platformFees) / 100;
     }
 
     /**
@@ -314,10 +300,10 @@ contract DeciblingAuctionV2 is ReentrancyGuard, Ownable {
 
     /**
      @notice Method for updating the platform fee recipient
-     @param _platformFeeRecipient address payable the new platform fee recipient
+     @param _platformFeeRecipient address the new platform fee recipient
      */
     function updatePlatformFeeRecipient(
-        address payable _platformFeeRecipient
+        address _platformFeeRecipient
     ) external onlyOwner {
         require(_platformFeeRecipient != address(0), "Invalid address");
         platformFeeRecipient = _platformFeeRecipient;

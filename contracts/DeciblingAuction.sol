@@ -63,13 +63,32 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
     event UpdatePlatformFees(uint256 firstSaleFee, uint256 secondSaleFee);
     event UpdatePlatformFeeRecipient(address payable platformFeeRecipient);
     event CreateNFT(string uri, uint256 index);
-    event CreateBid(string uri, uint256 startPrice, uint256 increment, uint256 startTime, uint256 endTime);
+    event CreateBid(
+        string uri,
+        uint256 startPrice,
+        uint256 increment,
+        uint256 startTime,
+        uint256 endTime
+    );
     event BidPlaced(string uri, address user, uint256 amount);
-    event SettleBid(string uri, address oldowner, address newowner, uint256 totalPrice, uint256 platformValue, uint256 saleCount);
+    event SettleBid(
+        string uri,
+        address oldowner,
+        address newowner,
+        uint256 totalPrice,
+        uint256 platformValue,
+        uint256 saleCount
+    );
     event UpdateBidEndTime(string uri, uint256 endtime);
 
-    constructor(address _tokenAddress, address payable _platformFeeRecipient) ERC721("Decibling", "dB") {
-        require(_tokenAddress != address(0) && _platformFeeRecipient != address(0), "34");
+    constructor(
+        address _tokenAddress,
+        address payable _platformFeeRecipient
+    ) ERC721("Decibling", "dB") {
+        require(
+            _tokenAddress != address(0) && _platformFeeRecipient != address(0),
+            "34"
+        );
         token = IERC20(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
     }
@@ -79,10 +98,7 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         uri : string of resource
         name : internal id
     */
-    function createNFT(
-        string calldata uri,
-        string calldata name
-    ) external {
+    function createNFT(string calldata uri, string calldata name) external {
         bytes memory idTest = bytes(uri); // Uses memory
         require(idTest.length != 0, "27");
         bytes memory nameTest = bytes(name); // Uses memory
@@ -147,29 +163,35 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
     }
 
     /**
-     @notice Method for place a bid
+     @notice Method for place a bid.
      @param uri string the platform token uri
      @param _amount uint256 the amount to bid
      */
-    function bid(string memory uri, uint256 _amount) public payable nonReentrant {
+    function bid(
+        string memory uri,
+        uint256 _amount
+    ) public payable nonReentrant {
         AudioInfo storage currentNFT = listNFT[uri];
         uint256 itemId = tokenIdMapping[uri];
 
         require(currentNFT.owner != msg.sender, "25");
         require(tokenIdMapping[uri] > 0, "26");
         require(currentNFT.status == AudioStatus.BIDDING, "8");
-        
+
         Auction storage auction = auctions[itemId];
-        require(auction.startTime <= _getNow() && _getNow() <= auction.endTime, "12");
+        require(
+            auction.startTime <= _getNow() && _getNow() <= auction.endTime,
+            "12"
+        );
         require(token.transferFrom(msg.sender, address(this), _amount), "26");
 
         TopBid storage topBid = topBids[itemId];
         address topBidUser = topBid.user;
         uint256 lastPrice = topBid.price;
         if (topBidUser == address(0)) {
-            if (_amount < lastPrice) revert ("13");
+            if (_amount < lastPrice) revert("13");
         } else {
-            if (_amount < lastPrice + auction.increment) revert ("13");
+            if (_amount < lastPrice + auction.increment) revert("13");
             require(token.transfer(topBidUser, lastPrice), "26");
         }
 
@@ -185,10 +207,12 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
      @notice Method for settle a bid, or cancel if no winner
      @param uri string the platform token uri
      */
-    function settleBiddingSession(string memory uri) public payable nonReentrant {
+    function settleBiddingSession(
+        string memory uri
+    ) public payable nonReentrant {
         AudioInfo storage currentNFT = listNFT[uri];
         uint256 itemId = tokenIdMapping[uri];
-        
+
         require(currentNFT.owner == msg.sender || owner() == msg.sender, "6");
         require(tokenIdMapping[uri] > 0, "26");
         require(currentNFT.status == AudioStatus.BIDDING, "8");
@@ -197,7 +221,10 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         Auction storage auction = auctions[itemId];
         // Ensure auction not already resulted
         require(!auction.resulted, "27");
-        require(auction.startTime < _getNow() && _getNow() > auction.endTime, "15");
+        require(
+            auction.startTime < _getNow() && _getNow() > auction.endTime,
+            "15"
+        );
 
         // Get info on who the highest bidder is
         TopBid storage topBid = topBids[itemId];
@@ -219,9 +246,9 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         } else {
             platformValue = totalPrice.mul(secondSaleFee).div(1e3);
         }
-        if (platformValue == 0) revert ("20");
+        if (platformValue == 0) revert("20");
         //to seller - old owner
-        require(token.transfer(oldOwner, totalPrice-platformValue), "26");
+        require(token.transfer(oldOwner, totalPrice - platformValue), "26");
         //to platform
         require(token.transfer(platformFeeRecipient, platformValue), "26");
         //to new owner
@@ -232,7 +259,14 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         currentNFT.status = AudioStatus.MINTED;
         auction.winner = winner;
 
-        emit SettleBid(uri, oldOwner, auction.winner, totalPrice, platformValue, currentNFT.saleCount);
+        emit SettleBid(
+            uri,
+            oldOwner,
+            auction.winner,
+            totalPrice,
+            platformValue,
+            currentNFT.saleCount
+        );
     }
 
     /**
@@ -248,7 +282,7 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
     ) external onlyOwner {
         AudioInfo storage currentNFT = listNFT[uri];
         uint256 itemId = tokenIdMapping[uri];
-        
+
         require(currentNFT.owner == msg.sender || owner() == msg.sender, "6");
         require(tokenIdMapping[uri] > 0, "26");
         require(currentNFT.status == AudioStatus.BIDDING, "8");
@@ -260,19 +294,12 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
         require(_getNow() < auction.endTime, "30");
 
         require(auction.endTime > 0, "31");
-        require(
-            auction.startTime < endtime,
-            "18"
-        );
-        require(
-            endtime > _getNow() + 300,
-            "33"
-        );
+        require(auction.startTime < endtime, "18");
+        require(endtime > _getNow() + 300, "33");
 
         auction.endTime = endtime;
         emit UpdateBidEndTime(uri, endtime);
     }
-
 
     function _getNow() internal view virtual returns (uint256) {
         return block.timestamp;
@@ -284,7 +311,10 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
      @param _firstSaleFee uint256 the platform first sale fee to set
      @param _secondSaleFee uint256 the platform second sale fee to set
      */
-    function updatePlatformFees(uint256 _firstSaleFee, uint256 _secondSaleFee) external onlyOwner {
+    function updatePlatformFees(
+        uint256 _firstSaleFee,
+        uint256 _secondSaleFee
+    ) external onlyOwner {
         firstSaleFee = _firstSaleFee;
         secondSaleFee = _secondSaleFee;
         emit UpdatePlatformFees(_firstSaleFee, _secondSaleFee);
@@ -295,10 +325,9 @@ contract DeciblingAuction is ERC721, Ownable, ReentrancyGuard {
      @dev Only admin
      @param _platformFeeRecipient payable address the address to sends the funds to
      */
-    function updatePlatformFeeRecipient(address payable _platformFeeRecipient)
-        external
-        onlyOwner
-    {
+    function updatePlatformFeeRecipient(
+        address payable _platformFeeRecipient
+    ) external onlyOwner {
         require(_platformFeeRecipient != address(0), "21");
 
         platformFeeRecipient = _platformFeeRecipient;
