@@ -37,14 +37,16 @@ describe("DeciblingAuctionV2", function () {
     });
 
     describe("createBidding", function () {
-        let itemId = 1;
+        let itemId = 0;
         let startPrice = BigNumber.from("1000000000000000000");
         let increment = BigNumber.from("100000000000000000");
         let startTime = Math.floor(Date.now() / 1000) + 300;
         let endTime = startTime + 3600;
 
         beforeEach(async () => {
-            await deciblingNFT.connect(owner).mint(owner.address);
+            const name = "Test Audio";
+            const uri = "https://example.com/testaudio";
+            await deciblingNFT.connect(owner).mint(name, uri);
         });
 
         it("should create a new bid", async () => {
@@ -61,7 +63,7 @@ describe("DeciblingAuctionV2", function () {
     });
 
     describe("bid", function () {
-        let itemId = 1;
+        let itemId = 0;
         let startPrice = BigNumber.from("1000000000000000000");
         let increment = BigNumber.from("100000000000000000");
         let startTime = Math.floor(Date.now() / 1000) + 300;
@@ -69,12 +71,19 @@ describe("DeciblingAuctionV2", function () {
         let bidAmount = BigNumber.from("1200000000000000000");
 
         beforeEach(async () => {
-            await deciblingNFT.connect(owner).mint(owner.address);
+            const name = "Test Audio";
+            const uri = "https://example.com/testaudio";
+            await deciblingNFT.connect(owner).mint(name, uri);
             await deciblingNFT.connect(owner).approve(deciblingAuctionV2.address, itemId);
+            await token.connect(owner).transfer(bidder1.address, bidAmount);
             await deciblingAuctionV2.connect(owner).createBidding(itemId, startPrice, increment, startTime, endTime);
         });
 
         it("should place a bid successfully", async () => {
+            // fast forward time to start of auction
+            await ethers.provider.send("evm_setNextBlockTimestamp", [startTime + 1]);
+            await ethers.provider.send("evm_mine");
+
             await token.connect(bidder1).approve(deciblingAuctionV2.address, bidAmount);
             await deciblingAuctionV2.connect(bidder1).bid(itemId, bidAmount);
 
@@ -85,18 +94,23 @@ describe("DeciblingAuctionV2", function () {
     });
 
     describe("settleBid", function () {
-        let itemId = 1;
+        let itemId = 0;
         let startPrice = BigNumber.from("1000000000000000000");
         let increment = BigNumber.from("100000000000000000");
-        let startTime = Math.floor(Date.now() / 1000) + 300;
+        let startTime = Math.floor(Date.now() / 1000) + 500;
         let endTime = startTime + 3600;
         let bidAmount = BigNumber.from("1200000000000000000");
 
         beforeEach(async () => {
-            await deciblingNFT.connect(owner).mint(owner.address);
+            const name = "Test Audio";
+            const uri = "https://example.com/testaudio";
+            await deciblingNFT.connect(owner).mint(name, uri);
             await deciblingNFT.connect(owner).approve(deciblingAuctionV2.address, itemId);
+            await token.connect(owner).transfer(bidder1.address, bidAmount);
             await deciblingAuctionV2.connect(owner).createBidding(itemId, startPrice, increment, startTime, endTime);
-
+            // fast forward time to start of auction
+            await ethers.provider.send("evm_setNextBlockTimestamp", [startTime + 1]);
+            await ethers.provider.send("evm_mine");
             await token.connect(bidder1).approve(deciblingAuctionV2.address, bidAmount);
             await deciblingAuctionV2.connect(bidder1).bid(itemId, bidAmount);
         });

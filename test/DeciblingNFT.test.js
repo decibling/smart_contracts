@@ -25,7 +25,7 @@ describe.only("DeciblingNFT", function () {
 
             const tokenId = 0;
             expect(await deciblingNFT.ownerOf(tokenId)).to.equal(owner.address);
-            expect((await deciblingNFT.audioInfos(tokenId)).name).to.equal(name);
+            expect(await deciblingNFT.audioInfos(tokenId)).to.equal(name);
             expect(await deciblingNFT.tokenURI(tokenId)).to.equal(uri);
         });
 

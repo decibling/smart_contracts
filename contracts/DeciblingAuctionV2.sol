@@ -19,8 +19,8 @@ contract DeciblingAuctionV2 is
     DeciblingNFT private nftContract;
 
     // 10000 == 100%
-    uint256 public firstSaleFee = 1250;
-    uint256 public secondSaleFee = 1000;
+    uint256 public firstSaleFee;
+    uint256 public secondSaleFee;
 
     address private platformFeeRecipient;
 
@@ -95,7 +95,8 @@ contract DeciblingAuctionV2 is
         nftContract = DeciblingNFT(_nftContractAddress);
         token = IERC20(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
-
+        firstSaleFee = 1250;
+        secondSaleFee = 1000;
         __Ownable_init();
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
@@ -132,7 +133,7 @@ contract DeciblingAuctionV2 is
 
         NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
         require(currentNFT.isBidding == false, "8"); // Check is not bidding
-        
+
         auctions[itemId] = Auction({
             winner: address(0),
             startPrice: startPrice,
@@ -273,7 +274,7 @@ contract DeciblingAuctionV2 is
         uint256 saleCount
     ) internal view returns (uint256) {
         uint256 platformFees = saleCount == 0 ? firstSaleFee : secondSaleFee;
-        return (price * platformFees) / 100;
+        return (price * platformFees) / 10000;
     }
 
     /**
