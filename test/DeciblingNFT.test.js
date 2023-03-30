@@ -1,7 +1,7 @@
 const { ethers, upgrades } = require("hardhat");
 const { expect } = require("chai");
 
-describe.only("DeciblingNFT", function () {
+describe("DeciblingNFT", function () {
     let DeciblingNFT, deciblingNFT, owner, addr1;
 
     beforeEach(async function () {
@@ -19,9 +19,10 @@ describe.only("DeciblingNFT", function () {
 
     describe("Minting", function () {
         it("Should mint a new NFT with the correct name and URI", async function () {
+            const proof = []
             const name = "Test Audio";
             const uri = "https://example.com/testaudio";
-            await deciblingNFT.connect(owner).mint(name, uri);
+            await deciblingNFT.connect(owner).mint(proof, name, uri);
 
             const tokenId = 0;
             expect(await deciblingNFT.ownerOf(tokenId)).to.equal(owner.address);
@@ -30,9 +31,10 @@ describe.only("DeciblingNFT", function () {
         });
 
         it("Should fail to mint a new NFT with an empty name", async function () {
+            const proof = []
             const name = "";
             const uri = "https://example.com/testaudio";
-            await expect(deciblingNFT.connect(owner).mint(name, uri)).to.be.revertedWith("28");
+            await expect(deciblingNFT.connect(owner).mint(proof, name, uri)).to.be.revertedWith("28");
         });
     });
 

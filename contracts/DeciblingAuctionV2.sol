@@ -27,7 +27,6 @@ contract DeciblingAuctionV2 is
     struct TopBid {
         address user;
         uint256 price;
-        uint256 timestamp;
     }
 
     struct Auction {
@@ -174,20 +173,12 @@ contract DeciblingAuctionV2 is
         if (topBidUser == address(0)) {
             if (_amount < lastPrice) revert("13");
             // assign top bidder and bid time
-            topBids[itemId] = TopBid({
-                user: msg.sender,
-                price: _amount,
-                timestamp: _getNow()
-            });
+            topBids[itemId] = TopBid({user: msg.sender, price: _amount});
         } else {
             if (_amount < lastPrice + auction.increment) revert("13");
             // assign top bidder and bid time
-            topBids[itemId] = TopBid({
-                user: msg.sender,
-                price: _amount,
-                timestamp: _getNow()
-            });
-            require(token.transfer(topBidUser, lastPrice), "26");
+            topBids[itemId] = TopBid({user: msg.sender, price: _amount});
+            require(token.transfer(topBidUser, lastPrice), "26"); // TODO check
         }
 
         emit BidPlaced(itemId, msg.sender, _amount);
@@ -211,18 +202,23 @@ contract DeciblingAuctionV2 is
         TopBid storage topBid = topBids[itemId];
         require(topBid.user != address(0), "20");
 
+        address topBidUser = topBid.user;
+        uint256 topBidPrice = topBid.price;
+
+        // Reset TopBid data
+        topBids[itemId] = TopBid({user: address(0), price: 0});
+
         uint256 platformValue = _calculatePlatformFees(
-            topBid.price,
+            topBidPrice,
             currentNFT.saleCount
         );
-
         require(token.transfer(platformFeeRecipient, platformValue), "26");
         require(
-            token.transfer(currentNftOwner, topBid.price - platformValue),
+            token.transfer(currentNftOwner, topBidPrice - platformValue),
             "26"
         );
 
-        nftContract.transferFrom(currentNftOwner, topBid.user, itemId);
+        nftContract.transferFrom(currentNftOwner, topBidUser, itemId);
 
         address oldOwner = currentNftOwner;
 
