@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
+import "hardhat/console.sol";
 
 /**
  * @title DeciblingNFT
@@ -71,7 +72,7 @@ contract DeciblingNFT is
     ) external {
         // Validate merkle proof || skip if Merkle Root = 0
         if (_merkleRoot != bytes32(0)) {
-            bytes32 merkleLeaf = keccak256(abi.encodePacked(_msgSender()));
+            bytes32 merkleLeaf = keccak256(bytes.concat(keccak256(abi.encode(_msgSender()))));
             require(
                 MerkleProofUpgradeable.verify(proof, _merkleRoot, merkleLeaf),
                 "Invalid proof"
