@@ -104,7 +104,7 @@ describe("DeciblingNFT", function () {
     // });
 });
 
-describe.only("DeciblingNFT with Merkle Proof", function () {
+describe("DeciblingNFT with Merkle Proof", function () {
     let DeciblingNFT, deciblingNFT, owner, addr1, addr2;
     let merkleTree, merkleRoot, validProof, invalidProof;
 
