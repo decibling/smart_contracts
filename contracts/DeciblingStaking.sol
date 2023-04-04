@@ -4,22 +4,24 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
 
 contract DeciblingStaking is Initializable, OwnableUpgradeable  {
     using SafeMathUpgradeable for uint256;
     IERC20Upgradeable public froyToken;
     
-    uint256 public platformFee = 5;
+    uint256 public platformFee;
     /// @notice where to send platform fee funds to
     address payable public platformFeeRecipient;
-
+    bytes32 public _merkleRoot;
+    
     constructor() {
     }
     function initialize(address _tokenAddress, address payable _platformFeeRecipient) public initializer {
         require(_tokenAddress != address(0) && _platformFeeRecipient != address(0), "Constructor wallets cannot be zero");
         froyToken = IERC20Upgradeable(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
-
+        platformFee = 5;
         _newPool("decibling_pool", 2, 0);
     }
 
@@ -107,7 +109,18 @@ contract DeciblingStaking is Initializable, OwnableUpgradeable  {
         emit UpdatePool(id, _r, _r_to_owner, pools[id].base, pools[id].baseToOwner);
     }
 
-    function stake(string memory id, uint256 _amount) external {
+    function stake(
+        string memory id, 
+        uint256 _amount,
+        bytes32[] calldata proof
+    ) external {
+        if (_merkleRoot != bytes32(0)) {
+            bytes32 merkleLeaf = keccak256(abi.encodePacked(id));
+            require(
+                MerkleProofUpgradeable.verify(proof, _merkleRoot, merkleLeaf),
+                "Invalid proof"
+            );
+        }
         bytes memory idTest = bytes(id); // Uses memory
         require(idTest.length != 0, "invalid pool id");
         require(_amount > 0, "amount must be larger than zero");
@@ -138,6 +151,13 @@ contract DeciblingStaking is Initializable, OwnableUpgradeable  {
         emit Unstake(user, currentTime, id, unstakeAmount);
     }
 
+    /**
+     * @dev Sets the Merkle root for minting authorization.
+     * @param newMerkleRoot The new Merkle root to be set
+     */
+    function setMerkleRoot(bytes32 newMerkleRoot) external onlyOwner {
+        _merkleRoot = newMerkleRoot;
+    }
     function renewUnclaimAmount(
         address _user,
         uint256 currentTime,
