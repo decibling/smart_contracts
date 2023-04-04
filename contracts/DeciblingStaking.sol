@@ -1,21 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-
-contract DeciblingStaking is Ownable  {
-    using SafeMath for uint256;
-    IERC20 public froyToken;
+contract DeciblingStaking is Initializable, OwnableUpgradeable  {
+    using SafeMathUpgradeable for uint256;
+    IERC20Upgradeable public froyToken;
     
     uint256 public platformFee = 5;
     /// @notice where to send platform fee funds to
     address payable public platformFeeRecipient;
 
-    constructor(address _tokenAddress, address payable _platformFeeRecipient) {
+    constructor() {
+    }
+    function initialize(address _tokenAddress, address payable _platformFeeRecipient) public initializer {
         require(_tokenAddress != address(0) && _platformFeeRecipient != address(0), "Constructor wallets cannot be zero");
-        froyToken = IERC20(_tokenAddress);
+        froyToken = IERC20Upgradeable(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
 
         _newPool("decibling_pool", 2, 0);
@@ -41,6 +43,7 @@ contract DeciblingStaking is Ownable  {
     }
 
     mapping(string => mapping(address => StakeInfo)) public stakes;
+    
     mapping(string => PoolInfo) public pools;
     
     event Stake(address _user, uint256 time, uint256 amount, string pool);
@@ -61,7 +64,7 @@ contract DeciblingStaking is Ownable  {
         _newPool(_id, _r, _r_to_owner);
     }
 
-    function _newPool(string memory _id, uint256 _r, uint256 _r_to_owner) internal {
+    function _newPool(string memory _id, uint256 _r, uint256 _r_to_owner) internal virtual{
         bytes memory idTest = bytes(_id); // Uses memory
         require(idTest.length != 0, "invalid pool id");
         pools[_id].owner = msg.sender;
@@ -93,7 +96,7 @@ contract DeciblingStaking is Ownable  {
     }
     
     function _updatePool(string memory id, uint256 _r, uint256 _r_to_owner)
-        internal
+        internal virtual
     {
         bytes memory idTest = bytes(id); // Uses memory
         require(idTest.length != 0, "invalid pool id");
