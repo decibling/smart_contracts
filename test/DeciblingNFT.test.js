@@ -61,23 +61,14 @@ describe("DeciblingNFT", function () {
     });
 
     describe("Minting from owner", function () {
-        it("Should mint a new NFT with the correct name and URI", async function () {
+        it("Should mint a new NFT with the correct URI", async function () {
             const proof = []
-            const name = "Test Audio";
             const uri = "https://example.com/testaudio";
-            await deciblingNFT.connect(owner).mint(proof, name, uri);
+            await deciblingNFT.connect(owner).mint(proof, uri);
 
             const tokenId = 0;
             expect(await deciblingNFT.ownerOf(tokenId)).to.equal(owner.address);
-            expect(await deciblingNFT.audioInfos(tokenId)).to.equal(name);
             expect(await deciblingNFT.tokenURI(tokenId)).to.equal(uri);
-        });
-
-        it("Should fail to mint a new NFT with an empty name", async function () {
-            const proof = []
-            const name = "";
-            const uri = "https://example.com/testaudio";
-            await expect(deciblingNFT.connect(owner).mint(proof, name, uri)).to.be.revertedWith("28");
         });
     });
 
@@ -126,25 +117,19 @@ describe("DeciblingNFT with Merkle Proof", function () {
     });
 
     it("Mint with valid proof", async () => {
-        const name = "Valid Audio";
         const uri = "https://ipfs.io/ipfs/VALID_AUDIO";
 
-        await expect(deciblingNFT.connect(addr1).mint(validProof, name, uri))
+        await expect(deciblingNFT.connect(addr1).mint(validProof, uri))
             .to.emit(deciblingNFT, "Minted")
-            .withArgs(name, 0);
-
-        const audioInfo = await deciblingNFT.audioInfos(0);
-        console.log("🚀 ~ file: DeciblingNFT.test.js:137 ~ it ~ audioInfo:", audioInfo)
-        expect(audioInfo).to.equal(name);
+            .withArgs(0);
 
         const tokenURI = await deciblingNFT.tokenURI(0);
         expect(tokenURI).to.equal(uri);
     });
 
     it("Mint with invalid proof", async () => {
-        const name = "Invalid Audio";
         const uri = "https://ipfs.io/ipfs/INVALID_AUDIO";
 
-        await expect(deciblingNFT.connect(addr1).mint(invalidProof, name, uri)).to.be.revertedWith("Invalid proof");
+        await expect(deciblingNFT.connect(addr1).mint(invalidProof, uri)).to.be.revertedWith("Invalid proof");
     });
 });

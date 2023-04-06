@@ -27,18 +27,11 @@ contract DeciblingNFT is
     CountersUpgradeable.Counter private _tokenIdCounter;
     bytes32 public _merkleRoot;
 
-    struct AudioInfo {
-        string name;
-    }
-
-    // Mapping tokenId => AudioInfo
-    mapping(uint256 => AudioInfo) public audioInfos;
-
     // Mapping to store used URI hashes
     mapping(bytes32 => bool) private usedURIHashes;
 
     /// @notice Emitted when an NFT is created
-    event Minted(string name, uint256 tokenId);
+    event Minted(uint256 tokenId);
 
     /**
      * @dev Initializes the contract.
@@ -61,14 +54,9 @@ contract DeciblingNFT is
     /**
      * @dev Mints a new NFT with the given parameters.
      * @param proof Merkle proof that the caller is authorized to mint
-     * @param name Name of the audio file associated with the NFT
      * @param uri URI of the NFT's metadata
      */
-    function mint(
-        bytes32[] calldata proof,
-        string calldata name,
-        string memory uri
-    ) external {
+    function mint(bytes32[] calldata proof, string memory uri) external {
         // Validate merkle proof || skip if Merkle Root = 0
         if (_merkleRoot != bytes32(0)) {
             // bytes32 merkleLeaf = keccak256(bytes.concat(keccak256(abi.encode(_msgSender()))));
@@ -79,9 +67,6 @@ contract DeciblingNFT is
             );
         }
 
-        bytes memory nameBytes = bytes(name);
-        require(nameBytes.length != 0, "28");
-
         // Hash the URI and check if it's unique
         bytes32 uriHash = keccak256(abi.encodePacked(uri));
         require(!usedURIHashes[uriHash], "URI already exists");
@@ -90,12 +75,11 @@ contract DeciblingNFT is
         _tokenIdCounter.increment();
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, uri);
-        audioInfos[tokenId] = AudioInfo({name: name});
 
         // Mark URI hash as used
         usedURIHashes[uriHash] = true;
 
-        emit Minted(name, tokenId);
+        emit Minted(tokenId);
     }
 
     /**
