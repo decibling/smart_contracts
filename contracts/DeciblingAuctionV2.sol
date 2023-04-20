@@ -132,6 +132,7 @@ contract DeciblingAuctionV2 is
 
         NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
         require(currentNFT.isBidding == false, "8"); // Check is not bidding
+        nftContract.lockNFT(itemId); // Lock item to avoid NFT owner transfer during auction
 
         auctions[itemId] = Auction({
             winner: address(0),
@@ -218,6 +219,7 @@ contract DeciblingAuctionV2 is
             "26"
         );
 
+        nftContract.unlockNFT(itemId); // Unlock item to transfer to top bidder
         nftContract.transferFrom(currentNftOwner, topBidUser, itemId);
 
         address oldOwner = currentNftOwner;

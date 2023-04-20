@@ -25,13 +25,25 @@ contract DeciblingNFT is
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
     CountersUpgradeable.Counter private _tokenIdCounter;
+
+    // The Merkle root of a Merkle tree, used to verify the whitelist for minting permissions
     bytes32 public _merkleRoot;
+
+    // Lock mechanism
+    mapping(uint256 => bool) public lockedNFTs;
+    address public auctionContractAddress;
 
     // Mapping to store used URI hashes
     mapping(bytes32 => bool) private usedURIHashes;
 
     /// @notice Emitted when an NFT is created
     event Minted(uint256 tokenId);
+
+    /// @notice Emitted when an NFT is locked
+    event Locked(uint256 tokenId);
+
+    /// @notice Emitted when an NFT is unlocked
+    event Unlocked(uint256 tokenId);
 
     /**
      * @dev Initializes the contract.
@@ -44,11 +56,76 @@ contract DeciblingNFT is
     }
 
     /**
+     * @dev Locks the specified NFT to prevent transfers during an ongoing auction.
+     * This function can only be called by the auction contract.
+     * @param tokenId The unique identifier of the NFT to be locked.
+     */
+    function lockNFT(uint256 tokenId) external {
+        require(
+            auctionContractAddress == msg.sender,
+            "Only auction contract can lock"
+        );
+        lockedNFTs[tokenId] = true;
+        emit Locked(tokenId);
+    }
+
+    /**
+     * @dev Unlocks the specified NFT after the auction has ended or setted,
+     * allowing transfers to occur again.
+     * This function can only be called by the auction contract.
+     * @param tokenId The unique identifier of the NFT to be unlocked.
+     */
+    function unlockNFT(uint256 tokenId) external {
+        require(
+            auctionContractAddress == msg.sender,
+            "Only auction contract can unlock"
+        );
+        lockedNFTs[tokenId] = false;
+        emit Unlocked(tokenId);
+    }
+
+    // Override the _beforeTokenTransfer function from the base ERC721 contract
+    // to add custom logic for transferring tokens in batches.
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        uint256 batchSize
+    ) internal virtual override {
+        // Check if the token is locked due to an ongoing auction
+        require(
+            !lockedNFTs[tokenId],
+            "Not allowed to transfer during auction."
+        );
+
+        // Call the parent implementation of _beforeTokenTransfer
+        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    }
+
+    /**
      * @dev Sets the Merkle root for minting authorization.
      * @param newMerkleRoot The new Merkle root to be set
      */
     function setMerkleRoot(bytes32 newMerkleRoot) external onlyOwner {
         _merkleRoot = newMerkleRoot;
+    }
+
+    /**
+     * @dev Set the auction contract address.
+     * @notice This function can only be called by the contract owner.
+     * @param newAuctionContractAddress The new address for the auction contract.
+     */
+    function setAuctionContractAddress(
+        address newAuctionContractAddress
+    ) external onlyOwner {
+        // Ensure the new address is not the zero address
+        require(
+            newAuctionContractAddress != address(0),
+            "New address cannot be zero address."
+        );
+
+        // Update the auction contract address
+        auctionContractAddress = newAuctionContractAddress;
     }
 
     /**
