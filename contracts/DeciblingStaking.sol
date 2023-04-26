@@ -1,167 +1,232 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-interface IDeciblingPoolConfig{
-    struct PoolInfo {
-        address owner;
-        uint256 rToOwner;
-        uint256 r;
-        uint256 base;
-        uint256 baseToOwner;
-    }
 
-    function froyToken() view external returns(address);
-    function pools(string memory) external view returns(
-        address,
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        uint256
-    );
-    function platformFeeRecipient() view external returns(address);
-    function platformFee() view external returns(uint256);
-    function _merkleRoot() view external returns(bytes32);
-    function updateUnclaimAmount(uint256) external;
-}
-contract DeciblingStaking is Initializable, OwnableUpgradeable  {
-    using SafeMathUpgradeable for uint256;   
-    /// @notice where to send platform fee funds to
-    constructor() {
-    }
-    address private configAdr;
-    mapping(string => mapping(address => StakeInfo)) public stakes;
-    function initialize(address _configAdr) public initializer {  
-        configAdr = _configAdr;      
-    }
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "./FroggilyToken.sol";
+
+contract DeciblingStaking is
+    Initializable,
+    OwnableUpgradeable,
+    UUPSUpgradeable
+{
+    FroggilyToken public froyToken;
+    bytes32 public merkleRoot;
 
     struct StakeInfo {
-        uint256 amount;
-        uint256 stakeTime;
-        uint256 unclaimAmount;
-        uint256 unclaimAmountToOwner;
-    }
-
-    struct ClaimInfo {
-        address to;
-        string id;
+        uint256 totalDeposit;
+        uint256 depositTime;
     }
     struct PoolInfo {
         address owner;
-        uint256 rToOwner;
-        uint256 r;
-        uint256 base;
-        uint256 baseToOwner;
-        uint256 unclaimAmount;
+        uint8 rToOwner;
+        uint8 r;
+        bool isDefault;
     }
-    event UpdateUnclaimAmount(address _user, string id, uint256 actualAmount);
-    event Stake(address _user, uint256 amount, string pool);
-    event Unstake(address _user, string pool, uint256 unstakeAmount);
-    event IssueToken(address _user, string pool, uint256 amount, uint256 amountToOwner, uint256 platformValue);
-    function stake(
-        string memory id, 
-        uint256 _amount
-    ) public {
-        bytes memory idTest = bytes(id); // Uses memory
-        require(idTest.length != 0, "invalid pool id");
-        require(_amount > 0, "amount must be larger than zero");
-        (address owner,,,,,) = IDeciblingPoolConfig(configAdr).pools(id);
-        require(owner != address(0), "not an active pool");
-        uint256 currentTime = _getNow();
-        require(IERC20Upgradeable(IDeciblingPoolConfig(configAdr).froyToken()).transferFrom(msg.sender, address(this), _amount));
-        if (stakes[id][msg.sender].stakeTime != 0) {
-            renewUnclaimAmount(msg.sender, currentTime, id);
+
+    mapping(string => mapping(address => StakeInfo)) public stakers;
+    mapping(string => PoolInfo) public pools;
+
+    event NewPool(string id);
+    event UpdatePool(string id, uint8 r, uint8 rToOwner, bool isDefault);
+    event UpdatePoolOwner(string id, address owner);
+    event Stake(string id, address _user, uint256 amount);
+    event Unstake(string id, address _user, uint256 amount);
+
+    modifier validPool(string memory id) {
+        bytes memory idTest = bytes(id);
+        require(
+            idTest.length != 0,
+            "DeciblingStaking: pool length must be > 0"
+        );
+        _;
+    }
+
+    modifier existPool(string memory id) {
+        require(
+            pools[id].owner != address(0),
+            "DeciblingStaking: this pool is not exist"
+        );
+        _;
+    }
+
+    modifier validAmount(uint256 amount) {
+        require(amount > 0, "DeciblingStaking: amount must be > 0");
+        _;
+    }
+
+    modifier onlyPoolOwnerOrAdmin(string memory id) {
+        require(
+            pools[id].owner == msg.sender || owner() == msg.sender,
+            "DeciblingPoolConfig: not pool owner or admin"
+        );
+        _;
+    }
+
+    modifier validProof(bytes32[] calldata proof) {
+        // Validate merkle proof || skip if Merkle Root = 0
+        if (merkleRoot != bytes32(0)) {
+            // bytes32 merkleLeaf = keccak256(bytes.concat(keccak256(abi.encode(_msgSender()))));
+            bytes32 merkleLeaf = keccak256(abi.encodePacked(_msgSender()));
+            require(
+                MerkleProofUpgradeable.verify(proof, merkleRoot, merkleLeaf),
+                "Invalid proof"
+            );
         }
-        stakes[id][msg.sender].stakeTime = currentTime;
-        stakes[id][msg.sender].amount += _amount;
-        emit Stake(msg.sender, _amount, id);
+        _;
     }
 
-    function unstake(string memory id, uint256 unstakeAmount) external {
-        bytes memory idTest = bytes(id); // Uses memory
-        require(idTest.length != 0, "invalid pool id");
-        address user = msg.sender;
-        IDeciblingPoolConfig config =IDeciblingPoolConfig(configAdr);
-        (address owner,,,,,) = config.pools(id);
-        require(owner != address(0), "not an active pool");
-        require(unstakeAmount > 0, "amount must be larger than zero");
-        require(stakes[id][user].amount != 0, "1"); // amount must be smaller than current staked
-        require(unstakeAmount <= stakes[id][user].amount || unstakeAmount == 0, "23");
-        uint256 currentTime = _getNow();
-        renewUnclaimAmount(user, currentTime, id);
-        stakes[id][user].amount = stakes[id][user].amount - unstakeAmount;
-        stakes[id][user].stakeTime = currentTime;
-        require(IERC20Upgradeable(config.froyToken()).transfer(user, unstakeAmount), "");
-        emit Unstake(user, id, unstakeAmount);
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
     }
 
-    function renewUnclaimAmount(
-        address _user,
-        uint256 currentTime,
+    function initialize(address froyAddr) public initializer {
+        froyToken = FroggilyToken(froyAddr);
+
+        __Ownable_init();
+        __UUPSUpgradeable_init();
+    }
+
+    function _authorizeUpgrade(
+        address newImplementation
+    ) internal override onlyOwner {}
+
+    /**
+     * @dev Sets the Merkle root for minting authorization.
+     * @param newMerkleRoot The new Merkle root to be set
+     */
+    function setMerkleRoot(bytes32 newMerkleRoot) external onlyOwner {
+        merkleRoot = newMerkleRoot;
+    }
+
+    function newPool(
+        bytes32[] calldata proof,
         string memory id
-    ) internal {
-        bytes memory idTest = bytes(id); // Uses memory
-        require(idTest.length != 0, "invalid pool id");
-        uint256 stakedSeconds = currentTime - stakes[id][_user].stakeTime;
-        uint256 base = 6341958396;
-        uint256 baseToOwner = 0;
-         (address owner,,,uint256 pbase,uint256 pbaseToOwner,) = IDeciblingPoolConfig(configAdr).pools(id);
-        if (pbase >= 0) {
-            base = pbase;
-        }
-        if (pbaseToOwner >= 0) {
-            baseToOwner = pbaseToOwner;
-        }
-        stakes[id][_user].unclaimAmount += base * stakedSeconds * stakes[id][_user].amount / 1e18;
-        stakes[id][_user].unclaimAmountToOwner += baseToOwner * stakedSeconds * stakes[id][_user].amount / 1e18;
-        emit UpdateUnclaimAmount(_user, id, stakes[id][_user].unclaimAmount);
-    }
-    event ClaimByOwner(address owner, address caller, string pool_id, uint256 amount, uint256 received_amount);
-    function claimPool(string memory poolId) external{
-        IDeciblingPoolConfig config = IDeciblingPoolConfig(configAdr);
-        uint256 platformFee = config.platformFee();
-         (address pOwner,,,,,uint256 pUnclaimToOwner) = config.pools(poolId);
-        require(pOwner == msg.sender || owner() == msg.sender, "");
-        require(pUnclaimToOwner != 0, "");
-        uint256 rewardAmountToOwner = pUnclaimToOwner;
-        uint256 oriClaim = pUnclaimToOwner;
-        uint256 platformValueFromOwner = 0;
-        platformValueFromOwner = rewardAmountToOwner * platformFee / 100;
-        rewardAmountToOwner -= platformValueFromOwner;
-        config.updateUnclaimAmount(0);
-        emit ClaimByOwner(pOwner, msg.sender, poolId,  oriClaim, rewardAmountToOwner);
-    }
-    function issueToken(string memory pool) public {
-        uint256 currentTime = _getNow();
-        IDeciblingPoolConfig config = IDeciblingPoolConfig(configAdr);
-        (address pOwner,,,,,) = config.pools(pool);
-        address user = pOwner;
-        require(pOwner == msg.sender || owner() == msg.sender, "not pool owner or admin");
-        bytes memory idTest = bytes(pool); // Uses memory
-        require (idTest.length == 0);
-        renewUnclaimAmount(user, currentTime, pool);
-        uint256 rewardAmount = stakes[pool][user].unclaimAmount;
-        uint256 rewardAmountToOwner = stakes[pool][user].unclaimAmountToOwner;
-        uint256 platformValue = 0;
-        uint256 platformFee = config.platformFee();
-        if (platformFee > 0) {
-            platformValue = rewardAmount * platformFee / 100;
-            rewardAmount -= platformValue;
-        }
-        IERC20Upgradeable froyToken = IERC20Upgradeable(config.froyToken());
-        stakes[pool][user].unclaimAmount = 0;
-        stakes[pool][user].stakeTime = currentTime;
-        if (rewardAmount > 0) {
-            require(froyToken.transfer(user, rewardAmount));
-        }
-        if (platformValue > 0) {
-            require(froyToken.transfer(config.platformFeeRecipient(), platformValue));
-        }
+    ) external validPool(id) validProof(proof) {
+        require(
+            pools[id].owner == address(0),
+            "DeciblingPoolConfig: pool id exists"
+        );
 
-        emit IssueToken(user, pool, rewardAmount, rewardAmountToOwner, platformValue);
+        _newPool(id);
+    }
+
+    function setDefaultPool() external onlyOwner {
+        string memory pid = "decibling_pool";
+        _newPool(pid);
+        _updatePool(pid, 2, 0, true);
+    }
+
+    function _newPool(string memory _id) internal virtual {
+        pools[_id].owner = msg.sender;
+
+        emit NewPool(_id);
+    }
+
+    function updatePool(
+        bytes32[] calldata proof,
+        string memory id,
+        uint8 _r,
+        uint8 _rToOwner
+    ) external validPool(id) onlyPoolOwnerOrAdmin(id) existPool(id) validProof(proof) {
+        require(
+            _r >= 3 && _r <= 8,
+            "DeciblingPoolConfig: invalid return value"
+        );
+        require(
+            _rToOwner <= 5,
+            "DeciblingPoolConfig: invalid return to owner value"
+        );
+        require(
+            _rToOwner + _r == 8,
+            "DeciblingPoolConfig: total return must be equal 8"
+        );
+
+        _updatePool(id, _r, _rToOwner, false);
+    }
+
+    function _updatePool(
+        string memory _id,
+        uint8 _r,
+        uint8 _rToOwner,
+        bool _isDefault
+    ) internal virtual {
+        pools[_id].r = _r;
+        pools[_id].rToOwner = _rToOwner;
+        pools[_id].isDefault = _isDefault;
+
+        emit UpdatePool(_id, _r, _rToOwner, _isDefault);
+    }
+
+    function updatePoolOwner(
+        bytes32[] calldata proof,
+        string memory id,
+        address poolOwner
+    ) external validPool(id) onlyPoolOwnerOrAdmin(id) existPool(id) validProof(proof) {
+        require(
+            poolOwner != address(0),
+            "DeciblingStaking: not a valid address"
+        );
+
+        _updatePoolOwner(id, poolOwner);
+    }
+
+    function _updatePoolOwner(
+        string memory id,
+        address poolOwner
+    ) internal virtual {
+        pools[id].owner = poolOwner;
+
+        emit UpdatePoolOwner(id, poolOwner);
+    }
+
+    function stake(
+        string memory id,
+        uint256 amount
+    ) external validPool(id) validAmount(amount) existPool(id) {
+        require(
+            froyToken.transferFrom(msg.sender, address(this), amount),
+            "DeciblingStaking: Transfer failed"
+        );
+
+        _stake(id, amount);
+    }
+
+    function _stake(string memory id, uint256 amount) internal virtual {
+        stakers[id][msg.sender].depositTime = _getNow();
+        stakers[id][msg.sender].totalDeposit += amount;
+
+        emit Stake(id, msg.sender, amount);
+    }
+
+    function unstake(
+        string memory id,
+        uint256 amount
+    ) external validPool(id) validAmount(amount) existPool(id) {
+        require(
+            stakers[id][msg.sender].totalDeposit != 0,
+            "Your current stake amount of this pool is 0"
+        );
+        require(
+            amount <= stakers[id][msg.sender].totalDeposit,
+            "The amount must be smaller than your current staked"
+        );
+        require(
+            froyToken.transfer(msg.sender, amount),
+            "DeciblingStaking: Transfer failed"
+        );
+
+        _unstake(id, amount);
+    }
+
+    function _unstake(string memory id, uint256 amount) internal virtual {
+        stakers[id][msg.sender].totalDeposit -= amount;
+        stakers[id][msg.sender].depositTime = _getNow();
+
+        emit Unstake(id, msg.sender, amount);
     }
 
     function _getNow() internal view virtual returns (uint256) {
