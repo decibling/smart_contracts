@@ -13,11 +13,12 @@ const {
 } = require("@nomicfoundation/hardhat-network-helpers");
 
 const {
-  expect
+  expect, assert
 } = require("chai");
 const {
   ZERO_ADDRESS
 } = require("@openzeppelin/test-helpers/src/constants");
+const { BigNumber } = require("ethers");
 
 const DeciblingStaking = artifacts.require("DeciblingStaking");
 const Token = artifacts.require("FroggilyToken");
@@ -205,6 +206,59 @@ contract("DeciblingStaking", () => {
         await expect(
           this.staking.connect(user1).updatePoolOwner([], poolId, ZERO_ADDRESS)
         ).to.be.revertedWith("DeciblingStaking: not a valid address");
+      })
+    }),
+    describe("hardCap cases", async() => {
+      beforeEach(async() => {
+        await this.staking.connect(admin).setDefaultPool();
+        expect(await this.staking.pools("decibling_pool").owner, admin.address);
+      }),
+      it("default pool hardcap", async() => {
+        const poolId = "decibling_pool";
+        assert.equal((await this.staking.pools(poolId)).hardCap, 10_000_000 * 1e18);
+      })
+    }),
+    describe("payout cases", async() => {
+      beforeEach(async() => {
+      }),
+      it("defaultPool payout 1 stake", async() => {
+        const poolId = "decibling_pool";
+
+        await this.staking.connect(admin).setDefaultPool();
+        expect(await this.staking.pools(poolId).owner, admin.address);
+
+        await this.token.connect(user1).approve(this.staking.address, 5_000_000);
+        await this.staking.connect(user1).stake(poolId, 5_000_000);
+
+        let depositTime = (await this.staking.stakers(poolId, user1.address)).depositTime;
+
+        // fast forward time to start of auction
+        await ethers.provider.send("evm_setNextBlockTimestamp", [depositTime.add(depositTime, BigNumber.from(5 * 86400)).toNumber()]);
+        await ethers.provider.send("evm_mine");
+
+        console.log(await this.staking.connect(user1).payout(poolId));
+      }),
+      it.only("newPool payout 1 stake", async() => {
+        const poolId = "new_pool";
+
+        await this.staking.connect(artist).newPool([], poolId);
+        expect(await this.staking.pools(poolId).owner, artist.address);
+        await this.staking.connect(artist).updatePool([], poolId, 5, 3);
+        poolInfo = await this.staking.pools(poolId);
+        expect(poolInfo.r).to.equal(new BN("5"));
+        expect(poolInfo.rToOwner).to.equal(new BN("3"));
+
+        await this.token.connect(user1).approve(this.staking.address, 500_000_000);
+        await this.staking.connect(user1).stake(poolId, 500_000_000);
+
+        let depositTime = (await this.staking.stakers(poolId, user1.address)).depositTime;
+
+        // fast forward time to start of auction
+        await ethers.provider.send("evm_setNextBlockTimestamp", [depositTime.add(depositTime, BigNumber.from(365 * 86400)).toNumber()]);
+        await ethers.provider.send("evm_mine");
+
+        console.log(await this.staking.connect(artist).payout(poolId));
+        console.log(await this.staking.connect(user1).payout(poolId));
       })
     })
   });

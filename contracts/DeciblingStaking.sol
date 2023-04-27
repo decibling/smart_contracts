@@ -6,13 +6,15 @@ import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgrad
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./Interest.sol";
 
 contract DeciblingStaking is
     Initializable,
+    Interest,
     OwnableUpgradeable,
     UUPSUpgradeable
 {
-    uint256 private DEFAULT_HARD_CAP = 10_000_000 * 1e18;
+    uint256 private constant DEFAULT_HARD_CAP = 10_000_000 * 1e18;
 
     IERC20 public token;
     bytes32 public merkleRoot;
@@ -20,6 +22,7 @@ contract DeciblingStaking is
     struct StakeInfo {
         uint256 totalDeposit;
         uint256 depositTime;
+        uint256 lastPayout;
     }
     struct PoolInfo {
         address owner;
@@ -39,6 +42,7 @@ contract DeciblingStaking is
     event Stake(string poolId, address user, uint256 amount);
     event Unstake(string poolId, address user, uint256 amount);
     event Claim(string poolId, address user, uint256 profitAmount);
+    event Reinvest(string poolId, address user, uint256 profitAmount);
 
     modifier validPool(string memory id) {
         bytes memory idTest = bytes(id);
@@ -220,6 +224,7 @@ contract DeciblingStaking is
             "DeciblingStaking: Transfer failed"
         );
 
+        reinvest(id);
         _stake(id, amount);
     }
 
@@ -229,6 +234,22 @@ contract DeciblingStaking is
         pools[id].totalDeposit += amount;
 
         emit Stake(id, msg.sender, amount);
+    }
+
+    /**
+     * @dev Reinvest accumulated TOKEN reward for a single pool
+     * @param {_pid} pool identifier
+     * @return {bool} status of reinvest
+     */
+
+    function reinvest(string memory _pid) public virtual returns (bool) {
+        uint256 amount = payout(_pid);
+        if (amount > 0) {
+            _stake(_pid, amount);
+            emit Reinvest(_pid, msg.sender, amount);
+        }
+
+        return true;
     }
 
     function unstake(
@@ -261,6 +282,27 @@ contract DeciblingStaking is
 
     function claim(string memory id) external validPool(id) existPool(id) {
         emit Claim(id, msg.sender, 0);
+    }
+
+    function payout(
+        string memory _pid
+    ) public view virtual returns (uint256 value) {
+        StakeInfo storage staker = stakers[_pid][msg.sender];
+        PoolInfo storage pool = pools[_pid];
+
+        uint256 from = staker.lastPayout > staker.depositTime
+            ? staker.lastPayout
+            : staker.depositTime;
+        uint256 to = _getNow();
+
+        if (from < to) {
+            uint256 rayValue = yearlyRateToRay((pool.r * 10 ** 18) / 1000);
+            uint256 totalDeposit = staker.totalDeposit;
+            value = (accrueInterest(totalDeposit, rayValue, to - from) -
+                totalDeposit);
+        }
+
+        return value;
     }
 
     function _getNow() internal view virtual returns (uint256) {
