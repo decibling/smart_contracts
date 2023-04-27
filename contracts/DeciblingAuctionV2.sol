@@ -15,14 +15,14 @@ contract DeciblingAuctionV2 is
     OwnableUpgradeable,
     UUPSUpgradeable
 {
-    IERC20 private token;
-    DeciblingNFT private nftContract;
+    IERC20 public token;
+    DeciblingNFT public nftContract;
 
     // 10000 == 100%
-    uint256 public firstSaleFee;
-    uint256 public secondSaleFee;
+    uint256 public firstSaleFee = 1250;
+    uint256 public secondSaleFee = 1000;
 
-    address private platformFeeRecipient;
+    address public platformFeeRecipient;
 
     struct TopBid {
         address user;
@@ -69,6 +69,15 @@ contract DeciblingAuctionV2 is
     );
     event UpdateBidEndTime(uint256 itemId, uint256 endtime);
 
+    modifier isOnSale(uint256 itemId) {
+        NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
+        require(
+            currentNFT.isBidding == true,
+            "DeciblingAuction: This item is not on sale"
+        );
+        _;
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -89,13 +98,12 @@ contract DeciblingAuctionV2 is
             _nftContractAddress != address(0) &&
                 _tokenAddress != address(0) &&
                 _platformFeeRecipient != address(0),
-            "34"
+            "DeciblingAuction: Constructor wallets cannot be zero"
         );
         nftContract = DeciblingNFT(_nftContractAddress);
         token = IERC20(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
-        firstSaleFee = 1250;
-        secondSaleFee = 1000;
+
         __Ownable_init();
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
@@ -123,15 +131,28 @@ contract DeciblingAuctionV2 is
         address currentNftOwner = nftContract.ownerOf(itemId);
         require(
             currentNftOwner == msg.sender && currentNftOwner != address(0),
-            "6"
+            "DeciblingAuction: You did not own this item"
         );
-        require(startTime < endTime, "18");
-        require(endTime > _getNow(), "7");
-        require(increment > 0, "22");
-        require(endTime >= startTime + 300, "24"); // end time must be after at least 5 mins
+        require(
+            startTime < endTime,
+            "DeciblingAuction: Start time must be before end time"
+        );
+        require(
+            endTime > _getNow(),
+            "DeciblingAuction: End time of biding must be in future"
+        );
+        require(increment > 0, "DeciblingAuction: Increment cannot be zero");
+        require(
+            endTime >= startTime + 300,
+            "DeciblingAuction: end time must be after at least 5 mins"
+        );
 
         NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
-        require(currentNFT.isBidding == false, "8"); // Check is not bidding
+        require(
+            currentNFT.isBidding == false,
+            "DeciblingAuction: This item is bidding"
+        ); // Check is not bidding
+        nftContract.lockNFT(itemId); // Lock item to avoid NFT owner transfer during auction
 
         auctions[itemId] = Auction({
             winner: address(0),
@@ -153,19 +174,24 @@ contract DeciblingAuctionV2 is
      @param itemId uint256 the id of the token
      @param _amount uint256 the amount to bid
      */
-    function bid(uint256 itemId, uint256 _amount) public nonReentrant {
+    function bid(
+        uint256 itemId,
+        uint256 _amount
+    ) public isOnSale(itemId) nonReentrant {
         address currentNftOwner = nftContract.ownerOf(itemId);
-        require(currentNftOwner != msg.sender, "25");
-
-        NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
-        require(currentNFT.isBidding == true, "8");
-
-        Auction storage auction = auctions[itemId];
         require(
-            auction.startTime <= _getNow() && _getNow() <= auction.endTime,
+            currentNftOwner != msg.sender,
+            "DeciblingAuction: Cannot bid on your own item"
+        );
+        require(
+            auctions[itemId].startTime <= _getNow() &&
+                _getNow() <= auctions[itemId].endTime,
             "12"
         );
-        require(token.transferFrom(msg.sender, address(this), _amount), "26");
+        require(
+            token.transferFrom(msg.sender, address(this), _amount),
+            "DeciblingAuction: Transfer failed"
+        );
 
         TopBid storage topBid = topBids[itemId];
         address topBidUser = topBid.user;
@@ -175,7 +201,7 @@ contract DeciblingAuctionV2 is
             // assign top bidder and bid time
             topBids[itemId] = TopBid({user: msg.sender, price: _amount});
         } else {
-            if (_amount < lastPrice + auction.increment) revert("13");
+            if (_amount < lastPrice + auctions[itemId].increment) revert("13");
             // assign top bidder and bid time
             topBids[itemId] = TopBid({user: msg.sender, price: _amount});
             require(token.transfer(topBidUser, lastPrice), "26"); // TODO check
@@ -197,10 +223,13 @@ contract DeciblingAuctionV2 is
 
         Auction storage auction = auctions[itemId];
         require(auction.endTime < _getNow(), "12");
-        require(!auction.resulted, "19");
+        require(!auction.resulted, "DeciblingAuction: this item is settled");
 
         TopBid storage topBid = topBids[itemId];
-        require(topBid.user != address(0), "20");
+        require(
+            topBid.user != address(0),
+            "DeciblingAuction: invalid top bid user"
+        );
 
         address topBidUser = topBid.user;
         uint256 topBidPrice = topBid.price;
@@ -215,9 +244,10 @@ contract DeciblingAuctionV2 is
         require(token.transfer(platformFeeRecipient, platformValue), "26");
         require(
             token.transfer(currentNftOwner, topBidPrice - platformValue),
-            "26"
+            "DeciblingAuction: transfer failed"
         );
 
+        nftContract.unlockNFT(itemId); // Unlock item to transfer to top bidder
         nftContract.transferFrom(currentNftOwner, topBidUser, itemId);
 
         address oldOwner = currentNftOwner;
@@ -244,16 +274,25 @@ contract DeciblingAuctionV2 is
     @param itemId uint256 the id of the token
     @param newEndTime uint256 the new end time
     */
-    function updateBidEndTime(uint256 itemId, uint256 newEndTime) external {
+    function updateBidEndTime(
+        uint256 itemId,
+        uint256 newEndTime
+    ) external isOnSale(itemId) {
         address currentNftOwner = nftContract.ownerOf(itemId);
-        require(currentNftOwner == msg.sender, "25");
-
-        NftAuctionInfo storage currentNFT = nftAuctionInfos[itemId];
-        require(currentNFT.isBidding == true, "8");
+        require(
+            currentNftOwner == msg.sender,
+            "DeciblingAuction: Only admin can update bid end time"
+        );
 
         Auction storage auction = auctions[itemId];
-        require(auction.endTime > _getNow(), "7");
-        require(newEndTime > _getNow(), "7");
+        require(
+            auction.endTime > _getNow(),
+            "DeciblingAuction: This bidding is ended"
+        );
+        require(
+            newEndTime > _getNow(),
+            "DeciblingAuction: End time of biding must be in future"
+        );
 
         auction.endTime = newEndTime;
 
@@ -302,7 +341,10 @@ contract DeciblingAuctionV2 is
     function updatePlatformFeeRecipient(
         address _platformFeeRecipient
     ) external onlyOwner {
-        require(_platformFeeRecipient != address(0), "Invalid address");
+        require(
+            _platformFeeRecipient != address(0),
+            "DeciblingAuction: Invalid address"
+        );
         platformFeeRecipient = _platformFeeRecipient;
 
         emit UpdatePlatformFeeRecipient(_platformFeeRecipient);

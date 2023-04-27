@@ -5,14 +5,16 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "./Token.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract DeciblingStaking is
     Initializable,
     OwnableUpgradeable,
     UUPSUpgradeable
 {
-    FroggilyToken public froyToken;
+    uint256 private DEFAULT_HARD_CAP = 10_000_000 * 1e18;
+
+    IERC20 public token;
     bytes32 public merkleRoot;
 
     struct StakeInfo {
@@ -21,6 +23,8 @@ contract DeciblingStaking is
     }
     struct PoolInfo {
         address owner;
+        uint256 hardCap;
+        uint256 totalDeposit;
         uint8 rToOwner;
         uint8 r;
         bool isDefault;
@@ -84,7 +88,7 @@ contract DeciblingStaking is
     }
 
     function initialize(address froyAddr) public initializer {
-        froyToken = FroggilyToken(froyAddr);
+        token = IERC20(froyAddr);
 
         __Ownable_init();
         __UUPSUpgradeable_init();
@@ -120,6 +124,13 @@ contract DeciblingStaking is
         _updatePool(pid, 2, 0, true);
     }
 
+    function setPoolHardCap(
+        string memory id,
+        uint256 cap
+    ) external onlyOwner validPool(id) existPool(id) validAmount(cap) {
+        pools[id].hardCap = cap;
+    }
+
     function _newPool(string memory _id) internal virtual {
         pools[_id].owner = msg.sender;
 
@@ -131,13 +142,19 @@ contract DeciblingStaking is
         string memory id,
         uint8 _r,
         uint8 _rToOwner
-    ) external validPool(id) onlyPoolOwnerOrAdmin(id) existPool(id) validProof(proof) {
+    )
+        external
+        validPool(id)
+        onlyPoolOwnerOrAdmin(id)
+        existPool(id)
+        validProof(proof)
+    {
         require(
             _r >= 3 && _r <= 8,
             "DeciblingPoolConfig: invalid return value"
         );
         require(
-            _rToOwner <= 5,
+            _rToOwner >= 0 && _rToOwner <= 5,
             "DeciblingPoolConfig: invalid return to owner value"
         );
         require(
@@ -157,6 +174,7 @@ contract DeciblingStaking is
         pools[_id].r = _r;
         pools[_id].rToOwner = _rToOwner;
         pools[_id].isDefault = _isDefault;
+        pools[_id].hardCap = DEFAULT_HARD_CAP;
 
         emit UpdatePool(_id, _r, _rToOwner, _isDefault);
     }
@@ -165,7 +183,13 @@ contract DeciblingStaking is
         bytes32[] calldata proof,
         string memory id,
         address poolOwner
-    ) external validPool(id) onlyPoolOwnerOrAdmin(id) existPool(id) validProof(proof) {
+    )
+        external
+        validPool(id)
+        onlyPoolOwnerOrAdmin(id)
+        existPool(id)
+        validProof(proof)
+    {
         require(
             poolOwner != address(0),
             "DeciblingStaking: not a valid address"
@@ -188,7 +212,11 @@ contract DeciblingStaking is
         uint256 amount
     ) external validPool(id) validAmount(amount) existPool(id) {
         require(
-            froyToken.transferFrom(msg.sender, address(this), amount),
+            pools[id].totalDeposit + amount <= pools[id].hardCap,
+            "DeciblingStaking: Hard cap reached, cannot stake more on this pool"
+        );
+        require(
+            token.transferFrom(msg.sender, address(this), amount),
             "DeciblingStaking: Transfer failed"
         );
 
@@ -198,6 +226,7 @@ contract DeciblingStaking is
     function _stake(string memory id, uint256 amount) internal virtual {
         stakers[id][msg.sender].depositTime = _getNow();
         stakers[id][msg.sender].totalDeposit += amount;
+        pools[id].totalDeposit += amount;
 
         emit Stake(id, msg.sender, amount);
     }
@@ -215,7 +244,7 @@ contract DeciblingStaking is
             "DeciblingStaking: The amount must be smaller than your current staked"
         );
         require(
-            froyToken.transfer(msg.sender, amount),
+            token.transfer(msg.sender, amount),
             "DeciblingStaking: Transfer failed"
         );
 
@@ -225,11 +254,12 @@ contract DeciblingStaking is
     function _unstake(string memory id, uint256 amount) internal virtual {
         stakers[id][msg.sender].totalDeposit -= amount;
         stakers[id][msg.sender].depositTime = _getNow();
+        pools[id].totalDeposit -= amount;
 
         emit Unstake(id, msg.sender, amount);
     }
 
-    function claim(string memory id) external {
+    function claim(string memory id) external validPool(id) existPool(id) {
         emit Claim(id, msg.sender, 0);
     }
 
