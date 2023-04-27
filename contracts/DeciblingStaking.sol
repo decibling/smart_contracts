@@ -29,11 +29,12 @@ contract DeciblingStaking is
     mapping(string => mapping(address => StakeInfo)) public stakers;
     mapping(string => PoolInfo) public pools;
 
-    event NewPool(string id);
-    event UpdatePool(string id, uint8 r, uint8 rToOwner, bool isDefault);
-    event UpdatePoolOwner(string id, address owner);
-    event Stake(string id, address _user, uint256 amount);
-    event Unstake(string id, address _user, uint256 amount);
+    event NewPool(string poolId);
+    event UpdatePool(string poolId, uint8 r, uint8 rToOwner, bool isDefault);
+    event UpdatePoolOwner(string poolId, address owner);
+    event Stake(string poolId, address user, uint256 amount);
+    event Unstake(string poolId, address user, uint256 amount);
+    event Claim(string poolId, address user, uint256 profitAmount);
 
     modifier validPool(string memory id) {
         bytes memory idTest = bytes(id);
@@ -68,7 +69,6 @@ contract DeciblingStaking is
     modifier validProof(bytes32[] calldata proof) {
         // Validate merkle proof || skip if Merkle Root = 0
         if (merkleRoot != bytes32(0)) {
-            // bytes32 merkleLeaf = keccak256(bytes.concat(keccak256(abi.encode(_msgSender()))));
             bytes32 merkleLeaf = keccak256(abi.encodePacked(_msgSender()));
             require(
                 MerkleProofUpgradeable.verify(proof, merkleRoot, merkleLeaf),
@@ -227,6 +227,10 @@ contract DeciblingStaking is
         stakers[id][msg.sender].depositTime = _getNow();
 
         emit Unstake(id, msg.sender, amount);
+    }
+
+    function claim(string memory id) external {
+        emit Claim(id, msg.sender, 0);
     }
 
     function _getNow() internal view virtual returns (uint256) {
