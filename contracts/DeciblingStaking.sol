@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "./FroggilyToken.sol";
+import "./Token.sol";
 
 contract DeciblingStaking is
     Initializable,
@@ -208,11 +208,11 @@ contract DeciblingStaking is
     ) external validPool(id) validAmount(amount) existPool(id) {
         require(
             stakers[id][msg.sender].totalDeposit != 0,
-            "Your current stake amount of this pool is 0"
+            "DeciblingStaking: Your current stake amount of this pool is 0"
         );
         require(
             amount <= stakers[id][msg.sender].totalDeposit,
-            "The amount must be smaller than your current staked"
+            "DeciblingStaking: The amount must be smaller than your current staked"
         );
         require(
             froyToken.transfer(msg.sender, amount),
