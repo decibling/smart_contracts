@@ -225,13 +225,20 @@ contract DeciblingStaking is
         );
 
         reinvest(id);
-        _stake(id, amount);
+        _stake(id, amount, false);
     }
 
-    function _stake(string memory id, uint256 amount) internal virtual {
-        stakers[id][msg.sender].depositTime = _getNow();
-        stakers[id][msg.sender].totalDeposit += amount;
+    function _stake(
+        string memory id,
+        uint256 amount,
+        bool _isReinvest
+    ) internal virtual {
+        if (!_isReinvest) {
+            stakers[id][msg.sender].depositTime = _getNow();
+        }
         pools[id].totalDeposit += amount;
+        stakers[id][msg.sender].totalDeposit += amount;
+        stakers[id][msg.sender].lastPayout = block.timestamp;
 
         emit Stake(id, msg.sender, amount);
     }
@@ -242,11 +249,11 @@ contract DeciblingStaking is
      * @return {bool} status of reinvest
      */
 
-    function reinvest(string memory _pid) public virtual returns (bool) {
-        uint256 amount = payout(_pid);
+    function reinvest(string memory id) public virtual returns (bool) {
+        uint256 amount = payout(id);
         if (amount > 0) {
-            _stake(_pid, amount);
-            emit Reinvest(_pid, msg.sender, amount);
+            _stake(id, amount, true);
+            emit Reinvest(id, msg.sender, amount);
         }
 
         return true;
@@ -296,7 +303,7 @@ contract DeciblingStaking is
         uint256 to = _getNow();
 
         if (from < to) {
-            uint256 rayValue = yearlyRateToRay((pool.r * 10 ** 18) / 1000);
+            uint256 rayValue = yearlyRateToRay((pool.r * 10 ** 18) / 100);
             uint256 totalDeposit = staker.totalDeposit;
             value = (accrueInterest(totalDeposit, rayValue, to - from) -
                 totalDeposit);

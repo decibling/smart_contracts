@@ -18,7 +18,8 @@ const {
 const {
   ZERO_ADDRESS
 } = require("@openzeppelin/test-helpers/src/constants");
-const { BigNumber } = require("ethers");
+const { BigNumber, utils } = require("ethers");
+const { ethers } = require("hardhat");
 
 const DeciblingStaking = artifacts.require("DeciblingStaking");
 const Token = artifacts.require("FroggilyToken");
@@ -26,7 +27,10 @@ const Token = artifacts.require("FroggilyToken");
 contract("DeciblingStaking", () => {
   let admin, user1, user2, artist;
 
-  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+  const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+  const ONE_BILLION = BigNumber.from("1000000000000000000000000000");
+  const TEN_MILLION = BigNumber.from("10000000000000000000000000");
+  const ONE_MILLION = BigNumber.from("1000000000000000000000000");
 
   const defaultPoolId = "decibling_pool";
 
@@ -42,8 +46,8 @@ contract("DeciblingStaking", () => {
       myToken = await MyToken.deploy();
       this.token = await myToken.deployed();
 
-      await this.token.transfer(user1.address, 1_000_000_000);
-      await this.token.transfer(user2.address, 1_000_000_000);
+      await this.token.transfer(user1.address, ONE_BILLION);
+      await this.token.transfer(user2.address, ONE_BILLION);
 
       const Staking = await ethers.getContractFactory("DeciblingStaking");
       this.staking = await upgrades.deployProxy(Staking, [this.token.address], {
@@ -238,7 +242,7 @@ contract("DeciblingStaking", () => {
 
         console.log(await this.staking.connect(user1).payout(poolId));
       }),
-      it.only("newPool payout 1 stake", async() => {
+      it("newPool payout 1 stake", async() => {
         const poolId = "new_pool";
 
         await this.staking.connect(artist).newPool([], poolId);
@@ -248,17 +252,59 @@ contract("DeciblingStaking", () => {
         expect(poolInfo.r).to.equal(new BN("5"));
         expect(poolInfo.rToOwner).to.equal(new BN("3"));
 
-        await this.token.connect(user1).approve(this.staking.address, 500_000_000);
-        await this.staking.connect(user1).stake(poolId, 500_000_000);
+        await this.token.connect(user1).approve(this.staking.address, TEN_MILLION);
+        await this.staking.connect(user1).stake(poolId, TEN_MILLION);
 
         let depositTime = (await this.staking.stakers(poolId, user1.address)).depositTime;
 
         // fast forward time to start of auction
-        await ethers.provider.send("evm_setNextBlockTimestamp", [depositTime.add(depositTime, BigNumber.from(365 * 86400)).toNumber()]);
+        await ethers.provider.send("evm_setNextBlockTimestamp", [depositTime.toNumber() + (365 * 86400)]);
         await ethers.provider.send("evm_mine");
 
-        console.log(await this.staking.connect(artist).payout(poolId));
+        // console.log(await this.staking.connect(artist).payout(poolId));
         console.log(await this.staking.connect(user1).payout(poolId));
+      }),
+      it.only("newPool payout 2 stakes", async() => {
+        const poolId = "new_pool";
+
+        await this.staking.connect(artist).newPool([], poolId);
+        expect(await this.staking.pools(poolId).owner, artist.address);
+        await this.staking.connect(artist).updatePool([], poolId, 5, 3);
+        poolInfo = await this.staking.pools(poolId);
+        expect(poolInfo.r).to.equal(new BN("5"));
+        expect(poolInfo.rToOwner).to.equal(new BN("3"));
+
+        await this.token.connect(user1).approve(this.staking.address, ONE_MILLION);
+        await this.staking.connect(user1).stake(poolId, ONE_MILLION);
+
+        let depositTime = (await this.staking.stakers(poolId, user1.address)).depositTime;
+
+        // fast forward time
+        await ethers.provider.send("evm_setNextBlockTimestamp", [depositTime.toNumber() + (10 * 86400)]);
+        await ethers.provider.send("evm_mine");
+
+        let payout = await this.staking.connect(user1).payout(poolId);
+        let age = (poolInfo.r / 100) * (10 / 365);
+        let rate = Math.pow(Math.exp(1), age);
+        let profit = (ONE_MILLION * rate) - ONE_MILLION;
+        expect((payout / 1e18).toFixed(5)).to.equal((profit/1e18).toFixed(5));
+
+        await this.token.connect(user1).approve(this.staking.address, ONE_MILLION);
+        await this.staking.connect(user1).stake(poolId, ONE_MILLION);
+
+        depositTime = (await this.staking.stakers(poolId, user1.address)).depositTime;
+
+        // fast forward time
+        await ethers.provider.send("evm_setNextBlockTimestamp", [depositTime.toNumber() + (10 * 86400)]);
+        await ethers.provider.send("evm_mine");
+
+        // console.log(await this.staking.connect(artist).payout(poolId));
+        payout = await this.staking.connect(user1).payout(poolId);
+        age = (poolInfo.r / 100) * (10 / 365);
+        rate = Math.pow(Math.exp(1), age);
+        totalNewDeposit = ONE_MILLION.add(ONE_MILLION).add(BigInt(profit));
+        let profit2 = (totalNewDeposit * rate) - totalNewDeposit;
+        expect((payout / 1e18).toFixed(5)).to.equal((profit2/1e18).toFixed(5));
       })
     })
   });
