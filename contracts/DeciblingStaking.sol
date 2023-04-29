@@ -5,8 +5,10 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Interest.sol";
+import "./DeciblingTreasury.sol";
 
 contract DeciblingStaking is
     Initializable,
@@ -14,15 +16,20 @@ contract DeciblingStaking is
     OwnableUpgradeable,
     UUPSUpgradeable
 {
-    uint256 private constant DEFAULT_HARD_CAP = 10_000_000 * 1e18;
+    using AddressUpgradeable for address;
+    using StringsUpgradeable for uint256;
+
+    uint256 private constant DEFAULT_HARD_CAP = 10_000_000 * 10 ** 18;
 
     IERC20 public token;
+    DeciblingTreasury public treasury;
     bytes32 public merkleRoot;
 
     struct StakeInfo {
         uint256 totalDeposit;
         uint256 depositTime;
         uint256 lastPayout;
+        uint256 lastPayoutToPoolOwner;
     }
     struct PoolInfo {
         address owner;
@@ -41,8 +48,8 @@ contract DeciblingStaking is
     event UpdatePoolOwner(string poolId, address owner);
     event Stake(string poolId, address user, uint256 amount);
     event Unstake(string poolId, address user, uint256 amount);
-    event Claim(string poolId, address user, uint256 profitAmount);
     event Reinvest(string poolId, address user, uint256 profitAmount);
+    event Claim(string poolId, address user);
 
     modifier validPool(string memory id) {
         bytes memory idTest = bytes(id);
@@ -86,12 +93,19 @@ contract DeciblingStaking is
         _;
     }
 
+    modifier validAddress(address addr) {
+        require(addr != address(0), "DeciblingStaking: not a valid address");
+        _;
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address froyAddr) public initializer {
+    function initialize(
+        address froyAddr
+    ) public initializer {
         token = IERC20(froyAddr);
 
         __Ownable_init();
@@ -174,7 +188,7 @@ contract DeciblingStaking is
         uint8 _r,
         uint8 _rToOwner,
         bool _isDefault
-    ) internal virtual {
+    ) internal {
         pools[_id].r = _r;
         pools[_id].rToOwner = _rToOwner;
         pools[_id].isDefault = _isDefault;
@@ -193,19 +207,12 @@ contract DeciblingStaking is
         onlyPoolOwnerOrAdmin(id)
         existPool(id)
         validProof(proof)
+        validAddress(poolOwner)
     {
-        require(
-            poolOwner != address(0),
-            "DeciblingStaking: not a valid address"
-        );
-
         _updatePoolOwner(id, poolOwner);
     }
 
-    function _updatePoolOwner(
-        string memory id,
-        address poolOwner
-    ) internal virtual {
+    function _updatePoolOwner(string memory id, address poolOwner) internal {
         pools[id].owner = poolOwner;
 
         emit UpdatePoolOwner(id, poolOwner);
@@ -232,13 +239,14 @@ contract DeciblingStaking is
         string memory id,
         uint256 amount,
         bool _isReinvest
-    ) internal virtual {
+    ) internal {
         if (!_isReinvest) {
             stakers[id][msg.sender].depositTime = _getNow();
         }
         pools[id].totalDeposit += amount;
         stakers[id][msg.sender].totalDeposit += amount;
-        stakers[id][msg.sender].lastPayout = block.timestamp;
+        stakers[id][msg.sender].lastPayout = _getNow();
+        stakers[id][msg.sender].lastPayoutToPoolOwner = _getNow();
 
         emit Stake(id, msg.sender, amount);
     }
@@ -249,8 +257,8 @@ contract DeciblingStaking is
      * @return {bool} status of reinvest
      */
 
-    function reinvest(string memory id) public virtual returns (bool) {
-        uint256 amount = payout(id);
+    function reinvest(string memory id) public returns (bool) {
+        uint256 amount = payout(id, msg.sender, false);
         if (amount > 0) {
             _stake(id, amount, true);
             emit Reinvest(id, msg.sender, amount);
@@ -276,40 +284,90 @@ contract DeciblingStaking is
             "DeciblingStaking: Transfer failed"
         );
 
-        _unstake(id, amount);
-    }
+        _claim(id, false);
 
-    function _unstake(string memory id, uint256 amount) internal virtual {
         stakers[id][msg.sender].totalDeposit -= amount;
-        stakers[id][msg.sender].depositTime = _getNow();
         pools[id].totalDeposit -= amount;
 
         emit Unstake(id, msg.sender, amount);
     }
 
     function claim(string memory id) external validPool(id) existPool(id) {
-        emit Claim(id, msg.sender, 0);
+        require(
+            treasury.requestPayout(id, msg.sender),
+            "DeciblingStaking: request payout failed"
+        );
+
+        _claim(id, false);
+    }
+
+    /**
+     * This would cost high gas fee. The team must advise to the pool owner about this.
+     * @param id pool id
+     * @param users the address list from the platform
+     */
+    function claimForPoolProfit(
+        string memory id,
+        address[] calldata users
+    ) external validPool(id) existPool(id) {
+        require(
+            treasury.requestPayoutForPoolOwner(id, users),
+            "DeciblingStaking: request payout for pool owner failed"
+        );
+
+        _claim(id, false);
+    }
+
+    function _claim(string memory id, bool isPoolProfit) internal {
+        if (isPoolProfit) {
+            stakers[id][msg.sender].lastPayoutToPoolOwner = _getNow();
+        } else {
+            stakers[id][msg.sender].lastPayout = _getNow();
+        }
+
+        emit Claim(id, msg.sender);
     }
 
     function payout(
-        string memory _pid
-    ) public view virtual returns (uint256 value) {
-        StakeInfo storage staker = stakers[_pid][msg.sender];
+        string memory _pid,
+        address user,
+        bool forPoolOwner
+    ) public view virtual validAddress(user) returns (uint256 value) {
+        StakeInfo storage staker = stakers[_pid][user];
         PoolInfo storage pool = pools[_pid];
 
         uint256 from = staker.lastPayout > staker.depositTime
             ? staker.lastPayout
             : staker.depositTime;
         uint256 to = _getNow();
+        uint8 r = pool.r;
+        if (forPoolOwner) {
+            r = pool.rToOwner;
+        }
 
         if (from < to) {
-            uint256 rayValue = yearlyRateToRay((pool.r * 10 ** 18) / 100);
+            uint256 rayValue = yearlyRateToRay((r * 10 ** 18) / 100);
             uint256 totalDeposit = staker.totalDeposit;
             value = (accrueInterest(totalDeposit, rayValue, to - from) -
                 totalDeposit);
         }
 
         return value;
+    }
+
+    /**
+     * @dev Allow owner to transfer token from contract
+     * @param _amount {uint256} amount of token to be transferred
+     *
+     * This is a generalized function which can be used to transfer any accidentally
+     * sent (including team) out of the contract to owner
+     */
+    function transferToken(uint256 _amount) external onlyOwner {
+        token.transfer(address(owner()), _amount);
+    }
+
+    function setTreasuryContract(address addr) external onlyOwner {
+        treasury = DeciblingTreasury(addr);
     }
 
     function _getNow() internal view virtual returns (uint256) {

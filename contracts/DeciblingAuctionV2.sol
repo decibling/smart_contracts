@@ -19,8 +19,8 @@ contract DeciblingAuctionV2 is
     DeciblingNFT public nftContract;
 
     // 10000 == 100%
-    uint256 public firstSaleFee = 1250;
-    uint256 public secondSaleFee = 1000;
+    uint256 public firstSaleFee;
+    uint256 public secondSaleFee;
 
     address public platformFeeRecipient;
 
@@ -103,6 +103,9 @@ contract DeciblingAuctionV2 is
         nftContract = DeciblingNFT(_nftContractAddress);
         token = IERC20(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
+
+        firstSaleFee = 1250;
+        secondSaleFee = 1000;
 
         __Ownable_init();
         __UUPSUpgradeable_init();
