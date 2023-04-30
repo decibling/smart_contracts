@@ -35,8 +35,10 @@ async function main() {
     console.log("DeciblingReserve deployed to:", dbReserve.address);
 
     console.log("Settings");
-    dbStaking.setReserveContract(dbReserve.address);
-    dbReserve.setStakingContract(dbStaking.address);
+    // let dbStaking = DeciblingStaking.attach("0xAb2B61C03A5c6c6b9CC4810F80b29ae14D75256F");
+    // let dbReserve = DeciblingReserve.attach("0x77E23179173Ab05a17f7DD546d5bbEd9044560d0");
+    // await dbStaking.setReserveContract(dbReserve.address);
+    // await dbReserve.setStakingContract(dbStaking.address);
 }
 
 main()
