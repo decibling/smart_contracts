@@ -33,6 +33,10 @@ async function main() {
     );
     await dbReserve.deployed();
     console.log("DeciblingReserve deployed to:", dbReserve.address);
+
+    console.log("Settings");
+    dbStaking.setReserveContract(dbReserve.address);
+    dbReserve.setStakingContract(dbStaking.address);
 }
 
 main()

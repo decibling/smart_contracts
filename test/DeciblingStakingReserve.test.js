@@ -68,7 +68,7 @@ contract("DeciblingReserve", () => {
 
       //set contracts
       await this.treasury.setStakingContract(this.staking.address);
-      await this.staking.setTreasuryContract(this.treasury.address);
+      await this.staking.setReserveContract(this.treasury.address);
 
       await this.token.transfer(this.treasury.address, ONE_BILLION); //send to treasury
     });
@@ -105,10 +105,10 @@ contract("DeciblingReserve", () => {
         expect((await this.token.balanceOf(this.treasury.address))).to.closeTo((ONE_BILLION.sub(BigInt(payAmount))), approx);
         expect(await this.token.balanceOf(user1.address)).to.closeTo(ONE_BILLION.sub(ONE_MILLION).add(BigInt(payAmount)), approx);
 
-        console.log(payout, fee, payAmount);
-        console.log(await this.token.balanceOf(this.staking.address));
-        console.log(await this.token.balanceOf(this.treasury.address));
-        console.log(await this.token.balanceOf(user1.address));
+        // console.log(payout, fee, payAmount);
+        // console.log(await this.token.balanceOf(this.staking.address));
+        // console.log(await this.token.balanceOf(this.treasury.address));
+        // console.log(await this.token.balanceOf(user1.address));
       }),
       it("requestPayout artist pool 1 stake", async () => {
         expect(await this.token.balanceOf(this.staking.address)).to.equal(0);
@@ -145,11 +145,11 @@ contract("DeciblingReserve", () => {
         let approx = 10000000000000000n;
 
         let tx1 = await this.staking.connect(user1).claim(poolId);
-        console.log("claim", tx1.gasPrice, tx1.gasLimit);
+        // console.log("claim", tx1.gasPrice, tx1.gasLimit);
         expect(tx1);
 
         let tx2 = await this.staking.connect(artist).claimForPoolProfit(poolId, [user1.address]);
-        console.log("claimForPoolProfit", tx2.gasPrice, tx2.gasLimit);
+        // console.log("claimForPoolProfit", tx2.gasPrice, tx2.gasLimit);
         expect(tx2);
 
         expect(await this.token.balanceOf(this.staking.address)).to.equal(ONE_MILLION);
@@ -157,7 +157,7 @@ contract("DeciblingReserve", () => {
         expect(await this.token.balanceOf(user1.address)).to.closeTo(ONE_BILLION.sub(ONE_MILLION).add(BigInt(payAmount)), approx);
         expect(await this.token.balanceOf(artist.address)).to.closeTo(BigInt(payAmount2), approx);
       }),
-      it.only("requestPayout artist pool 2 stakes", async () => {
+      it("requestPayout artist pool 2 stakes", async () => {
         expect(await this.token.balanceOf(this.staking.address)).to.equal(0);
         expect(await this.token.balanceOf(user1.address)).to.equal(ONE_BILLION);
 

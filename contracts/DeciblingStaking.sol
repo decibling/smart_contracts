@@ -100,6 +100,14 @@ contract DeciblingStaking is
         _;
     }
 
+    modifier validReserveContract() {
+        require(
+            address(treasury) != address(0),
+            "DeciblingStaking: reserve contract is not updated"
+        );
+        _;
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -293,7 +301,9 @@ contract DeciblingStaking is
         emit Unstake(id, msg.sender, amount);
     }
 
-    function claim(string memory id) external validPool(id) existPool(id) {
+    function claim(
+        string memory id
+    ) external validPool(id) existPool(id) validReserveContract {
         require(
             treasury.requestPayout(id, msg.sender),
             "DeciblingStaking: request payout failed"
@@ -310,7 +320,7 @@ contract DeciblingStaking is
     function claimForPoolProfit(
         string memory id,
         address[] calldata users
-    ) external validPool(id) existPool(id) {
+    ) external validPool(id) existPool(id) validReserveContract {
         require(
             treasury.requestPayoutForPoolOwner(id, users),
             "DeciblingStaking: request payout for pool owner failed"
@@ -378,7 +388,9 @@ contract DeciblingStaking is
         token.transfer(address(owner()), _amount);
     }
 
-    function setTreasuryContract(address addr) external onlyOwner {
+    function setReserveContract(
+        address addr
+    ) external onlyOwner validAddress(addr) {
         treasury = DeciblingReserve(addr);
     }
 

@@ -104,6 +104,7 @@ contract DeciblingReserve is
     }
 
     function setStakingContract(address addr) external onlyOwner {
+        require(addr != address(0), "DeciblingReserve: invalid contract address");
         staking = DeciblingStaking(addr);
     }
 
