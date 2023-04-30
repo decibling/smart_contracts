@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 import "./DeciblingStaking.sol";
 
-contract DeciblingTreasury is
+contract DeciblingReserve is
     Initializable,
     OwnableUpgradeable,
     ReentrancyGuardUpgradeable,
@@ -56,12 +56,12 @@ contract DeciblingTreasury is
         address user
     ) external nonReentrant stakingContractOnly returns (bool) {
         uint256 amount = staking.payout(id, user, false);
-        require(amount > 0, "DeciblingTreasury: Payout must be > 0");
+        require(amount > 0, "DeciblingReserve: Payout must be > 0");
         uint256 feeAmount = (amount * payoutFee) / 100;
         uint256 payAmount = amount - feeAmount;
         require(
             token.transfer(user, payAmount),
-            "DeciblingTreasury: Transfer failed"
+            "DeciblingReserve: Transfer failed"
         );
 
         emit Payout(id, msg.sender, payAmount);
@@ -74,14 +74,15 @@ contract DeciblingTreasury is
         address[] calldata users
     ) external nonReentrant stakingContractOnly returns (bool) {
         uint256 totalPaidAmount;
+        (address owner,,,,,) = staking.pools(id);
         for (uint i = 0; i < users.length; i++) {
             uint256 amount = staking.payout(id, users[i], true);
             uint256 feeAmount = (amount * payoutFee) / 100;
             uint256 payAmount = amount - feeAmount;
-            if (amount > 0) {
+            if (payAmount > 0) {
                 require(
-                    token.transfer(users[i], payAmount),
-                    "DeciblingTreasury: Transfer failed"
+                    token.transfer(owner, payAmount),
+                    "DeciblingReserve: Transfer failed"
                 );
                 totalPaidAmount += payAmount;
             }

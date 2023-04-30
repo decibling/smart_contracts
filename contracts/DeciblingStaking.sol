@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Interest.sol";
-import "./DeciblingTreasury.sol";
+import "./DeciblingReserve.sol";
 
 contract DeciblingStaking is
     Initializable,
@@ -22,7 +22,7 @@ contract DeciblingStaking is
     uint256 private constant DEFAULT_HARD_CAP = 10_000_000 * 10 ** 18;
 
     IERC20 public token;
-    DeciblingTreasury public treasury;
+    DeciblingReserve public treasury;
     bytes32 public merkleRoot;
 
     struct StakeInfo {
@@ -103,9 +103,7 @@ contract DeciblingStaking is
         _disableInitializers();
     }
 
-    function initialize(
-        address froyAddr
-    ) public initializer {
+    function initialize(address froyAddr) public initializer {
         token = IERC20(froyAddr);
 
         __Ownable_init();
@@ -284,7 +282,7 @@ contract DeciblingStaking is
             "DeciblingStaking: Transfer failed"
         );
 
-        _claim(id, false);
+        _claim(id);
 
         stakers[id][msg.sender].totalDeposit -= amount;
         pools[id].totalDeposit -= amount;
@@ -298,7 +296,7 @@ contract DeciblingStaking is
             "DeciblingStaking: request payout failed"
         );
 
-        _claim(id, false);
+        _claim(id);
     }
 
     /**
@@ -315,15 +313,22 @@ contract DeciblingStaking is
             "DeciblingStaking: request payout for pool owner failed"
         );
 
-        _claim(id, false);
+        _batchClaimForPoolProfit(id, users);
     }
 
-    function _claim(string memory id, bool isPoolProfit) internal {
-        if (isPoolProfit) {
-            stakers[id][msg.sender].lastPayoutToPoolOwner = _getNow();
-        } else {
-            stakers[id][msg.sender].lastPayout = _getNow();
+    function _batchClaimForPoolProfit(
+        string memory id,
+        address[] calldata users
+    ) internal {
+        for (uint i = 0; i < users.length; i++) {
+            stakers[id][users[i]].lastPayoutToPoolOwner = _getNow();
         }
+
+        emit Claim(id, msg.sender);
+    }
+
+    function _claim(string memory id) internal {
+        stakers[id][msg.sender].lastPayout = _getNow();
 
         emit Claim(id, msg.sender);
     }
@@ -336,8 +341,12 @@ contract DeciblingStaking is
         StakeInfo storage staker = stakers[_pid][user];
         PoolInfo storage pool = pools[_pid];
 
-        uint256 from = staker.lastPayout > staker.depositTime
-            ? staker.lastPayout
+        uint256 lastPayout = staker.lastPayout;
+        if (forPoolOwner) {
+            lastPayout = staker.lastPayoutToPoolOwner;
+        }
+        uint256 from = lastPayout > staker.depositTime
+            ? lastPayout
             : staker.depositTime;
         uint256 to = _getNow();
         uint8 r = pool.r;
@@ -367,7 +376,7 @@ contract DeciblingStaking is
     }
 
     function setTreasuryContract(address addr) external onlyOwner {
-        treasury = DeciblingTreasury(addr);
+        treasury = DeciblingReserve(addr);
     }
 
     function _getNow() internal view virtual returns (uint256) {
