@@ -16,7 +16,7 @@ contract DeciblingAuctionV2 is
     UUPSUpgradeable
 {
     IERC20 public token;
-    DeciblingNFT public nftContract;
+    DeciblingNFTV2 public nftContract;
 
     // 10000 == 100%
     uint256 public firstSaleFee;
@@ -100,7 +100,7 @@ contract DeciblingAuctionV2 is
                 _platformFeeRecipient != address(0),
             "DeciblingAuction: Constructor wallets cannot be zero"
         );
-        nftContract = DeciblingNFT(_nftContractAddress);
+        nftContract = DeciblingNFTV2(_nftContractAddress);
         token = IERC20(_tokenAddress);
         platformFeeRecipient = _platformFeeRecipient;
 
