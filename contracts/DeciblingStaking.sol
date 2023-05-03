@@ -236,6 +236,10 @@ contract DeciblingStaking is
             "DeciblingStaking: Hard cap reached, cannot stake more on this pool"
         );
         require(
+            token.allowance(msg.sender, address(this)) >= amount,
+            "DeciblingStaking : Please set allowance for the deposit"
+        );
+        require(
             token.transferFrom(msg.sender, address(this), amount),
             "DeciblingStaking: Transfer failed"
         );
