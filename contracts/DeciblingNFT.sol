@@ -8,12 +8,14 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
 
 /**
  * @title DeciblingNFT
  * @dev An upgradeable NFT contract for minting audio-related NFTs, leveraging OpenZeppelin's upgradeable contracts library.
  */
-contract DeciblingNFT is
+contract DeciblingNFTV2 is
     Initializable,
     ERC721Upgradeable,
     ERC721URIStorageUpgradeable,
@@ -29,15 +31,23 @@ contract DeciblingNFT is
     // The Merkle root of a Merkle tree, used to verify the whitelist for minting permissions
     bytes32 public _merkleRoot;
 
-    // Lock mechanism
-    mapping(uint256 => bool) public lockedNFTs;
-    address public auctionContractAddress;
-
     // Mapping to store used URI hashes
     mapping(bytes32 => bool) private usedURIHashes;
 
     /// @notice Emitted when an NFT is created
     event Minted(uint256 tokenId);
+
+    // Lock mechanism
+    mapping(uint256 => bool) public lockedNFTs;
+    address public auctionContractAddress;
+
+    // On-chain NFTInfo
+    struct NFTInfo {
+        string name;
+    }
+
+    // Mapping tokenId => AudioInfo
+    mapping(uint256 => NFTInfo) public nftInfos;
 
     /// @notice Emitted when an NFT is locked
     event Locked(uint256 tokenId);
@@ -131,9 +141,14 @@ contract DeciblingNFT is
     /**
      * @dev Mints a new NFT with the given parameters.
      * @param proof Merkle proof that the caller is authorized to mint
-     * @param uri URI of the NFT's metadata
+     * @param hashData Hash (SHA256) of the raw NFT file
+     * @param name Name of the NFT's metadata
      */
-    function mint(bytes32[] calldata proof, string memory uri) external {
+    function mint(
+        bytes32[] calldata proof,
+        string memory hashData,
+        string memory name
+    ) external {
         // Validate merkle proof || skip if Merkle Root = 0
         if (_merkleRoot != bytes32(0)) {
             // bytes32 merkleLeaf = keccak256(bytes.concat(keccak256(abi.encode(_msgSender()))));
@@ -145,13 +160,16 @@ contract DeciblingNFT is
         }
 
         // Hash the URI and check if it's unique
-        bytes32 uriHash = keccak256(abi.encodePacked(uri));
+        bytes32 uriHash = keccak256(abi.encodePacked(hashData));
         require(!usedURIHashes[uriHash], "URI already exists");
 
-        uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter.current();
         _safeMint(msg.sender, tokenId);
-        _setTokenURI(tokenId, uri);
+        _setTokenURI(tokenId, hashData);
+
+        // Set storage
+        nftInfos[tokenId].name = name;
 
         // Mark URI hash as used
         usedURIHashes[uriHash] = true;
@@ -192,6 +210,34 @@ contract DeciblingNFT is
         override(ERC721Upgradeable, ERC721URIStorageUpgradeable)
         returns (string memory)
     {
-        return super.tokenURI(tokenId);
+        string memory rawURI = super.tokenURI(tokenId);
+        string memory tokenIDstring = tokenId.toString();
+        string memory defaultBaseURL = "https://meta.decibling.com/";
+        bytes memory dataURI = abi.encodePacked(
+            "{",
+            '"hash_sha256":"',
+            rawURI,
+            '",',
+            '"name":"',
+            nftInfos[tokenId].name,
+            '",',
+            '"image":"',
+            defaultBaseURL,
+            "image/",
+            tokenIDstring,
+            '",',
+            '"external_link":"',
+            defaultBaseURL,
+            tokenIDstring,
+            '"',
+            "}"
+        );
+        return
+            string(
+                abi.encodePacked(
+                    "data:application/json;base64,",
+                    Base64.encode(dataURI)
+                )
+            );
     }
 }

@@ -54,7 +54,7 @@ module.exports = {
 
   },
   gasReporter: {
-    enabled: false,
+    enabled: (process.env.REPORT_GAS) ? true : false,
     coinmarketcap: "c9e4cd6a-851e-4aea-a372-43eede88dd18"
   },
   etherscan: {

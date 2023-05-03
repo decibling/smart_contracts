@@ -1,4 +1,7 @@
-const { ethers, upgrades } = require("hardhat");
+const {
+    ethers,
+    upgrades
+} = require("hardhat");
 
 async function main() {
     const [deployer] = await ethers.getSigners();
@@ -11,7 +14,9 @@ async function main() {
 
     // Deploy DeciblingNFT contract
     const DeciblingNFT = await ethers.getContractFactory("DeciblingNFT");
-    const deciblingNFT = await upgrades.deployProxy(DeciblingNFT, [], { initializer: "initialize" });
+    const deciblingNFT = await upgrades.deployProxy(DeciblingNFT, [], {
+        initializer: "initialize"
+    });
     await deciblingNFT.deployed();
     console.log("DeciblingNFT deployed to:", deciblingNFT.address);
 
@@ -19,11 +24,22 @@ async function main() {
     const DeciblingAuctionV2 = await ethers.getContractFactory("DeciblingAuctionV2");
     const deciblingAuctionV2 = await upgrades.deployProxy(
         DeciblingAuctionV2,
-        [deciblingNFT.address, myToken.address, deployer.address],
-        { initializer: "initialize" }
+        [deciblingNFT.address, myToken.address, deployer.address], {
+            initializer: "initialize"
+        }
     );
     await deciblingAuctionV2.deployed();
     console.log("DeciblingAuctionV2 deployed to:", deciblingAuctionV2.address);
+
+    // await upgrades.forceImport(
+    //     "0x88F1aa5e2affcee8577111E3f417F129Fe8464A2", DeciblingNFT
+    // );
+    // const deciblingNFT = await upgrades.validateUpgrade(
+    //     "0x88F1aa5e2affcee8577111E3f417F129Fe8464A2", DeciblingNFT
+    // );
+    // const deciblingNFT = await upgrades.upgradeProxy(
+    //     "0x88F1aa5e2affcee8577111E3f417F129Fe8464A2", DeciblingNFT
+    // );
 }
 
 main()
