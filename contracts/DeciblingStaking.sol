@@ -292,12 +292,13 @@ contract DeciblingStaking is
             amount <= stakers[id][msg.sender].totalDeposit,
             "DeciblingStaking: The amount must be smaller than your current staked"
         );
+
+        _claim(id);
+
         require(
             token.transfer(msg.sender, amount),
             "DeciblingStaking: Transfer failed"
         );
-
-        _claim(id);
 
         stakers[id][msg.sender].totalDeposit -= amount;
         pools[id].totalDeposit -= amount;
