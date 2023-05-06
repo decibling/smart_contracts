@@ -155,6 +155,7 @@ contract DeciblingAuctionV2 is
             currentNFT.isBidding == false,
             "DeciblingAuction: This item is bidding"
         ); // Check is not bidding
+        nftContract.approve(owner(), itemId);
         nftContract.lockNFT(itemId); // Lock item to avoid NFT owner transfer during auction
 
         auctions[itemId] = Auction({
@@ -265,8 +266,8 @@ contract DeciblingAuctionV2 is
         emit SettleBid(
             itemId,
             oldOwner,
-            topBid.user,
-            topBid.price,
+            topBidUser,
+            topBidPrice,
             platformValue,
             currentNFT.saleCount
         );
