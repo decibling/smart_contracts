@@ -2,6 +2,11 @@
   "manifestVersion": "3.2",
   "proxies": [
     {
+      "address": "0xC0725e1FaEA28e42EA7678Da8326382A29007a60",
+      "txHash": "0xce351f7620fefce37063b4c0348995265b23fefac9989dbb0ed887528f21cd4e",
+      "kind": "uups"
+    },
+    {
       "address": "0x1051bc3b5b9C5C66574C88c54B2a2E0bCa79C567",
       "kind": "uups"
     },
@@ -11,8 +16,140 @@
     }
   ],
   "impls": {
-    "7ee168141fc10a410be01a24fac1592bc315649e7b3bac5cf9490a637645f0a4": {
-      "address": "0xF30213565f300E948857078879F04fEa6992db93",
+    "79f7564c4965283ec2910876207f98222586527c89093735fb6ea3d81a9cc387": {
+      "address": "0xcD6FD8284B4916288d238D059b4C9F54228abd6a",
+      "txHash": "0x315c0867eb4d6ea026ef4103fa6c520a8e95cba93d49071b4224c57d911a32de",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:80"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC1967UpgradeUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "UUPSUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol:107"
+          },
+          {
+            "label": "token",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_contract(IERC20)2402",
+            "contract": "DeciblingFaucet",
+            "src": "contracts/DeciblingFaucet.sol:22"
+          },
+          {
+            "label": "faucets",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "DeciblingFaucet",
+            "src": "contracts/DeciblingFaucet.sol:24"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IERC20)2402": {
+            "label": "contract IERC20",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "876116c5e4d85a03bdb7e9d0338d2b52a450c26adaa1ae710a77089e002786b0": {
+      "address": "0x7654f29D42a599Da66FcbC55E497C251167Aa44f",
       "layout": {
         "solcVersion": "0.8.9",
         "storage": [
@@ -79,7 +216,7 @@
             "slot": "151",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:197"
           },
           {
             "label": "__gap",
@@ -93,7 +230,7 @@
             "label": "token",
             "offset": 0,
             "slot": "251",
-            "type": "t_contract(IERC20)4310",
+            "type": "t_contract(IERC20)4886",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:18"
           },
@@ -101,7 +238,7 @@
             "label": "nftContract",
             "offset": 0,
             "slot": "252",
-            "type": "t_contract(DeciblingNFT)6768",
+            "type": "t_contract(DeciblingNFTV2)7549",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:19"
           },
@@ -133,7 +270,7 @@
             "label": "nftAuctionInfos",
             "offset": 0,
             "slot": "256",
-            "type": "t_mapping(t_uint256,t_struct(NftAuctionInfo)5579_storage)",
+            "type": "t_mapping(t_uint256,t_struct(NftAuctionInfo)6202_storage)",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:47"
           },
@@ -141,7 +278,7 @@
             "label": "auctions",
             "offset": 0,
             "slot": "257",
-            "type": "t_mapping(t_uint256,t_struct(Auction)5572_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Auction)6195_storage)",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:48"
           },
@@ -149,7 +286,7 @@
             "label": "topBids",
             "offset": 0,
             "slot": "258",
-            "type": "t_mapping(t_uint256,t_struct(TopBid)5559_storage)",
+            "type": "t_mapping(t_uint256,t_struct(TopBid)6182_storage)",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:49"
           }
@@ -171,27 +308,27 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(DeciblingNFT)6768": {
-            "label": "contract DeciblingNFT",
+          "t_contract(DeciblingNFTV2)7549": {
+            "label": "contract DeciblingNFTV2",
             "numberOfBytes": "20"
           },
-          "t_contract(IERC20)4310": {
+          "t_contract(IERC20)4886": {
             "label": "contract IERC20",
             "numberOfBytes": "20"
           },
-          "t_mapping(t_uint256,t_struct(Auction)5572_storage)": {
+          "t_mapping(t_uint256,t_struct(Auction)6195_storage)": {
             "label": "mapping(uint256 => struct DeciblingAuctionV2.Auction)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(NftAuctionInfo)5579_storage)": {
+          "t_mapping(t_uint256,t_struct(NftAuctionInfo)6202_storage)": {
             "label": "mapping(uint256 => struct DeciblingAuctionV2.NftAuctionInfo)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(TopBid)5559_storage)": {
+          "t_mapping(t_uint256,t_struct(TopBid)6182_storage)": {
             "label": "mapping(uint256 => struct DeciblingAuctionV2.TopBid)",
             "numberOfBytes": "32"
           },
-          "t_struct(Auction)5572_storage": {
+          "t_struct(Auction)6195_storage": {
             "label": "struct DeciblingAuctionV2.Auction",
             "members": [
               {
@@ -233,7 +370,7 @@
             ],
             "numberOfBytes": "192"
           },
-          "t_struct(NftAuctionInfo)5579_storage": {
+          "t_struct(NftAuctionInfo)6202_storage": {
             "label": "struct DeciblingAuctionV2.NftAuctionInfo",
             "members": [
               {
@@ -257,7 +394,7 @@
             ],
             "numberOfBytes": "96"
           },
-          "t_struct(TopBid)5559_storage": {
+          "t_struct(TopBid)6182_storage": {
             "label": "struct DeciblingAuctionV2.TopBid",
             "members": [
               {
@@ -286,9 +423,9 @@
         }
       }
     },
-    "f25d94b7bf406f3541841eab87a7b4a6701305e485e7cdcbf6c44e46bda5244c": {
-      "address": "0x818e1a44ddc8f80381BD10b6b5a5BD64069d1927",
-      "txHash": "0x96fedcf6c5baccff9b08f150bd330fd5097594f3caaf7f8f7c6613a098fd8344",
+    "8280687a3e5b6b7c4c0b705960cd1ca0fabd535b98c99f47d5b1ae0f3f34f5d2": {
+      "address": "0x786C7164A2Ad7B7caF5aA5f3634a68A65a77C6aE",
+      "txHash": "0x852a85aeaea5642cea9e409e2829ddd6081cf96bc8f1c29186ae72a45442948f",
       "layout": {
         "solcVersion": "0.8.9",
         "storage": [
@@ -355,7 +492,7 @@
             "slot": "151",
             "type": "t_array(t_uint256)50_storage",
             "contract": "ERC1967UpgradeUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:211"
+            "src": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol:197"
           },
           {
             "label": "__gap",
@@ -369,7 +506,7 @@
             "label": "token",
             "offset": 0,
             "slot": "251",
-            "type": "t_contract(IERC20)4310",
+            "type": "t_contract(IERC20)4299",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:18"
           },
@@ -377,7 +514,7 @@
             "label": "nftContract",
             "offset": 0,
             "slot": "252",
-            "type": "t_contract(DeciblingNFT)6776",
+            "type": "t_contract(DeciblingNFTV2)6759",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:19"
           },
@@ -409,7 +546,7 @@
             "label": "nftAuctionInfos",
             "offset": 0,
             "slot": "256",
-            "type": "t_mapping(t_uint256,t_struct(NftAuctionInfo)5579_storage)",
+            "type": "t_mapping(t_uint256,t_struct(NftAuctionInfo)5568_storage)",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:47"
           },
@@ -417,7 +554,7 @@
             "label": "auctions",
             "offset": 0,
             "slot": "257",
-            "type": "t_mapping(t_uint256,t_struct(Auction)5572_storage)",
+            "type": "t_mapping(t_uint256,t_struct(Auction)5561_storage)",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:48"
           },
@@ -425,7 +562,7 @@
             "label": "topBids",
             "offset": 0,
             "slot": "258",
-            "type": "t_mapping(t_uint256,t_struct(TopBid)5559_storage)",
+            "type": "t_mapping(t_uint256,t_struct(TopBid)5548_storage)",
             "contract": "DeciblingAuctionV2",
             "src": "contracts/DeciblingAuctionV2.sol:49"
           }
@@ -447,27 +584,27 @@
             "label": "bool",
             "numberOfBytes": "1"
           },
-          "t_contract(DeciblingNFT)6776": {
-            "label": "contract DeciblingNFT",
+          "t_contract(DeciblingNFTV2)6759": {
+            "label": "contract DeciblingNFTV2",
             "numberOfBytes": "20"
           },
-          "t_contract(IERC20)4310": {
+          "t_contract(IERC20)4299": {
             "label": "contract IERC20",
             "numberOfBytes": "20"
           },
-          "t_mapping(t_uint256,t_struct(Auction)5572_storage)": {
+          "t_mapping(t_uint256,t_struct(Auction)5561_storage)": {
             "label": "mapping(uint256 => struct DeciblingAuctionV2.Auction)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(NftAuctionInfo)5579_storage)": {
+          "t_mapping(t_uint256,t_struct(NftAuctionInfo)5568_storage)": {
             "label": "mapping(uint256 => struct DeciblingAuctionV2.NftAuctionInfo)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint256,t_struct(TopBid)5559_storage)": {
+          "t_mapping(t_uint256,t_struct(TopBid)5548_storage)": {
             "label": "mapping(uint256 => struct DeciblingAuctionV2.TopBid)",
             "numberOfBytes": "32"
           },
-          "t_struct(Auction)5572_storage": {
+          "t_struct(Auction)5561_storage": {
             "label": "struct DeciblingAuctionV2.Auction",
             "members": [
               {
@@ -509,7 +646,7 @@
             ],
             "numberOfBytes": "192"
           },
-          "t_struct(NftAuctionInfo)5579_storage": {
+          "t_struct(NftAuctionInfo)5568_storage": {
             "label": "struct DeciblingAuctionV2.NftAuctionInfo",
             "members": [
               {
@@ -533,7 +670,7 @@
             ],
             "numberOfBytes": "96"
           },
-          "t_struct(TopBid)5559_storage": {
+          "t_struct(TopBid)5548_storage": {
             "label": "struct DeciblingAuctionV2.TopBid",
             "members": [
               {

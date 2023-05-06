@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Interest.sol";
-import "./DeciblingReserve.sol";
+import "./interfaces/IDeciblingReserve.sol";
 
 contract DeciblingStaking is
     Initializable,
@@ -24,7 +24,7 @@ contract DeciblingStaking is
     uint256 private constant DEFAULT_HARD_CAP = 10_000_000 * 10 ** 18;
 
     IERC20 public token;
-    DeciblingReserve public treasury;
+    IDeciblingReserve public treasury;
     bytes32 public merkleRoot;
 
     struct StakeInfo {
@@ -396,7 +396,7 @@ contract DeciblingStaking is
     function setReserveContract(
         address addr
     ) external onlyOwner validAddress(addr) {
-        treasury = DeciblingReserve(addr);
+        treasury = IDeciblingReserve(addr);
     }
 
     function _getNow() internal view virtual returns (uint256) {

@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/utils/Base64.sol";
  * @title DeciblingNFT
  * @dev An upgradeable NFT contract for minting audio-related NFTs, leveraging OpenZeppelin's upgradeable contracts library.
  */
-contract DeciblingNFTV2 is
+contract DeciblingNFT is
     Initializable,
     ERC721Upgradeable,
     ERC721URIStorageUpgradeable,

@@ -40,7 +40,7 @@
         "./DeciblingNFT.sol"
       ],
       "versionPragmas": [
-        "^0.8.9"
+        "^0.8.0"
       ],
       "artifacts": [
         "DeciblingAuctionV2"
@@ -359,7 +359,7 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.2"
       ],
       "artifacts": [
         "CountersUpgradeable"
@@ -521,7 +521,7 @@
         "^0.8.0"
       ],
       "artifacts": [
-        "MerkleProofUpgradeable"
+        "StorageSlotUpgradeable"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol": {
@@ -553,15 +553,12 @@
           }
         }
       },
-      "imports": [
-        "../ERC721Upgradeable.sol",
-        "../../../proxy/utils/Initializable.sol"
-      ],
+      "imports": [],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "ERC721URIStorageUpgradeable"
+        "IERC165"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol": {
@@ -594,13 +591,21 @@
         }
       },
       "imports": [
-        "../proxy/utils/Initializable.sol"
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "./Interest.sol",
+        "./interfaces/IDeciblingReserve.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.9"
       ],
       "artifacts": [
-        "ContextUpgradeable"
+        "DeciblingStaking"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
@@ -634,10 +639,11 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.1"
+        "^0.8.9"
       ],
       "artifacts": [
-        "AddressUpgradeable"
+        "DSMath",
+        "Interest"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts/utils/math/Math.sol": {
@@ -707,13 +713,19 @@
         }
       },
       "imports": [
-        "./math/MathUpgradeable.sol"
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "./interfaces/IDeciblingStaking.sol"
       ],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.9"
       ],
       "artifacts": [
-        "StringsUpgradeable"
+        "DeciblingReserve"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol": {
@@ -746,14 +758,13 @@
         }
       },
       "imports": [
-        "./IERC165Upgradeable.sol",
-        "../../proxy/utils/Initializable.sol"
+        "../IERC20.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "ERC165Upgradeable"
+        "IERC20Metadata"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol": {
@@ -786,13 +797,15 @@
         }
       },
       "imports": [
-        "../../utils/introspection/IERC165Upgradeable.sol"
+        "./IERC20.sol",
+        "./extensions/IERC20Metadata.sol",
+        "../../utils/Context.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
       ],
       "artifacts": [
-        "IERC721Upgradeable"
+        "ERC20"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol": {
@@ -829,7 +842,7 @@
         "^0.8.0"
       ],
       "artifacts": [
-        "IERC721ReceiverUpgradeable"
+        "Context"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/token/ERC721/extensions/IERC721MetadataUpgradeable.sol": {
@@ -862,10 +875,7 @@
         }
       },
       "imports": [
-        "../IERC721Upgradeable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
       ],
       "artifacts": [
         "IERC721MetadataUpgradeable"
@@ -902,10 +912,10 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.9"
       ],
       "artifacts": [
-        "MathUpgradeable"
+        "FroggilyToken"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol": {
@@ -937,9 +947,8 @@
           }
         }
       },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/ERC20.sol"
       ],
       "artifacts": [
         "IERC165Upgradeable"
@@ -976,10 +985,10 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.9"
       ],
       "artifacts": [
-        "IERC1822ProxiableUpgradeable"
+        "MyToken"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol": {
@@ -1012,17 +1021,18 @@
         }
       },
       "imports": [
-        "../beacon/IBeaconUpgradeable.sol",
-        "../../interfaces/draft-IERC1822Upgradeable.sol",
-        "../../utils/AddressUpgradeable.sol",
-        "../../utils/StorageSlotUpgradeable.sol",
-        "../utils/Initializable.sol"
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol"
       ],
       "versionPragmas": [
-        "^0.8.2"
+        "^0.8.9"
       ],
       "artifacts": [
-        "ERC1967UpgradeUpgradeable"
+        "DeciblingFaucet"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol": {
@@ -1056,10 +1066,10 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.4"
       ],
       "artifacts": [
-        "StorageSlotUpgradeable"
+        "IDeciblingNFT"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/node_modules/@openzeppelin/contracts-upgradeable/proxy/beacon/IBeaconUpgradeable.sol": {
@@ -1214,11 +1224,10 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.9"
+        "^0.8.4"
       ],
       "artifacts": [
-        "DSMath",
-        "Interest"
+        "IDeciblingStaking"
       ]
     },
     "/home/zack/projects/hexhive/decibling/contract-tests/contracts/DeciblingReserve.sol": {
@@ -1251,11 +1260,7 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol",
-        "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
+        "@openzeppelin/contracts/token/ERC721/IERC721.sol",
         "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "./DeciblingStaking.sol"
       ],

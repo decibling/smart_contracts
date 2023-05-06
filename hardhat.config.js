@@ -38,6 +38,10 @@ module.exports = {
       url: process.env.GOERLI_URL,
       accounts: [process.env.ACCOUNT_KEY],
     },
+    sepolia: {
+      url: process.env.SEPOLIA_URL,
+      accounts: [process.env.ACCOUNT_KEY],
+    },
     arb: {
       url: process.env.ARB_URL,
       accounts: [process.env.ACCOUNT_KEY],
@@ -58,8 +62,6 @@ module.exports = {
     coinmarketcap: "c9e4cd6a-851e-4aea-a372-43eede88dd18"
   },
   etherscan: {
-    apiKey: {
-      arbitrumGoerli : "mTDwIo0RdADc8P7ULK9fIXk0vPfHWXx3"
-    }
+    apiKey: "KZBBIVQ6VN1JVQP1I85DFZ3H5WKGEFGJGI"
   },
 };
