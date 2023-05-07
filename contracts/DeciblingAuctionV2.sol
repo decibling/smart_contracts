@@ -265,8 +265,8 @@ contract DeciblingAuctionV2 is
         emit SettleBid(
             itemId,
             oldOwner,
-            topBid.user,
-            topBid.price,
+            topBidUser,
+            topBidPrice,
             platformValue,
             currentNFT.saleCount
         );
