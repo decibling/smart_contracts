@@ -12,11 +12,11 @@ const {
   expect
 } = require("chai");
 
-const DeciblingAuction = artifacts.require("DeciblingAuction");
+const DeciblingAuction = artifacts.require("DeciblingAuctionV2");
 const Token = artifacts.require("FroggilyToken");
 const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
-contract("DeciblingAuction", (accounts) => {
+contract("DeciblingAuctionV2", (accounts) => {
   const [
     admin,
     smartContract,

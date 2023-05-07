@@ -12,7 +12,7 @@ const hre = require("hardhat");
 
 const { expect } = require("chai");
 
-const DeciblingAuction = artifacts.require("DeciblingAuction");
+const DeciblingAuction = artifacts.require("DeciblingAuctionV2");
 const Token = artifacts.require("FroggilyToken");
 
 const weiToEther = (n) => {
@@ -23,7 +23,7 @@ const toPercent = (n) => {
   return n / 1e3;
 };
 
-contract("DeciblingAuction", (accounts) => {
+contract("DeciblingAuctionV2", (accounts) => {
   const [
     admin,
     artist,

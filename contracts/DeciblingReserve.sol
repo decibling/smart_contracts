@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./DeciblingStaking.sol";
+import "./interfaces/IDeciblingStaking.sol";
 
 contract DeciblingReserve is
     Initializable,
@@ -19,7 +19,7 @@ contract DeciblingReserve is
     using StringsUpgradeable for uint256;
 
     IERC20 public token;
-    DeciblingStaking public staking;
+    IDeciblingStaking public staking;
 
     uint8 public payoutFee;
 
@@ -105,7 +105,7 @@ contract DeciblingReserve is
 
     function setStakingContract(address addr) external onlyOwner {
         require(addr != address(0), "DeciblingReserve: invalid contract address");
-        staking = DeciblingStaking(addr);
+        staking = IDeciblingStaking(addr);
     }
 
     /**
