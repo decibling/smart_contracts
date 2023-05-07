@@ -31,6 +31,7 @@ contract("DeciblingStaking", () => {
   const ONE_BILLION = BigNumber.from("1000000000000000000000000000");
   const TEN_MILLION = BigNumber.from("10000000000000000000000000");
   const ONE_MILLION = BigNumber.from("1000000000000000000000000");
+  const ONE_THOUSAND = BigNumber.from("1000000000000000000000");
 
   const defaultPoolId = "decibling_pool";
 
@@ -43,7 +44,7 @@ contract("DeciblingStaking", () => {
       user2 = accounts[3];
       
       const MyToken = await ethers.getContractFactory("FroggilyToken");
-      myToken = await MyToken.deploy();
+      let myToken = await MyToken.deploy();
       this.token = await myToken.deployed();
 
       await this.token.transfer(user1.address, ONE_BILLION);
@@ -104,24 +105,24 @@ contract("DeciblingStaking", () => {
       });
     it("stake()", async () => {
         expect(await this.token.balanceOf(this.staking.address)).to.equal(0);
-        expect(await this.token.balanceOf(user1.address)).to.equal(1_000_000_000);
+        expect(await this.token.balanceOf(user1.address)).to.equal(ONE_BILLION);
 
         //approve and stake
         expect(
-          await this.token.connect(user1).approve(this.staking.address, 1_000)
+          await this.token.connect(user1).approve(this.staking.address, ONE_THOUSAND)
         );
         expect(
-          await this.staking.connect(user1).stake(defaultPoolId, 1_000)
+          await this.staking.connect(user1).stake(defaultPoolId, ONE_THOUSAND)
         );
 
         //pool balance
-        expect(await this.token.balanceOf(this.staking.address), 1_000);
+        expect(await this.token.balanceOf(this.staking.address)).to.equal(ONE_THOUSAND);
         //user1 balance
-        expect(await this.token.balanceOf(user1.address), 1_000_000_000 - 1_000);
+        expect(await this.token.balanceOf(user1.address)).to.equal(ONE_BILLION.sub(ONE_THOUSAND));
       }),
       it("stake() with zero value", async () => {
         expect(await this.token.balanceOf(this.staking.address)).to.equal(0);
-        expect(await this.token.balanceOf(user1.address)).to.equal(1_000_000_000);
+        expect(await this.token.balanceOf(user1.address)).to.equal(ONE_BILLION);
 
         //approve and stake
         expect(
@@ -134,32 +135,32 @@ contract("DeciblingStaking", () => {
     describe("unstake cases", async () => {
       beforeEach(async() => {
         expect(await this.token.balanceOf(this.staking.address)).to.equal(0);
-        expect(await this.token.balanceOf(user1.address)).to.equal(1_000_000_000);
+        expect(await this.token.balanceOf(user1.address)).to.equal(ONE_BILLION);
 
         //approve and stake
         expect(
-          await this.token.connect(user1).approve(this.staking.address, 1_000)
+          await this.token.connect(user1).approve(this.staking.address, ONE_THOUSAND)
         );
         expect(
-          await this.staking.connect(user1).stake(defaultPoolId, 1_000)
+          await this.staking.connect(user1).stake(defaultPoolId, ONE_THOUSAND)
         );
 
         //pool balance
-        expect(await this.token.balanceOf(this.staking.address), 1_000);
+        expect(await this.token.balanceOf(this.staking.address), ONE_THOUSAND);
         //user1 balance
-        expect(await this.token.balanceOf(user1.address), 1_000_000_000 - 1_000);
+        expect(await this.token.balanceOf(user1.address), ONE_BILLION.sub(ONE_THOUSAND));
       }),
 
       it("unstake()", async() => {
         // unstake
         expect(
-          await this.staking.connect(user1).unstake(defaultPoolId, 1_000)
+          await this.staking.connect(user1).unstake(defaultPoolId, ONE_THOUSAND)
         );
 
         //pool balance
-        expect(await this.token.balanceOf(this.staking.address), 1_000 - 1_000);
+        expect(await this.token.balanceOf(this.staking.address), 0);
         //user1 balance
-        expect(await this.token.balanceOf(user1.address), 1_000_000_000 - 1_000 + 1_000);
+        expect(await this.token.balanceOf(user1.address), ONE_BILLION);
       }),
 
       it("unstake() with zero value", async () => {
@@ -172,13 +173,13 @@ contract("DeciblingStaking", () => {
       it("unstake() with value larger than staked amount", async () => {
         // unstake
         await expect(
-          this.staking.connect(user1).unstake(defaultPoolId, 2_000)
+          this.staking.connect(user1).unstake(defaultPoolId, ONE_THOUSAND.add(ONE_THOUSAND))
         ).to.be.revertedWith('DeciblingStaking: The amount must be smaller than your current staked');
       }),
       it("unstake() to invalid pool id", async () => {
         // unstake
         await expect(
-          this.staking.connect(user1).unstake("invalid_pool", 1_000)
+          this.staking.connect(user1).unstake("invalid_pool", ONE_THOUSAND)
         ).to.be.revertedWith('DeciblingStaking: this pool is not exist');
       })
 
@@ -240,7 +241,7 @@ contract("DeciblingStaking", () => {
         await ethers.provider.send("evm_setNextBlockTimestamp", [depositTime.add(depositTime, BigNumber.from(5 * 86400)).toNumber()]);
         await ethers.provider.send("evm_mine");
 
-        console.log(await this.staking.connect(user1).payout(poolId));
+        console.log(await this.staking.connect(user1).payout(poolId, user1.address, false));
       }),
       it("newPool payout 1 stake", async() => {
         const poolId = "new_pool";
@@ -262,9 +263,9 @@ contract("DeciblingStaking", () => {
         await ethers.provider.send("evm_mine");
 
         // console.log(await this.staking.connect(artist).payout(poolId));
-        console.log(await this.staking.connect(user1).payout(poolId));
+        console.log(await this.staking.connect(user1).payout(poolId, user1.address, false));
       }),
-      it.only("newPool payout 2 stakes", async() => {
+      it("newPool payout 2 stakes", async() => {
         const poolId = "new_pool";
 
         await this.staking.connect(artist).newPool([], poolId);
@@ -283,7 +284,7 @@ contract("DeciblingStaking", () => {
         await ethers.provider.send("evm_setNextBlockTimestamp", [depositTime.toNumber() + (10 * 86400)]);
         await ethers.provider.send("evm_mine");
 
-        let payout = await this.staking.connect(user1).payout(poolId);
+        let payout = await this.staking.connect(user1).payout(poolId, user1.address, false);
         let age = (poolInfo.r / 100) * (10 / 365);
         let rate = Math.pow(Math.exp(1), age);
         let profit = (ONE_MILLION * rate) - ONE_MILLION;
@@ -299,7 +300,7 @@ contract("DeciblingStaking", () => {
         await ethers.provider.send("evm_mine");
 
         // console.log(await this.staking.connect(artist).payout(poolId));
-        payout = await this.staking.connect(user1).payout(poolId);
+        payout = await this.staking.connect(user1).payout(poolId, user1.address, false);
         age = (poolInfo.r / 100) * (10 / 365);
         rate = Math.pow(Math.exp(1), age);
         totalNewDeposit = ONE_MILLION.add(ONE_MILLION).add(BigInt(profit));

@@ -159,6 +159,9 @@ contract DeciblingNFT is
             );
         }
 
+        bytes memory nameBytes = bytes(name);
+        require(nameBytes.length != 0, "Invalid name");
+
         // Hash the URI and check if it's unique
         bytes32 uriHash = keccak256(abi.encodePacked(hashData));
         require(!usedURIHashes[uriHash], "URI already exists");

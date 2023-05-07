@@ -41,6 +41,8 @@ const { createMerkleTree, getMerkleProof } = require("./helper/genMerkle");
 //     }
 // }
 
+const jsonPrefix = 'data:application/json;base64,';
+
 describe("DeciblingNFT", function () {
     let DeciblingNFT, deciblingNFT, owner, addr1, addr2, addr3, addr4;
 
@@ -61,38 +63,29 @@ describe("DeciblingNFT", function () {
     });
 
     describe("Minting from owner", function () {
-        it("Should mint a new NFT with the correct URI", async function () {
-            const proof = []
-            const uri = "https://example.com/testaudio";
-            await deciblingNFT.connect(owner).mint(proof, uri);
+        it("Should mint a new NFT with the correct name and owner", async function () {
+            const proof = [];
+            const hash = "hashdata";
+            const name = "testaudio";
+            await deciblingNFT.connect(owner).mint(proof, hash, name);
 
-            const tokenId = 0;
+            const tokenId = 1;
             expect(await deciblingNFT.ownerOf(tokenId)).to.equal(owner.address);
-            expect(await deciblingNFT.tokenURI(tokenId)).to.equal(uri);
+            expect(await deciblingNFT.nftInfos(tokenId)).to.equal(name);
+
+            let dat = await deciblingNFT.tokenURI(tokenId);
+            let json = JSON.parse(Buffer.from((dat.substr(jsonPrefix.length)), 'base64'));
+            expect(json.hash_sha256).to.equal(hash);
+            expect(json.name).to.equal(name);
+        });
+
+        it("Should fail to mint a new NFT with an empty name", async function () {
+            const proof = [];
+            const hash = "hashdata";
+            const name = "";
+            await expect(deciblingNFT.connect(owner).mint(proof, hash, name)).to.be.revertedWith("Invalid name");
         });
     });
-
-    // describe("Minting from artists", function () {
-    //     it("Should fail mint NFT if not on the list", async function () {
-    //         let root = buildTree([
-    //             [owner.address],
-    //             [addr1.address],
-    //         ]);
-
-    //         expect(await deciblingNFT.connect(owner).setMerkleRoot(root))
-
-    //         const name = "test";
-    //         const uri = "https://example.com/testaudio";
-    //         expect(await deciblingNFT.connect(addr1).mint(obtainProof(addr1.address), name, uri));
-    //     });
-    // });
-
-    // describe("Upgrading", function () {
-    //     it("Should be able to upgrade the contract", async function () {
-    //         const newImplementation = await ethers.getContractFactory("DeciblingNFT");
-    //         await upgrades.prepareUpgrade(deciblingNFT.address, newImplementation);
-    //     });
-    // });
 });
 
 describe("DeciblingNFT with Merkle Proof", function () {
@@ -117,19 +110,25 @@ describe("DeciblingNFT with Merkle Proof", function () {
     });
 
     it("Mint with valid proof", async () => {
-        const uri = "https://ipfs.io/ipfs/VALID_AUDIO";
+        const hash = "hashdata";
+        const name = "testaudio";
 
-        await expect(deciblingNFT.connect(addr1).mint(validProof, uri))
+        await expect(deciblingNFT.connect(addr1).mint(validProof, hash, name))
             .to.emit(deciblingNFT, "Minted")
-            .withArgs(0);
+            .withArgs(1);
 
-        const tokenURI = await deciblingNFT.tokenURI(0);
-        expect(tokenURI).to.equal(uri);
+        const audioInfo = await deciblingNFT.nftInfos(1);
+        expect(audioInfo).to.equal(name);
+        let dat = await deciblingNFT.tokenURI(1);
+        let json = JSON.parse(Buffer.from((dat.substr(jsonPrefix.length)), 'base64'));
+        expect(json.hash_sha256).to.equal(hash);
+        expect(json.name).to.equal(name);
     });
 
     it("Mint with invalid proof", async () => {
-        const uri = "https://ipfs.io/ipfs/INVALID_AUDIO";
+        const hash = "hashdata";
+        const name = "testaudio";
 
-        await expect(deciblingNFT.connect(addr1).mint(invalidProof, uri)).to.be.revertedWith("Invalid proof");
+        await expect(deciblingNFT.connect(addr1).mint(invalidProof, hash, name)).to.be.revertedWith("Invalid proof");
     });
 });
