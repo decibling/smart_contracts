@@ -136,6 +136,12 @@ contract DeciblingAuctionV2 is
             currentNftOwner == msg.sender && currentNftOwner != address(0),
             "DeciblingAuction: You did not own this item"
         );
+        // Add allowance check for the NFT
+        require(
+            nftContract.isApprovedForAll(currentNftOwner, address(this)) ||
+                nftContract.getApproved(itemId) == address(this),
+            "DeciblingAuction: Auction contract not approved to manage the NFT"
+        );
         require(
             startTime < endTime,
             "DeciblingAuction: Start time must be before end time"
