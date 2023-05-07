@@ -1,30 +1,3 @@
-# Advanced Sample Hardhat Project
-
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
-
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.js
-node scripts/deploy.js
-npx eslint '**/*.js'
-npx eslint '**/*.js' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
-
 # Etherscan verification
 
 To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
@@ -51,6 +24,7 @@ npx hardhat verify --network sepolia 0x20959E89F3d04a6033aa5081056e20A1321352aA 
 
 # Latest test results (May 1, 2023)
 ## Auction
+```
 ·---------------------------|----------------------------|-------------|-----------------------------·
 |    Solc version: 0.8.9    ·  Optimizer enabled: false  ·  Runs: 200  ·  Block limit: 30000000 gas  │
 ····························|····························|·············|······························
@@ -68,8 +42,10 @@ npx hardhat verify --network sepolia 0x20959E89F3d04a6033aa5081056e20A1321352aA 
 ····························|··············|·············|·············|···············|··············
 |  MyToken                  ·           -  ·          -  ·    1328038  ·        4.4 %  ·      87.84  │
 ·---------------------------|--------------|-------------|-------------|---------------|-------------·
+```
 
 ## Staking
+```
 ·-------------------------------------------|----------------------------|-------------|-----------------------------·
 |            Solc version: 0.8.9            ·  Optimizer enabled: false  ·  Runs: 200  ·  Block limit: 30000000 gas  │
 ············································|····························|·············|······························
@@ -105,3 +81,4 @@ npx hardhat verify --network sepolia 0x20959E89F3d04a6033aa5081056e20A1321352aA 
 ············································|··············|·············|·············|···············|··············
 |  FroggilyToken                            ·           -  ·          -  ·    1180904  ·        3.9 %  ·      73.71  │
 ·-------------------------------------------|--------------|-------------|-------------|---------------|-------------·
+```
