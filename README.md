@@ -40,6 +40,14 @@ Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_
 ```shell
 npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 ```
+```
+npx hardhat verify --network sepolia 0x33634B1Cd1B1c5783cA6Eab3E464464644ad7F73 --contract contracts/Token.sol:FroggilyToken
+npx hardhat verify --network sepolia 0xAa8ADb51329BA9640D86Aa10b0F374d97A7B31d9 --contract contracts/DeciblingNFT.sol:DeciblingNFT
+npx hardhat verify --network sepolia 0x6D4b9E456F70504787158491f16c5b6eDC09B3CF --contract contracts/DeciblingReserve.sol:DeciblingReserve
+npx hardhat verify --network sepolia 0x6F53C1836e3988f5DC0645C2c58b399A7497486f --contract contracts/DeciblingAuction.sol:DeciblingAuction
+npx hardhat verify --network sepolia 0xfD269C44f98f2af253f66897F24fBAD7926bcb18 --contract contracts/DeciblingStaking.sol:DeciblingStaking
+npx hardhat verify --network sepolia 0x20959E89F3d04a6033aa5081056e20A1321352aA --contract contracts/DeciblingFaucet.sol:DeciblingFaucet
+```
 
 # Latest test results (May 1, 2023)
 ## Auction

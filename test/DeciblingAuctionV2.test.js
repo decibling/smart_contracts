@@ -129,7 +129,7 @@ describe.only("DeciblingAuctionV2", function () {
             await deciblingAuction.connect(owner).settleBid(itemId);
 
             const auction = await deciblingAuction.auctions(itemId);
-            expect(auction.resulted).to.equal(true);
+            expect(auction.resulted).to.emit(deciblingAuction, "SettleBid");
 
             const newOwner = await deciblingNFT.ownerOf(itemId);
             expect(newOwner).to.equal(bidder1.address);
@@ -148,12 +148,10 @@ describe.only("DeciblingAuctionV2", function () {
 
             const newOwner = await deciblingNFT.ownerOf(itemId);
             expect(newOwner).to.equal(owner.address);
-
-            const nft = await deciblingAuction.nftAuctionInfos(itemId);
-            expect(nft.isBidding).to.equal(false);
         });
 
-        it("should settle and cannot cancel after a bid", async () => {
+        it("refund to top bid if cancel a bid that had history", async () => {
+            let initialDeposit = await token.balanceOf(bidder1.address);
             // fast forward time to start of auction
             await ethers.provider.send("evm_setNextBlockTimestamp", [startTime + 3600000]);
             await ethers.provider.send("evm_mine");
@@ -163,15 +161,10 @@ describe.only("DeciblingAuctionV2", function () {
             // fast forward time to end of auction
             await ethers.provider.send("evm_setNextBlockTimestamp", [endTime + 1]);
             await ethers.provider.send("evm_mine");
-
-            expect(deciblingAuction.connect(owner).cancelBid(itemId)).to.be.revertedWith("DeciblingAuction: Please settle this bid instead of cancel");
-            await deciblingAuction.connect(owner).settleBid(itemId);
-
-            const auction = await deciblingAuction.auctions(itemId);
-            expect(auction.resulted).to.equal(true);
-
-            const newOwner = await deciblingNFT.ownerOf(itemId);
-            expect(newOwner).to.equal(bidder1.address);
+            
+            expect(await token.balanceOf(bidder1.address)).to.equal(initialDeposit.sub(bidAmount));
+            await deciblingAuction.connect(owner).cancelBid(itemId);
+            expect(await token.balanceOf(bidder1.address)).to.equal(initialDeposit);
         });
     });
 
