@@ -293,7 +293,7 @@ contract DeciblingStaking is
             "DeciblingStaking: The amount must be smaller than your current staked"
         );
 
-        _claim(id);
+        claim(id);
 
         require(
             token.transfer(msg.sender, amount),
@@ -308,13 +308,15 @@ contract DeciblingStaking is
 
     function claim(
         string memory id
-    ) external validPool(id) existPool(id) validReserveContract {
+    ) public validPool(id) existPool(id) validReserveContract {
         require(
             treasury.requestPayout(id, msg.sender),
             "DeciblingStaking: request payout failed"
         );
 
-        _claim(id);
+        stakers[id][msg.sender].lastPayout = _getNow();
+
+        emit Claim(id, msg.sender);
     }
 
     /**
@@ -341,12 +343,6 @@ contract DeciblingStaking is
         for (uint i = 0; i < users.length; i++) {
             stakers[id][users[i]].lastPayoutToPoolOwner = _getNow();
         }
-
-        emit Claim(id, msg.sender);
-    }
-
-    function _claim(string memory id) internal {
-        stakers[id][msg.sender].lastPayout = _getNow();
 
         emit Claim(id, msg.sender);
     }

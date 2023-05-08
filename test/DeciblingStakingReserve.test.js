@@ -110,6 +110,27 @@ contract("DeciblingReserve", () => {
         // console.log(await this.token.balanceOf(this.treasury.address));
         // console.log(await this.token.balanceOf(user1.address));
       }),
+      it.only("requestPayout default pool 2 stakes", async () => {
+        expect(await this.token.balanceOf(this.staking.address)).to.equal(0);
+        expect(await this.token.balanceOf(user1.address)).to.equal(ONE_BILLION);
+
+        //approve and stake
+        expect(
+          await this.token.connect(user1).approve(this.staking.address, ONE_MILLION)
+        );
+        expect(
+          await this.staking.connect(user1).stake(defaultPoolId, ONE_MILLION)
+        );
+        expect(
+          await this.token.connect(user1).approve(this.staking.address, ONE_MILLION)
+        );
+        expect(
+          await this.staking.connect(user1).stake(defaultPoolId, ONE_MILLION)
+        );
+        expect(
+          await this.staking.connect(user1).unstake(defaultPoolId, ONE_MILLION)
+        );
+      }),
       it("requestPayout artist pool 1 stake", async () => {
         expect(await this.token.balanceOf(this.staking.address)).to.equal(0);
         expect(await this.token.balanceOf(user1.address)).to.equal(ONE_BILLION);
