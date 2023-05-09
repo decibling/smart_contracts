@@ -149,9 +149,27 @@ contract("DeciblingStaking", () => {
         expect(await this.token.balanceOf(this.staking.address), ONE_THOUSAND);
         //user1 balance
         expect(await this.token.balanceOf(user1.address), ONE_BILLION.sub(ONE_THOUSAND));
+
+        const Treasury = await ethers.getContractFactory("DeciblingReserve");
+        this.treasury = await upgrades.deployProxy(Treasury, [this.token.address], {
+          initializer: "initialize"
+        });
+        await this.staking.deployed();
+  
+        await this.staking.setDefaultPool();
+  
+        //set contracts
+        await this.treasury.setStakingContract(this.staking.address);
+        await this.staking.setReserveContract(this.treasury.address);
+        await this.token.transfer(this.treasury.address, ONE_BILLION);
       }),
 
       it("unstake()", async() => {
+        console.log(await this.staking.connect(user1).payout(defaultPoolId, user1.address, false))
+        // fast forward time to start of auction
+        await ethers.provider.send("evm_setNextBlockTimestamp", [(await time.latest()) + (3600 * 2)]);
+        await ethers.provider.send("evm_mine");
+
         // unstake
         expect(
           await this.staking.connect(user1).unstake(defaultPoolId, ONE_THOUSAND)

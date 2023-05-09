@@ -95,11 +95,6 @@ contract DeciblingStaking is
         _;
     }
 
-    modifier validAddress(address addr) {
-        require(addr != address(0), "DeciblingStaking: not a valid address");
-        _;
-    }
-
     modifier validReserveContract() {
         require(
             address(treasury) != address(0),
@@ -216,8 +211,8 @@ contract DeciblingStaking is
         onlyPoolOwnerOrAdmin(id)
         existPool(id)
         validProof(proof)
-        validAddress(poolOwner)
     {
+        require(poolOwner != address(0), "DeciblingStaking: not a valid address");
         _updatePoolOwner(id, poolOwner);
     }
 
@@ -235,17 +230,11 @@ contract DeciblingStaking is
             pools[id].totalDeposit + amount <= pools[id].hardCap,
             "DeciblingStaking: Hard cap reached, cannot stake more on this pool"
         );
-        require(
-            token.allowance(msg.sender, address(this)) >= amount,
-            "DeciblingStaking : Please set allowance for the deposit"
-        );
-        require(
-            token.transferFrom(msg.sender, address(this), amount),
-            "DeciblingStaking: Transfer failed"
-        );
 
         reinvest(id);
         _stake(id, amount, false);
+
+        token.transferFrom(msg.sender, address(this), amount);
     }
 
     function _stake(
@@ -295,13 +284,10 @@ contract DeciblingStaking is
 
         claim(id);
 
-        require(
-            token.transfer(msg.sender, amount),
-            "DeciblingStaking: Transfer failed"
-        );
-
         stakers[id][msg.sender].totalDeposit -= amount;
         pools[id].totalDeposit -= amount;
+
+        token.transfer(msg.sender, amount);
 
         emit Unstake(id, msg.sender, amount);
     }
@@ -315,7 +301,7 @@ contract DeciblingStaking is
         );
 
         stakers[id][msg.sender].lastPayout = _getNow();
-
+        
         emit Claim(id, msg.sender);
     }
 
@@ -328,22 +314,13 @@ contract DeciblingStaking is
         string memory id,
         address[] calldata users
     ) external validPool(id) existPool(id) validReserveContract {
+        for (uint i = 0; i < users.length; i++) {
+            stakers[id][users[i]].lastPayoutToPoolOwner = _getNow();
+        }
         require(
             treasury.requestPayoutForPoolOwner(id, users),
             "DeciblingStaking: request payout for pool owner failed"
         );
-
-        _batchClaimForPoolProfit(id, users);
-    }
-
-    function _batchClaimForPoolProfit(
-        string memory id,
-        address[] calldata users
-    ) internal {
-        for (uint i = 0; i < users.length; i++) {
-            stakers[id][users[i]].lastPayoutToPoolOwner = _getNow();
-        }
-
         emit Claim(id, msg.sender);
     }
 
@@ -351,7 +328,7 @@ contract DeciblingStaking is
         string memory _pid,
         address user,
         bool forPoolOwner
-    ) public view virtual validAddress(user) returns (uint256 value) {
+    ) public view virtual returns (uint256 value) {
         StakeInfo storage staker = stakers[_pid][user];
         PoolInfo storage pool = pools[_pid];
 
@@ -391,7 +368,7 @@ contract DeciblingStaking is
 
     function setReserveContract(
         address addr
-    ) external onlyOwner validAddress(addr) {
+    ) external onlyOwner {
         treasury = IDeciblingReserve(addr);
     }
 

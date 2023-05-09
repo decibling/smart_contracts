@@ -26,6 +26,7 @@ const {
 const {
   ethers
 } = require("hardhat");
+const testHelpers = require("@openzeppelin/test-helpers");
 
 contract("DeciblingReserve", () => {
   let admin, user1, user2, artist;
@@ -34,6 +35,7 @@ contract("DeciblingReserve", () => {
   const ONE_BILLION = BigNumber.from("1000000000000000000000000000");
   const TEN_MILLION = BigNumber.from("10000000000000000000000000");
   const ONE_MILLION = BigNumber.from("1000000000000000000000000");
+  const ONE = BigNumber.from("1000000000000000000");
 
   const defaultPoolId = "decibling_pool";
 
@@ -110,25 +112,34 @@ contract("DeciblingReserve", () => {
         // console.log(await this.token.balanceOf(this.treasury.address));
         // console.log(await this.token.balanceOf(user1.address));
       }),
-      it.only("requestPayout default pool 2 stakes", async () => {
-        expect(await this.token.balanceOf(this.staking.address)).to.equal(0);
-        expect(await this.token.balanceOf(user1.address)).to.equal(ONE_BILLION);
-
+      it("requestPayout default pool 2 stakes", async () => {
         //approve and stake
         expect(
-          await this.token.connect(user1).approve(this.staking.address, ONE_MILLION)
+          await this.token.connect(user1).approve(this.staking.address, ONE)
         );
         expect(
-          await this.staking.connect(user1).stake(defaultPoolId, ONE_MILLION)
+          await this.staking.connect(user1).stake(defaultPoolId, ONE)
+        );
+
+        // fast forward time to start of auction
+        let depositTime = (await this.staking.stakers(defaultPoolId, user1.address)).depositTime;
+        await ethers.provider.send("evm_setNextBlockTimestamp", [(await time.latest()) + 60]);
+        await ethers.provider.send("evm_mine");
+
+        expect(
+          await this.staking.connect(user1).unstake(defaultPoolId, ONE)
+        );
+
+        // fast forward time to start of auction
+        depositTime = (await this.staking.stakers(defaultPoolId, user1.address)).depositTime;
+        await ethers.provider.send("evm_setNextBlockTimestamp", [(await time.latest()) + 60]);
+        await ethers.provider.send("evm_mine");
+
+        expect(
+          await this.token.connect(user1).approve(this.staking.address, ONE)
         );
         expect(
-          await this.token.connect(user1).approve(this.staking.address, ONE_MILLION)
-        );
-        expect(
-          await this.staking.connect(user1).stake(defaultPoolId, ONE_MILLION)
-        );
-        expect(
-          await this.staking.connect(user1).unstake(defaultPoolId, ONE_MILLION)
+          await this.staking.connect(user1).stake(defaultPoolId, ONE)
         );
       }),
       it("requestPayout artist pool 1 stake", async () => {
@@ -240,11 +251,10 @@ contract("DeciblingReserve", () => {
         payout4 = await this.staking.connect(artist).payout(poolId, user2.address, true);
 
         expect(await this.token.balanceOf(this.staking.address)).to.equal(ONE_MILLION.add(ONE_MILLION.div(2)));
-        expect((await this.token.balanceOf(this.treasury.address))).to.closeTo((ONE_BILLION.
-          sub(BigInt(payAmount+payAmount2+payAmount3+payAmount4))), approx);
+        expect((await this.token.balanceOf(this.treasury.address))).to.closeTo((ONE_BILLION.sub(BigInt(payAmount + payAmount2 + payAmount3 + payAmount4))), approx);
         expect(await this.token.balanceOf(user1.address)).to.closeTo(ONE_BILLION.sub(ONE_MILLION).add(BigInt(payAmount)), approx);
         expect(await this.token.balanceOf(user2.address)).to.closeTo(ONE_BILLION.sub(ONE_MILLION.div(2)).add(BigInt(payAmount3)), approx);
-        expect(await this.token.balanceOf(artist.address)).to.closeTo(BigInt(payAmount2+payAmount4), approx);
+        expect(await this.token.balanceOf(artist.address)).to.closeTo(BigInt(payAmount2 + payAmount4), approx);
 
         //make sure all profit reset after claims
         expect(payout).to.equal(0);
