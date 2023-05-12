@@ -4,7 +4,6 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IDeciblingStaking.sol";
@@ -12,7 +11,6 @@ import "./interfaces/IDeciblingStaking.sol";
 contract DeciblingReserve is
     Initializable,
     OwnableUpgradeable,
-    ReentrancyGuardUpgradeable,
     UUPSUpgradeable
 {
     using AddressUpgradeable for address;
@@ -44,7 +42,6 @@ contract DeciblingReserve is
 
         __Ownable_init();
         __UUPSUpgradeable_init();
-        __ReentrancyGuard_init();
     }
 
     function _authorizeUpgrade(
@@ -54,7 +51,7 @@ contract DeciblingReserve is
     function requestPayout(
         string memory id,
         address user
-    ) external nonReentrant stakingContractOnly returns (bool) {
+    ) external stakingContractOnly returns (bool) {
         uint256 amount = staking.payout(id, user, false);
         require(amount > 0, "DeciblingReserve: Payout must be > 0");
         uint256 feeAmount = (amount * payoutFee) / 100;
@@ -72,7 +69,7 @@ contract DeciblingReserve is
     function requestPayoutForPoolOwner(
         string memory id,
         address[] calldata users
-    ) external nonReentrant stakingContractOnly returns (bool) {
+    ) external stakingContractOnly returns (bool) {
         uint256 totalPaidAmount;
         (address owner,,,,,) = staking.pools(id);
         for (uint i = 0; i < users.length; i++) {
