@@ -6,34 +6,21 @@ const {
 async function main() {
     const [deployer] = await ethers.getSigners();
 
-    // Deploy MyToken contract
-    // const MyToken = await ethers.getContractFactory("FroggilyToken");
-    // const myToken = await MyToken.deploy();
-    // await myToken.deployed();
-    // console.log("FroggilyToken deployed to:", myToken.address);
-
-    // Deploy DeciblingStaking contract
     const DeciblingStaking = await ethers.getContractFactory("DeciblingStaking");
-    // const dbStaking = await upgrades.forceImport(
-    //     "0xAb2B61C03A5c6c6b9CC4810F80b29ae14D75256F",
+    // const dbStaking = await upgrades.deployProxy(
     //     DeciblingStaking,
+    //     ["0x33634B1Cd1B1c5783cA6Eab3E464464644ad7F73"], {
+    //         initializer: "initialize"
+    //     }
     // );
-    // const dbStaking = await upgrades.validateUpgrade(
-    //     "0xAb2B61C03A5c6c6b9CC4810F80b29ae14D75256F",
-    //     DeciblingStaking,
-    // );
-    const dbStaking = await upgrades.upgradeProxy(
-        "0xAb2B61C03A5c6c6b9CC4810F80b29ae14D75256F",
-        DeciblingStaking,
-    );
     // await dbStaking.deployed();
     // console.log("DeciblingStaking deployed to:", dbStaking.address);
 
-    // Deploy DeciblingReserve contract
-    // const DeciblingReserve = await ethers.getContractFactory("DeciblingReserve");
+    // // Deploy DeciblingReserve contract
+    const DeciblingReserve = await ethers.getContractFactory("DeciblingReserve");
     // const dbReserve = await upgrades.deployProxy(
     //     DeciblingReserve,
-    //     [myToken.address], {
+    //     ["0x33634B1Cd1B1c5783cA6Eab3E464464644ad7F73"], {
     //         initializer: "initialize"
     //     }
     // );
@@ -41,10 +28,11 @@ async function main() {
     // console.log("DeciblingReserve deployed to:", dbReserve.address);
 
     // console.log("Settings");
-    // let dbStaking = DeciblingStaking.attach("0xAb2B61C03A5c6c6b9CC4810F80b29ae14D75256F");
-    // let dbReserve = DeciblingReserve.attach("0x77E23179173Ab05a17f7DD546d5bbEd9044560d0");
-    // await dbStaking.setReserveContract(dbReserve.address);
-    // await dbReserve.setStakingContract(dbStaking.address);
+    let dbStaking = DeciblingStaking.attach("0xE2678C127C4b68DC46Bd52b7991613885c5b212A");
+    let dbReserve = DeciblingReserve.attach("0x2cc52A8d5544eD2A5cd66CC0Cb0E2504FC2C55F7");
+    await dbStaking.setReserveContract(dbReserve.address);
+    await dbReserve.setStakingContract(dbStaking.address);
+    await dbStaking.setDefaultPool();
 }
 
 main()

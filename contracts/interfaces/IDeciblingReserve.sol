@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.9;
 
 interface IDeciblingReserve {
     event AdminChanged(address previousAdmin, address newAdmin);
@@ -23,13 +23,11 @@ interface IDeciblingReserve {
 
     function renounceOwnership() external;
 
-    function requestPayout(string memory id, address user)
-        external
-        returns (bool);
-
-    function requestPayoutForPoolOwner(string memory id, address[] memory users)
-        external
-        returns (bool);
+    function requestPayout(
+        string memory id,
+        address user,
+        uint256 amount
+    ) external returns (bool);
 
     function setStakingContract(address addr) external;
 

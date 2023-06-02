@@ -24,7 +24,7 @@ contract DeciblingStaking is
     uint256 private constant DEFAULT_HARD_CAP = 10_000_000 * 10 ** 18;
 
     IERC20 public token;
-    IDeciblingReserve public treasury;
+    IDeciblingReserve public reserve;
     bytes32 public merkleRoot;
 
     struct StakeInfo {
@@ -51,7 +51,7 @@ contract DeciblingStaking is
     event Stake(string poolId, address user, uint256 amount);
     event Unstake(string poolId, address user, uint256 amount);
     event Reinvest(string poolId, address user, uint256 profitAmount);
-    event Claim(string poolId, address user);
+    event Claim(string poolId, address user, uint256 amount);
 
     modifier validPool(string memory id) {
         bytes memory idTest = bytes(id);
@@ -102,7 +102,7 @@ contract DeciblingStaking is
 
     modifier validReserveContract() {
         require(
-            address(treasury) != address(0),
+            address(reserve) != address(0),
             "DeciblingStaking: reserve contract is not updated"
         );
         _;
@@ -244,7 +244,7 @@ contract DeciblingStaking is
             "DeciblingStaking: Transfer failed"
         );
 
-        reinvest(id);
+        _reinvest(id);
         _stake(id, amount, false);
     }
 
@@ -270,7 +270,7 @@ contract DeciblingStaking is
      * @return {bool} status of reinvest
      */
 
-    function reinvest(string memory id) public returns (bool) {
+    function _reinvest(string memory id) internal returns (bool) {
         uint256 amount = payout(id, msg.sender, false);
         if (amount > 0) {
             _stake(id, amount, true);
@@ -283,7 +283,7 @@ contract DeciblingStaking is
     function unstake(
         string memory id,
         uint256 amount
-    ) external validPool(id) validAmount(amount) existPool(id) {
+    ) external nonReentrant validPool(id) validAmount(amount) existPool(id) {
         require(
             stakers[id][msg.sender].totalDeposit != 0,
             "DeciblingStaking: Your current stake amount of this pool is 0"
@@ -295,26 +295,31 @@ contract DeciblingStaking is
 
         _claim(id);
 
+        stakers[id][msg.sender].totalDeposit -= amount;
+        pools[id].totalDeposit -= amount;
+
         require(
             token.transfer(msg.sender, amount),
             "DeciblingStaking: Transfer failed"
         );
-
-        stakers[id][msg.sender].totalDeposit -= amount;
-        pools[id].totalDeposit -= amount;
 
         emit Unstake(id, msg.sender, amount);
     }
 
     function claim(
         string memory id
-    ) external validPool(id) existPool(id) validReserveContract {
+    ) public nonReentrant validPool(id) existPool(id) validReserveContract {
+        _claim(id);
+    }
+
+    function _claim(string memory id) internal {
+        uint256 amount = payout(id, msg.sender, false);
+        stakers[id][msg.sender].lastPayout = _getNow();
         require(
-            treasury.requestPayout(id, msg.sender),
+            reserve.requestPayout(id, msg.sender, amount),
             "DeciblingStaking: request payout failed"
         );
-
-        _claim(id);
+        emit Claim(id, msg.sender, amount);
     }
 
     /**
@@ -325,30 +330,29 @@ contract DeciblingStaking is
     function claimForPoolProfit(
         string memory id,
         address[] calldata users
-    ) external validPool(id) existPool(id) validReserveContract {
-        require(
-            treasury.requestPayoutForPoolOwner(id, users),
-            "DeciblingStaking: request payout for pool owner failed"
-        );
-
-        _batchClaimForPoolProfit(id, users);
-    }
-
-    function _batchClaimForPoolProfit(
-        string memory id,
-        address[] calldata users
-    ) internal {
+    )
+        external
+        validPool(id)
+        existPool(id)
+        onlyPoolOwnerOrAdmin(id)
+        validReserveContract
+    {
+        address poolOwner = pools[id].owner;
+        uint256 totalAmount = 0;
         for (uint i = 0; i < users.length; i++) {
+            uint256 amount = payout(id, users[i], true);
+            if (amount > 0) {
+                totalAmount += amount;
+            }
             stakers[id][users[i]].lastPayoutToPoolOwner = _getNow();
         }
 
-        emit Claim(id, msg.sender);
-    }
+        require(
+            reserve.requestPayout(id, poolOwner, totalAmount),
+            "DeciblingStaking: request payout failed"
+        );
 
-    function _claim(string memory id) internal {
-        stakers[id][msg.sender].lastPayout = _getNow();
-
-        emit Claim(id, msg.sender);
+        emit Claim(id, poolOwner, totalAmount);
     }
 
     function payout(
@@ -396,7 +400,7 @@ contract DeciblingStaking is
     function setReserveContract(
         address addr
     ) external onlyOwner validAddress(addr) {
-        treasury = IDeciblingReserve(addr);
+        reserve = IDeciblingReserve(addr);
     }
 
     function _getNow() internal view virtual returns (uint256) {

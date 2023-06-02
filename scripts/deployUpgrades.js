@@ -11,8 +11,10 @@ async function main() {
     const DeciblingNFT = await ethers.getContractFactory("DeciblingNFT");
     const DeciblingReserve = await ethers.getContractFactory("DeciblingReserve");
     const DeciblingAuction = await ethers.getContractFactory("DeciblingAuction");
+    const DeciblingStaking = await ethers.getContractFactory("DeciblingStaking");
 
-    await upgrades.validateUpgrade("0x2a3d9fAf012A9A60583eCea22F09b98839359441", DeciblingAuction)
+    await upgrades.validateUpgrade("0xfD269C44f98f2af253f66897F24fBAD7926bcb18", DeciblingStaking)
+    await upgrades.validateUpgrade("0x6D4b9E456F70504787158491f16c5b6eDC09B3CF", DeciblingReserve)
 }
 
 main()

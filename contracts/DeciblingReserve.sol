@@ -50,9 +50,9 @@ contract DeciblingReserve is
 
     function requestPayout(
         string memory id,
-        address user
+        address user,
+        uint256 amount
     ) external stakingContractOnly returns (bool) {
-        uint256 amount = staking.payout(id, user, false);
         require(amount > 0, "DeciblingReserve: Payout must be > 0");
         uint256 feeAmount = (amount * payoutFee) / 100;
         uint256 payAmount = amount - feeAmount;
@@ -61,31 +61,7 @@ contract DeciblingReserve is
             "DeciblingReserve: Transfer failed"
         );
 
-        emit Payout(id, msg.sender, payAmount);
-
-        return true;
-    }
-
-    function requestPayoutForPoolOwner(
-        string memory id,
-        address[] calldata users
-    ) external stakingContractOnly returns (bool) {
-        uint256 totalPaidAmount;
-        (address owner,,,,,) = staking.pools(id);
-        for (uint i = 0; i < users.length; i++) {
-            uint256 amount = staking.payout(id, users[i], true);
-            uint256 feeAmount = (amount * payoutFee) / 100;
-            uint256 payAmount = amount - feeAmount;
-            if (payAmount > 0) {
-                require(
-                    token.transfer(owner, payAmount),
-                    "DeciblingReserve: Transfer failed"
-                );
-                totalPaidAmount += payAmount;
-            }
-        }
-
-        emit Payout(id, msg.sender, totalPaidAmount);
+        emit Payout(id, user, payAmount);
 
         return true;
     }
